@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<attributes>
+<attribute>
+<srcPos sline="0" eline="0" spos="0" epos="0"/>
+<jmpPos sline="0" eline="0" spos="0" epos="0"/>
+<text info="[inner=com/stac/learning/Vector$VectorBuilder, outer=com/stac/learning/Vector, name=VectorBuilder,flags=9]" aType="InnerClassTag"/>
+<text info="soot.tagkit.InnerClassAttribute@4160027e" aType="InnerClassAttribute"/>
+</attribute>
+<attribute>
+<srcPos sline="0" eline="0" spos="0" epos="0"/>
+<jmpPos sline="4" eline="4" spos="0" epos="0"/>
+<text info="Signature: Ljava/util/ArrayList&lt;Lcom/stac/image/ImageAlgorithm;&gt;;" aType="SignatureTag"/>
+</attribute>
+</attributes>

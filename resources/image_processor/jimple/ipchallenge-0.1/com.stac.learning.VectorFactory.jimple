@@ -1,0 +1,16 @@
+public abstract class com.stac.learning.VectorFactory extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        com.stac.learning.VectorFactory this;
+
+        this := @this: com.stac.learning.VectorFactory;
+
+        specialinvoke this.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public abstract com.stac.learning.Vector get(int);
+}

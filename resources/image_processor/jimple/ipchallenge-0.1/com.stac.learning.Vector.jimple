@@ -1,0 +1,108 @@
+public abstract class com.stac.learning.Vector extends java.lang.Object
+{
+    final float[] attributes;
+
+    void <init>(int)
+    {
+        com.stac.learning.Vector this;
+        int n;
+        float[] $r0;
+
+        this := @this: com.stac.learning.Vector;
+
+        n := @parameter0: int;
+
+        specialinvoke this.<java.lang.Object: void <init>()>();
+
+        $r0 = newarray (float)[n];
+
+        this.<com.stac.learning.Vector: float[] attributes> = $r0;
+
+        return;
+    }
+
+    public final int size()
+    {
+        com.stac.learning.Vector this;
+        float[] $r0;
+        int $i0;
+
+        this := @this: com.stac.learning.Vector;
+
+        $r0 = this.<com.stac.learning.Vector: float[] attributes>;
+
+        $i0 = lengthof $r0;
+
+        return $i0;
+    }
+
+    final float[] getAttributes()
+    {
+        com.stac.learning.Vector this;
+        float[] $r0;
+
+        this := @this: com.stac.learning.Vector;
+
+        $r0 = this.<com.stac.learning.Vector: float[] attributes>;
+
+        return $r0;
+    }
+
+    public abstract float compareTo(com.stac.learning.Vector);
+
+    public java.lang.String toString()
+    {
+        com.stac.learning.Vector this;
+        java.lang.StringBuilder sb, $r0, $r8;
+        float[] $r2, $r3, $r7;
+        int $i0, $i1, i;
+        float $f0, $f1;
+        java.lang.String $r6;
+
+        this := @this: com.stac.learning.Vector;
+
+        $r0 = new java.lang.StringBuilder;
+
+        specialinvoke $r0.<java.lang.StringBuilder: void <init>()>();
+
+        sb = $r0;
+
+        virtualinvoke sb.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("Vector [");
+
+        i = 0;
+
+     label1:
+        $r2 = this.<com.stac.learning.Vector: float[] attributes>;
+
+        $i0 = lengthof $r2;
+
+        $i1 = $i0 - 1;
+
+        if i >= $i1 goto label2;
+
+        $r7 = this.<com.stac.learning.Vector: float[] attributes>;
+
+        $f1 = $r7[i];
+
+        $r8 = virtualinvoke sb.<java.lang.StringBuilder: java.lang.StringBuilder append(float)>($f1);
+
+        virtualinvoke $r8.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(", ");
+
+        i = i + 1;
+
+        goto label1;
+
+     label2:
+        $r3 = this.<com.stac.learning.Vector: float[] attributes>;
+
+        $f0 = $r3[i];
+
+        virtualinvoke sb.<java.lang.StringBuilder: java.lang.StringBuilder append(float)>($f0);
+
+        virtualinvoke sb.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("]");
+
+        $r6 = virtualinvoke sb.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        return $r6;
+    }
+}

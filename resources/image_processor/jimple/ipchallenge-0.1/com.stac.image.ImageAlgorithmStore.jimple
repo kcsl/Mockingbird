@@ -1,0 +1,101 @@
+public class com.stac.image.ImageAlgorithmStore extends java.lang.Object
+{
+    private static java.util.Map store;
+
+    public void <init>()
+    {
+        com.stac.image.ImageAlgorithmStore this;
+
+        this := @this: com.stac.image.ImageAlgorithmStore;
+
+        specialinvoke this.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    private static void addAlgorithm(java.lang.Class)
+    {
+        java.lang.Class algo;
+        java.util.Map $r0;
+        java.lang.String $r1;
+        java.lang.Object $r2;
+        java.lang.ReflectiveOperationException $r4;
+        java.lang.RuntimeException $r5;
+
+        algo := @parameter0: java.lang.Class;
+
+     label1:
+        $r0 = <com.stac.image.ImageAlgorithmStore: java.util.Map store>;
+
+        $r1 = virtualinvoke algo.<java.lang.Class: java.lang.String getSimpleName()>();
+
+        $r2 = virtualinvoke algo.<java.lang.Class: java.lang.Object newInstance()>();
+
+        interfaceinvoke $r0.<java.util.Map: java.lang.Object put(java.lang.Object,java.lang.Object)>($r1, $r2);
+
+     label2:
+        goto label4;
+
+     label3:
+        $r4 := @caughtexception;
+
+        $r5 = new java.lang.RuntimeException;
+
+        specialinvoke $r5.<java.lang.RuntimeException: void <init>(java.lang.String)>("Fatal initialization error has occurred");
+
+        throw $r5;
+
+     label4:
+        return;
+
+        catch java.lang.InstantiationException from label1 to label2 with label3;
+        catch java.lang.IllegalAccessException from label1 to label2 with label3;
+    }
+
+    public static com.stac.image.ImageAlgorithm getAlgorithm(java.lang.String)
+    {
+        java.lang.String name;
+        java.util.Map $r0;
+        java.lang.Object $r1;
+        com.stac.image.ImageAlgorithm $r2;
+
+        name := @parameter0: java.lang.String;
+
+        $r0 = <com.stac.image.ImageAlgorithmStore: java.util.Map store>;
+
+        $r1 = interfaceinvoke $r0.<java.util.Map: java.lang.Object get(java.lang.Object)>(name);
+
+        $r2 = (com.stac.image.ImageAlgorithm) $r1;
+
+        return $r2;
+    }
+
+    static void <clinit>()
+    {
+        java.util.HashMap $r0;
+
+        $r0 = new java.util.HashMap;
+
+        specialinvoke $r0.<java.util.HashMap: void <init>()>();
+
+        <com.stac.image.ImageAlgorithmStore: java.util.Map store> = $r0;
+
+        staticinvoke <com.stac.image.ImageAlgorithmStore: void addAlgorithm(java.lang.Class)>(class "com/stac/image/algorithms/detectors/BlackDetector");
+
+        staticinvoke <com.stac.image.ImageAlgorithmStore: void addAlgorithm(java.lang.Class)>(class "com/stac/image/algorithms/detectors/BlueDetector");
+
+        staticinvoke <com.stac.image.ImageAlgorithmStore: void addAlgorithm(java.lang.Class)>(class "com/stac/image/algorithms/detectors/EdgingDetector");
+
+        staticinvoke <com.stac.image.ImageAlgorithmStore: void addAlgorithm(java.lang.Class)>(class "com/stac/image/algorithms/detectors/GreenDetector");
+
+        staticinvoke <com.stac.image.ImageAlgorithmStore: void addAlgorithm(java.lang.Class)>(class "com/stac/image/algorithms/detectors/RedDetector");
+
+        staticinvoke <com.stac.image.ImageAlgorithmStore: void addAlgorithm(java.lang.Class)>(class "com/stac/image/algorithms/detectors/WhiteDetector");
+
+        staticinvoke <com.stac.image.ImageAlgorithmStore: void addAlgorithm(java.lang.Class)>(class "com/stac/image/algorithms/filters/Intensify");
+
+        staticinvoke <com.stac.image.ImageAlgorithmStore: void addAlgorithm(java.lang.Class)>(class "com/stac/image/algorithms/filters/Invert");
+
+        return;
+    }
+}

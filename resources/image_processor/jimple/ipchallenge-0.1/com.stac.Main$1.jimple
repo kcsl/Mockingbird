@@ -1,0 +1,71 @@
+final class com.stac.Main$1 extends java.lang.Object implements java.util.Comparator
+{
+
+    void <init>()
+    {
+        com.stac.Main$1 this;
+
+        this := @this: com.stac.Main$1;
+
+        specialinvoke this.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public int compare(java.util.Map$Entry, java.util.Map$Entry)
+    {
+        com.stac.Main$1 this;
+        java.util.Map$Entry o1, o2;
+        java.lang.Object $r0, $r1, $r3, $r4;
+        java.lang.Integer $r2, $r5;
+        int $i0, $i1, $i2;
+
+        this := @this: com.stac.Main$1;
+
+        o1 := @parameter0: java.util.Map$Entry;
+
+        o2 := @parameter1: java.util.Map$Entry;
+
+        $r0 = interfaceinvoke o2.<java.util.Map$Entry: java.lang.Object getValue()>();
+
+        $r1 = staticinvoke <java.util.Objects: java.lang.Object requireNonNull(java.lang.Object)>($r0);
+
+        $r2 = (java.lang.Integer) $r1;
+
+        $i0 = virtualinvoke $r2.<java.lang.Integer: int intValue()>();
+
+        $r3 = interfaceinvoke o1.<java.util.Map$Entry: java.lang.Object getValue()>();
+
+        $r4 = staticinvoke <java.util.Objects: java.lang.Object requireNonNull(java.lang.Object)>($r3);
+
+        $r5 = (java.lang.Integer) $r4;
+
+        $i1 = virtualinvoke $r5.<java.lang.Integer: int intValue()>();
+
+        $i2 = $i0 - $i1;
+
+        return $i2;
+    }
+
+    public volatile int compare(java.lang.Object, java.lang.Object)
+    {
+        com.stac.Main$1 this;
+        java.lang.Object l1, l2;
+        java.util.Map$Entry $r0, $r1;
+        int $i0;
+
+        this := @this: com.stac.Main$1;
+
+        l1 := @parameter0: java.lang.Object;
+
+        l2 := @parameter1: java.lang.Object;
+
+        $r1 = (java.util.Map$Entry) l1;
+
+        $r0 = (java.util.Map$Entry) l2;
+
+        $i0 = virtualinvoke this.<com.stac.Main$1: int compare(java.util.Map$Entry,java.util.Map$Entry)>($r1, $r0);
+
+        return $i0;
+    }
+}

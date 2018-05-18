@@ -1,0 +1,271 @@
+public class com.stac.image.ImageProcessing extends java.lang.Object
+{
+    private static final com.stac.learning.VectorFactory VECTOR_FACTORY;
+    private final java.util.ArrayList ALGORITHMS;
+    private final java.awt.image.BufferedImage image;
+
+    private void <init>()
+    {
+        com.stac.image.ImageProcessing this;
+        java.util.ArrayList $r0;
+
+        this := @this: com.stac.image.ImageProcessing;
+
+        specialinvoke this.<java.lang.Object: void <init>()>();
+
+        $r0 = new java.util.ArrayList;
+
+        specialinvoke $r0.<java.util.ArrayList: void <init>()>();
+
+        this.<com.stac.image.ImageProcessing: java.util.ArrayList ALGORITHMS> = $r0;
+
+        this.<com.stac.image.ImageProcessing: java.awt.image.BufferedImage image> = null;
+
+        return;
+    }
+
+    private void <init>(java.awt.image.BufferedImage, java.lang.String) throws java.io.IOException
+    {
+        com.stac.image.ImageProcessing this;
+        java.awt.image.BufferedImage imageFile, $r1, $r2;
+        java.lang.String processingChain, algorithm, $r8;
+        java.lang.String[] algorithms, arr$;
+        int len$, $i0, $i1, $i2, i$;
+        com.stac.image.ImageAlgorithm ia;
+        java.util.ArrayList $r0, $r3;
+        java.lang.RuntimeException $r4, $r9;
+        java.lang.StringBuilder $r5, $r6, $r7;
+
+        this := @this: com.stac.image.ImageProcessing;
+
+        imageFile := @parameter0: java.awt.image.BufferedImage;
+
+        processingChain := @parameter1: java.lang.String;
+
+        specialinvoke this.<java.lang.Object: void <init>()>();
+
+        $r0 = new java.util.ArrayList;
+
+        specialinvoke $r0.<java.util.ArrayList: void <init>()>();
+
+        this.<com.stac.image.ImageProcessing: java.util.ArrayList ALGORITHMS> = $r0;
+
+        this.<com.stac.image.ImageProcessing: java.awt.image.BufferedImage image> = imageFile;
+
+        $r1 = this.<com.stac.image.ImageProcessing: java.awt.image.BufferedImage image>;
+
+        $i0 = virtualinvoke $r1.<java.awt.image.BufferedImage: int getWidth()>();
+
+        $r2 = this.<com.stac.image.ImageProcessing: java.awt.image.BufferedImage image>;
+
+        $i1 = virtualinvoke $r2.<java.awt.image.BufferedImage: int getHeight()>();
+
+        $i2 = $i0 * $i1;
+
+        if $i2 <= 250000 goto label1;
+
+        $r9 = new java.lang.RuntimeException;
+
+        specialinvoke $r9.<java.lang.RuntimeException: void <init>(java.lang.String)>("This image is too large. Please reduce your image size to less than 250000 pixels");
+
+        throw $r9;
+
+     label1:
+        algorithms = virtualinvoke processingChain.<java.lang.String: java.lang.String[] split(java.lang.String)>(",\\s*");
+
+        arr$ = algorithms;
+
+        len$ = lengthof arr$;
+
+        i$ = 0;
+
+     label2:
+        if i$ >= len$ goto label4;
+
+        algorithm = arr$[i$];
+
+        ia = staticinvoke <com.stac.image.ImageAlgorithmStore: com.stac.image.ImageAlgorithm getAlgorithm(java.lang.String)>(algorithm);
+
+        if ia != null goto label3;
+
+        $r4 = new java.lang.RuntimeException;
+
+        $r5 = new java.lang.StringBuilder;
+
+        specialinvoke $r5.<java.lang.StringBuilder: void <init>()>();
+
+        $r6 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("Unknown algorithm: ");
+
+        $r7 = virtualinvoke $r6.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(algorithm);
+
+        $r8 = virtualinvoke $r7.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        specialinvoke $r4.<java.lang.RuntimeException: void <init>(java.lang.String)>($r8);
+
+        throw $r4;
+
+     label3:
+        $r3 = this.<com.stac.image.ImageProcessing: java.util.ArrayList ALGORITHMS>;
+
+        virtualinvoke $r3.<java.util.ArrayList: boolean add(java.lang.Object)>(ia);
+
+        i$ = i$ + 1;
+
+        goto label2;
+
+     label4:
+        return;
+    }
+
+    private int countDetectors()
+    {
+        com.stac.image.ImageProcessing this;
+        java.util.Iterator i$;
+        com.stac.image.ImageAlgorithm algorithm;
+        java.util.ArrayList $r0;
+        boolean $z0, $z1;
+        java.lang.Object $r1;
+        int c;
+
+        this := @this: com.stac.image.ImageProcessing;
+
+        c = 0;
+
+        $r0 = this.<com.stac.image.ImageProcessing: java.util.ArrayList ALGORITHMS>;
+
+        i$ = virtualinvoke $r0.<java.util.ArrayList: java.util.Iterator iterator()>();
+
+     label1:
+        $z0 = interfaceinvoke i$.<java.util.Iterator: boolean hasNext()>();
+
+        if $z0 == 0 goto label3;
+
+        $r1 = interfaceinvoke i$.<java.util.Iterator: java.lang.Object next()>();
+
+        algorithm = (com.stac.image.ImageAlgorithm) $r1;
+
+        $z1 = virtualinvoke algorithm.<com.stac.image.ImageAlgorithm: boolean hasValue()>();
+
+        if $z1 == 0 goto label2;
+
+        c = c + 1;
+
+     label2:
+        goto label1;
+
+     label3:
+        return c;
+    }
+
+    private com.stac.learning.Vector featureExtract() throws java.io.InvalidObjectException
+    {
+        com.stac.image.ImageProcessing this;
+        com.stac.learning.Vector$VectorBuilder vectorBuilder, $r0;
+        java.util.Iterator i$;
+        com.stac.image.ImageAlgorithm imageAlgorithm;
+        com.stac.learning.VectorFactory $r1;
+        int $i0;
+        java.util.ArrayList $r2;
+        boolean $z0, $z1;
+        com.stac.learning.Vector $r3;
+        java.lang.Object $r4;
+        java.awt.image.BufferedImage $r5;
+        float $f0;
+
+        this := @this: com.stac.image.ImageProcessing;
+
+        $r0 = new com.stac.learning.Vector$VectorBuilder;
+
+        $r1 = <com.stac.image.ImageProcessing: com.stac.learning.VectorFactory VECTOR_FACTORY>;
+
+        $i0 = specialinvoke this.<com.stac.image.ImageProcessing: int countDetectors()>();
+
+        specialinvoke $r0.<com.stac.learning.Vector$VectorBuilder: void <init>(com.stac.learning.VectorFactory,int)>($r1, $i0);
+
+        vectorBuilder = $r0;
+
+        $r2 = this.<com.stac.image.ImageProcessing: java.util.ArrayList ALGORITHMS>;
+
+        i$ = virtualinvoke $r2.<java.util.ArrayList: java.util.Iterator iterator()>();
+
+     label1:
+        $z0 = interfaceinvoke i$.<java.util.Iterator: boolean hasNext()>();
+
+        if $z0 == 0 goto label3;
+
+        $r4 = interfaceinvoke i$.<java.util.Iterator: java.lang.Object next()>();
+
+        imageAlgorithm = (com.stac.image.ImageAlgorithm) $r4;
+
+        $r5 = this.<com.stac.image.ImageProcessing: java.awt.image.BufferedImage image>;
+
+        virtualinvoke imageAlgorithm.<com.stac.image.ImageAlgorithm: void runAlgorithm(java.awt.image.BufferedImage)>($r5);
+
+        $z1 = virtualinvoke imageAlgorithm.<com.stac.image.ImageAlgorithm: boolean hasValue()>();
+
+        if $z1 == 0 goto label2;
+
+        $f0 = virtualinvoke imageAlgorithm.<com.stac.image.ImageAlgorithm: float getValue()>();
+
+        virtualinvoke vectorBuilder.<com.stac.learning.Vector$VectorBuilder: com.stac.learning.Vector$VectorBuilder add(float)>($f0);
+
+     label2:
+        goto label1;
+
+     label3:
+        $r3 = virtualinvoke vectorBuilder.<com.stac.learning.Vector$VectorBuilder: com.stac.learning.Vector build()>();
+
+        return $r3;
+    }
+
+    public static com.stac.learning.Vector getAttributeVector(java.io.File, java.lang.String) throws java.io.IOException
+    {
+        java.io.File imageFile;
+        java.lang.String processingChain;
+        java.awt.image.BufferedImage $r0;
+        com.stac.learning.Vector $r1;
+
+        imageFile := @parameter0: java.io.File;
+
+        processingChain := @parameter1: java.lang.String;
+
+        $r0 = staticinvoke <javax.imageio.ImageIO: java.awt.image.BufferedImage read(java.io.File)>(imageFile);
+
+        $r1 = staticinvoke <com.stac.image.ImageProcessing: com.stac.learning.Vector getAttributeVector(java.awt.image.BufferedImage,java.lang.String)>($r0, processingChain);
+
+        return $r1;
+    }
+
+    public static com.stac.learning.Vector getAttributeVector(java.awt.image.BufferedImage, java.lang.String) throws java.io.IOException
+    {
+        java.awt.image.BufferedImage image;
+        java.lang.String processingChain;
+        com.stac.image.ImageProcessing $r0;
+        com.stac.learning.Vector $r1;
+
+        image := @parameter0: java.awt.image.BufferedImage;
+
+        processingChain := @parameter1: java.lang.String;
+
+        $r0 = new com.stac.image.ImageProcessing;
+
+        specialinvoke $r0.<com.stac.image.ImageProcessing: void <init>(java.awt.image.BufferedImage,java.lang.String)>(image, processingChain);
+
+        $r1 = specialinvoke $r0.<com.stac.image.ImageProcessing: com.stac.learning.Vector featureExtract()>();
+
+        return $r1;
+    }
+
+    static void <clinit>()
+    {
+        com.stac.learning.EuclideanVectorFactory $r0;
+
+        $r0 = new com.stac.learning.EuclideanVectorFactory;
+
+        specialinvoke $r0.<com.stac.learning.EuclideanVectorFactory: void <init>()>();
+
+        <com.stac.image.ImageProcessing: com.stac.learning.VectorFactory VECTOR_FACTORY> = $r0;
+
+        return;
+    }
+}

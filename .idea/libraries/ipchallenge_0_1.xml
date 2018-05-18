@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="ipchallenge-0.1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/resources/image_processor/ipchallenge-0.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

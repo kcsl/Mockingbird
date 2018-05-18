@@ -1,0 +1,57 @@
+public abstract class com.stac.image.algorithms.Detector extends com.stac.image.ImageAlgorithm
+{
+    private float value;
+
+    public void <init>()
+    {
+        com.stac.image.algorithms.Detector this;
+
+        this := @this: com.stac.image.algorithms.Detector;
+
+        specialinvoke this.<com.stac.image.ImageAlgorithm: void <init>()>();
+
+        this.<com.stac.image.algorithms.Detector: float value> = 0.0F;
+
+        return;
+    }
+
+    public void runAlgorithm(java.awt.image.BufferedImage)
+    {
+        com.stac.image.algorithms.Detector this;
+        java.awt.image.BufferedImage image;
+        float $f0;
+
+        this := @this: com.stac.image.algorithms.Detector;
+
+        image := @parameter0: java.awt.image.BufferedImage;
+
+        $f0 = virtualinvoke this.<com.stac.image.algorithms.Detector: float detect(java.awt.image.BufferedImage)>(image);
+
+        this.<com.stac.image.algorithms.Detector: float value> = $f0;
+
+        return;
+    }
+
+    public boolean hasValue()
+    {
+        com.stac.image.algorithms.Detector this;
+
+        this := @this: com.stac.image.algorithms.Detector;
+
+        return 1;
+    }
+
+    public float getValue()
+    {
+        com.stac.image.algorithms.Detector this;
+        float $f0;
+
+        this := @this: com.stac.image.algorithms.Detector;
+
+        $f0 = this.<com.stac.image.algorithms.Detector: float value>;
+
+        return $f0;
+    }
+
+    public abstract float detect(java.awt.image.BufferedImage);
+}

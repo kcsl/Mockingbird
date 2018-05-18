@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<attributes>
+<attribute>
+<srcPos sline="0" eline="0" spos="0" epos="0"/>
+<jmpPos sline="0" eline="0" spos="0" epos="0"/>
+<text info="Signature: Ljava/lang/Object;Ljava/util/Comparator&lt;Ljava/util/Map$Entry&lt;Ljava/lang/String;Ljava/lang/Integer;&gt;;&gt;;" aType="SignatureTag"/>
+<text info="Enclosing Class: com/stac/Main Enclosing Method: clusterAgainstTrainingSet Sig: (Ljava/lang/String;)Z" aType="EnclosingMethodTag"/>
+<text info="[inner=com/stac/Main$1, outer=null, name=null,flags=8]" aType="InnerClassTag"/>
+<text info="[inner=java/util/Map$Entry, outer=java/util/Map, name=Entry,flags=1545]" aType="InnerClassTag"/>
+<text info="soot.tagkit.InnerClassAttribute@3fbf48da" aType="InnerClassAttribute"/>
+</attribute>
+<attribute>
+<srcPos sline="0" eline="0" spos="0" epos="0"/>
+<jmpPos sline="15" eline="15" spos="0" epos="0"/>
+<text info="Signature: (Ljava/util/Map$Entry&lt;Ljava/lang/String;Ljava/lang/Integer;&gt;;Ljava/util/Map$Entry&lt;Ljava/lang/String;Ljava/lang/Integer;&gt;;)I" aType="SignatureTag"/>
+</attribute>
+</attributes>

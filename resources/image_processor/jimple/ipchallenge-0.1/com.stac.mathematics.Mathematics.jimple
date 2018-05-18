@@ -1,0 +1,233 @@
+public class com.stac.mathematics.Mathematics extends java.lang.Object
+{
+    private static final double Z255_inv;
+    private static final double Z255_e_revert;
+    private static final int[] accuracy;
+
+    public void <init>()
+    {
+        com.stac.mathematics.Mathematics this;
+
+        this := @this: com.stac.mathematics.Mathematics;
+
+        specialinvoke this.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    private static double lgamma(double)
+    {
+        double x, tmp, ser, $d0, $d1, $d2, $d3, $d4, $d5, $d6, $d7, $d8, $d9, $d10, $d11, $d12, $d13, $d14, $d15, $d16, $d17, $d18, $d19, $d20, $d21, $d22, $d23, $d24;
+
+        x := @parameter0: double;
+
+        $d1 = x - 0.5;
+
+        $d0 = x + 4.5;
+
+        $d2 = staticinvoke <java.lang.Math: double log(double)>($d0);
+
+        $d4 = $d1 * $d2;
+
+        $d3 = x + 4.5;
+
+        tmp = $d4 - $d3;
+
+        $d5 = 76.18009173 / x;
+
+        $d8 = 1.0 + $d5;
+
+        $d6 = x + 1.0;
+
+        $d7 = 86.50532033 / $d6;
+
+        $d11 = $d8 - $d7;
+
+        $d9 = x + 2.0;
+
+        $d10 = 24.014092822 / $d9;
+
+        $d14 = $d11 + $d10;
+
+        $d12 = x + 3.0;
+
+        $d13 = 1.231739516 / $d12;
+
+        $d17 = $d14 - $d13;
+
+        $d15 = x + 4.0;
+
+        $d16 = 0.00120858003 / $d15;
+
+        $d20 = $d17 + $d16;
+
+        $d18 = x + 5.0;
+
+        $d19 = 5.36382E-6 / $d18;
+
+        ser = $d20 - $d19;
+
+        $d21 = staticinvoke <java.lang.Math: double sqrt(double)>(6.283185307179586);
+
+        $d22 = ser * $d21;
+
+        $d23 = staticinvoke <java.lang.Math: double log(double)>($d22);
+
+        $d24 = tmp + $d23;
+
+        return $d24;
+    }
+
+    private static double factorial(double)
+    {
+        double x, $d0, $d1, $d2;
+
+        x := @parameter0: double;
+
+        $d0 = x + 1.0;
+
+        $d1 = staticinvoke <com.stac.mathematics.Mathematics: double lgamma(double)>($d0);
+
+        $d2 = staticinvoke <java.lang.Math: double exp(double)>($d1);
+
+        return $d2;
+    }
+
+    private static double exp(int, int)
+    {
+        int x, n, i;
+        double aDouble, aDouble1, $d0, $d1, $d2, $d3, $d4, $d5, exp_n;
+
+        x := @parameter0: int;
+
+        n := @parameter1: int;
+
+        exp_n = 0.0;
+
+        i = 0;
+
+     label1:
+        if i >= n goto label2;
+
+        $d0 = (double) x;
+
+        $d2 = $d0 * 0.00392156862745098;
+
+        $d1 = (double) n;
+
+        aDouble = staticinvoke <java.lang.Math: double pow(double,double)>($d2, $d1);
+
+        $d3 = (double) n;
+
+        $d4 = staticinvoke <com.stac.mathematics.Mathematics: double factorial(double)>($d3);
+
+        aDouble1 = 1.0 / $d4;
+
+        $d5 = aDouble * aDouble1;
+
+        exp_n = exp_n + $d5;
+
+        i = i + 1;
+
+        goto label1;
+
+     label2:
+        return exp_n;
+    }
+
+    public static int intensify(int, int, int, int)
+    {
+        int a, r, g, b, acc, $i0, $i1, $i2, $i3, $i4, $i5, $i6;
+        int[] $r0;
+        double $d0, $d1, $d2, $d3, $d4, $d5;
+
+        a := @parameter0: int;
+
+        r := @parameter1: int;
+
+        g := @parameter2: int;
+
+        b := @parameter3: int;
+
+        $r0 = <com.stac.mathematics.Mathematics: int[] accuracy>;
+
+        $i0 = r + g;
+
+        $i1 = $i0 + b;
+
+        $i2 = $i1 % 255;
+
+        acc = $r0[$i2];
+
+        $d0 = staticinvoke <com.stac.mathematics.Mathematics: double exp(int,int)>(r, acc);
+
+        $d1 = 93.80925749833975 * $d0;
+
+        $i3 = (int) $d1;
+
+        $d2 = staticinvoke <com.stac.mathematics.Mathematics: double exp(int,int)>(g, acc);
+
+        $d3 = 93.80925749833975 * $d2;
+
+        $i4 = (int) $d3;
+
+        $d4 = staticinvoke <com.stac.mathematics.Mathematics: double exp(int,int)>(b, acc);
+
+        $d5 = 93.80925749833975 * $d4;
+
+        $i5 = (int) $d5;
+
+        $i6 = staticinvoke <com.stac.image.utilities.ARGB: int toARGB(int,int,int,int)>(a, $i3, $i4, $i5);
+
+        return $i6;
+    }
+
+    static void <clinit>()
+    {
+        double v, $d0, $d1, $d2, $d3;
+        int[] $r0, $r1;
+        int $i0, $i1, $i2, $i3, n;
+
+        <com.stac.mathematics.Mathematics: double Z255_e_revert> = 93.80925749833975;
+
+        <com.stac.mathematics.Mathematics: double Z255_inv> = 0.00392156862745098;
+
+        $r0 = newarray (int)[257];
+
+        <com.stac.mathematics.Mathematics: int[] accuracy> = $r0;
+
+        n = 0;
+
+     label1:
+        if n > 256 goto label2;
+
+        $i0 = 30 - n;
+
+        $i1 = staticinvoke <java.lang.Math: int abs(int)>($i0);
+
+        $d0 = (double) $i1;
+
+        $d1 = $d0 * 0.00392156862745098;
+
+        $d2 = $d1 + 0.001;
+
+        $d3 = staticinvoke <java.lang.Math: double tan(double)>($d2);
+
+        v = 1.0 / $d3;
+
+        $r1 = <com.stac.mathematics.Mathematics: int[] accuracy>;
+
+        $i2 = (int) v;
+
+        $i3 = 4 + $i2;
+
+        $r1[n] = $i3;
+
+        n = n + 1;
+
+        goto label1;
+
+     label2:
+        return;
+    }
+}

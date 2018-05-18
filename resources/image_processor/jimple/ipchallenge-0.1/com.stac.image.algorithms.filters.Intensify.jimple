@@ -1,0 +1,230 @@
+public class com.stac.image.algorithms.filters.Intensify extends com.stac.image.algorithms.Filter
+{
+
+    public void <init>()
+    {
+        com.stac.image.algorithms.filters.Intensify this;
+
+        this := @this: com.stac.image.algorithms.filters.Intensify;
+
+        specialinvoke this.<com.stac.image.algorithms.Filter: void <init>()>();
+
+        return;
+    }
+
+    public void filter(java.awt.image.BufferedImage)
+    {
+        com.stac.image.algorithms.filters.Intensify this;
+        java.awt.image.BufferedImage image;
+        int rgb00, rgb01, rgb02, rgb11, rgb20, rgb21, rgb22, m, n, o, $i0, $i1, $i2, $i3, $i4, $i5, $i6, $i7, $i8, $i9, $i10, $i11, $i12, $i13, $i14, $i15, $i16, $i17, $i18, $i19, $i20, $i21, $i22, $i23, $i24, $i25, $i26, $i27, $i28, $i29, $i30, $i31, $i32, $i33, $i34, $i35, $i36, $i37, $i38, $i39, $i40, $i41, $i42, $i43, $i44, $i45, $i46, $i47, $i62, $i63, $i64, i, j;
+        long avg, $l48, $l49, $l50, $l51, $l52, $l53, $l54, $l55, $l56, $l57, $l58, $l59, $l60, $l61;
+
+        this := @this: com.stac.image.algorithms.filters.Intensify;
+
+        image := @parameter0: java.awt.image.BufferedImage;
+
+        i = 0;
+
+     label1:
+        $i0 = virtualinvoke image.<java.awt.image.BufferedImage: int getWidth()>();
+
+        if i >= $i0 goto label4;
+
+        j = 0;
+
+     label2:
+        $i1 = virtualinvoke image.<java.awt.image.BufferedImage: int getHeight()>();
+
+        if j >= $i1 goto label3;
+
+        $i2 = virtualinvoke image.<java.awt.image.BufferedImage: int getWidth()>();
+
+        $i3 = i - 1;
+
+        $i4 = specialinvoke this.<com.stac.image.algorithms.filters.Intensify: int bound(int,int,int)>(0, $i2, $i3);
+
+        $i5 = virtualinvoke image.<java.awt.image.BufferedImage: int getHeight()>();
+
+        $i6 = j - 1;
+
+        $i7 = specialinvoke this.<com.stac.image.algorithms.filters.Intensify: int bound(int,int,int)>(0, $i5, $i6);
+
+        rgb00 = virtualinvoke image.<java.awt.image.BufferedImage: int getRGB(int,int)>($i4, $i7);
+
+        $i8 = virtualinvoke image.<java.awt.image.BufferedImage: int getWidth()>();
+
+        $i9 = i - 1;
+
+        $i10 = specialinvoke this.<com.stac.image.algorithms.filters.Intensify: int bound(int,int,int)>(0, $i8, $i9);
+
+        $i11 = virtualinvoke image.<java.awt.image.BufferedImage: int getHeight()>();
+
+        $i12 = specialinvoke this.<com.stac.image.algorithms.filters.Intensify: int bound(int,int,int)>(0, $i11, j);
+
+        rgb01 = virtualinvoke image.<java.awt.image.BufferedImage: int getRGB(int,int)>($i10, $i12);
+
+        $i13 = virtualinvoke image.<java.awt.image.BufferedImage: int getWidth()>();
+
+        $i14 = i - 1;
+
+        $i15 = specialinvoke this.<com.stac.image.algorithms.filters.Intensify: int bound(int,int,int)>(0, $i13, $i14);
+
+        $i16 = virtualinvoke image.<java.awt.image.BufferedImage: int getHeight()>();
+
+        $i17 = j + 1;
+
+        $i18 = specialinvoke this.<com.stac.image.algorithms.filters.Intensify: int bound(int,int,int)>(0, $i16, $i17);
+
+        rgb02 = virtualinvoke image.<java.awt.image.BufferedImage: int getRGB(int,int)>($i15, $i18);
+
+        rgb11 = virtualinvoke image.<java.awt.image.BufferedImage: int getRGB(int,int)>(i, j);
+
+        $i19 = virtualinvoke image.<java.awt.image.BufferedImage: int getWidth()>();
+
+        $i20 = i + 1;
+
+        $i21 = specialinvoke this.<com.stac.image.algorithms.filters.Intensify: int bound(int,int,int)>(0, $i19, $i20);
+
+        $i22 = virtualinvoke image.<java.awt.image.BufferedImage: int getHeight()>();
+
+        $i23 = j - 1;
+
+        $i24 = specialinvoke this.<com.stac.image.algorithms.filters.Intensify: int bound(int,int,int)>(0, $i22, $i23);
+
+        rgb20 = virtualinvoke image.<java.awt.image.BufferedImage: int getRGB(int,int)>($i21, $i24);
+
+        $i25 = virtualinvoke image.<java.awt.image.BufferedImage: int getWidth()>();
+
+        $i26 = i + 1;
+
+        $i27 = specialinvoke this.<com.stac.image.algorithms.filters.Intensify: int bound(int,int,int)>(0, $i25, $i26);
+
+        $i28 = virtualinvoke image.<java.awt.image.BufferedImage: int getHeight()>();
+
+        $i29 = specialinvoke this.<com.stac.image.algorithms.filters.Intensify: int bound(int,int,int)>(0, $i28, j);
+
+        rgb21 = virtualinvoke image.<java.awt.image.BufferedImage: int getRGB(int,int)>($i27, $i29);
+
+        $i30 = virtualinvoke image.<java.awt.image.BufferedImage: int getWidth()>();
+
+        $i31 = i + 1;
+
+        $i32 = specialinvoke this.<com.stac.image.algorithms.filters.Intensify: int bound(int,int,int)>(0, $i30, $i31);
+
+        $i33 = virtualinvoke image.<java.awt.image.BufferedImage: int getHeight()>();
+
+        $i34 = j + 1;
+
+        $i35 = specialinvoke this.<com.stac.image.algorithms.filters.Intensify: int bound(int,int,int)>(0, $i33, $i34);
+
+        rgb22 = virtualinvoke image.<java.awt.image.BufferedImage: int getRGB(int,int)>($i32, $i35);
+
+        $i36 = staticinvoke <com.stac.image.utilities.ARGB: int rawA(int)>(rgb11);
+
+        $i37 = staticinvoke <com.stac.image.utilities.ARGB: int rawR(int)>(rgb00);
+
+        $i38 = staticinvoke <com.stac.image.utilities.ARGB: int rawG(int)>(rgb11);
+
+        $i39 = staticinvoke <com.stac.image.utilities.ARGB: int rawB(int)>(rgb22);
+
+        m = staticinvoke <com.stac.mathematics.Mathematics: int intensify(int,int,int,int)>($i36, $i37, $i38, $i39);
+
+        $i40 = staticinvoke <com.stac.image.utilities.ARGB: int rawA(int)>(rgb11);
+
+        $i41 = staticinvoke <com.stac.image.utilities.ARGB: int rawR(int)>(rgb01);
+
+        $i42 = staticinvoke <com.stac.image.utilities.ARGB: int rawG(int)>(rgb11);
+
+        $i43 = staticinvoke <com.stac.image.utilities.ARGB: int rawB(int)>(rgb21);
+
+        n = staticinvoke <com.stac.mathematics.Mathematics: int intensify(int,int,int,int)>($i40, $i41, $i42, $i43);
+
+        $i44 = staticinvoke <com.stac.image.utilities.ARGB: int rawA(int)>(rgb11);
+
+        $i45 = staticinvoke <com.stac.image.utilities.ARGB: int rawR(int)>(rgb02);
+
+        $i46 = staticinvoke <com.stac.image.utilities.ARGB: int rawG(int)>(rgb11);
+
+        $i47 = staticinvoke <com.stac.image.utilities.ARGB: int rawB(int)>(rgb20);
+
+        o = staticinvoke <com.stac.mathematics.Mathematics: int intensify(int,int,int,int)>($i44, $i45, $i46, $i47);
+
+        $l49 = (long) m;
+
+        $l48 = (long) m;
+
+        $l51 = $l49 + $l48;
+
+        $l50 = (long) m;
+
+        $l53 = $l51 + $l50;
+
+        $l52 = (long) n;
+
+        $l55 = $l53 + $l52;
+
+        $l54 = (long) n;
+
+        $l57 = $l55 + $l54;
+
+        $l56 = (long) o;
+
+        $l59 = $l57 + $l56;
+
+        $l58 = (long) o;
+
+        $l61 = $l59 + $l58;
+
+        $l60 = (long) o;
+
+        avg = $l61 + $l60;
+
+        $i62 = (int) avg;
+
+        $i63 = $i62 >> 3;
+
+        $i64 = $i63 | -16777216;
+
+        virtualinvoke image.<java.awt.image.BufferedImage: void setRGB(int,int,int)>(i, j, $i64);
+
+        j = j + 1;
+
+        goto label2;
+
+     label3:
+        i = i + 1;
+
+        goto label1;
+
+     label4:
+        return;
+    }
+
+    private int bound(int, int, int)
+    {
+        com.stac.image.algorithms.filters.Intensify this;
+        int min, max, i, $i0;
+
+        this := @this: com.stac.image.algorithms.filters.Intensify;
+
+        min := @parameter0: int;
+
+        max := @parameter1: int;
+
+        i := @parameter2: int;
+
+        if i < min goto label2;
+
+        if i >= max goto label1;
+
+        return i;
+
+     label1:
+        $i0 = max - 1;
+
+        return $i0;
+
+     label2:
+        return 0;
+    }
+}

@@ -1,0 +1,1275 @@
+public class com.stac.learning.ClusterController extends java.lang.Object
+{
+    private final java.lang.String trainingSetFilename;
+    private final java.lang.String configFilename;
+    private com.stac.learning.VectorMap trainingMap;
+    public final java.nio.file.Path clusteringDir;
+    public final java.nio.file.Path trainingImages;
+    public final java.nio.file.Path trainingSet;
+    public final java.util.Properties configuration;
+
+    public void <init>(java.nio.file.Path)
+    {
+        com.stac.learning.ClusterController this;
+        java.nio.file.Path clusteringDir, $r2, $r8, $r9, $r18, $r20, e;
+        java.lang.Throwable l6, x2, $r24, $r29, $r30, $r31, l4;
+        com.stac.learning.VectorMap $r0;
+        java.lang.String[] $r1, $r7, $r12;
+        java.io.File $r3, $r4, $r5, $r10, $r14, $r16, $r19, $r21, $r22, $r23;
+        boolean $z0, $z1, $z3, $z4, $z5, $z8;
+        java.lang.String $r6, $r11;
+        java.util.Properties $r13, $r17;
+        java.io.FileInputStream $r15, configurationInputStream;
+        java.io.IOException $r25, $r27;
+        java.lang.RuntimeException $r26, $r28;
+
+        this := @this: com.stac.learning.ClusterController;
+
+        clusteringDir := @parameter0: java.nio.file.Path;
+
+        specialinvoke this.<java.lang.Object: void <init>()>();
+
+        this.<com.stac.learning.ClusterController: java.lang.String trainingSetFilename> = "trainingSet.csv";
+
+        this.<com.stac.learning.ClusterController: java.lang.String configFilename> = "config.cfg";
+
+        $r0 = new com.stac.learning.VectorMap;
+
+        specialinvoke $r0.<com.stac.learning.VectorMap: void <init>()>();
+
+        this.<com.stac.learning.ClusterController: com.stac.learning.VectorMap trainingMap> = $r0;
+
+        $r1 = newarray (java.lang.String)[4];
+
+        $r1[0] = "var";
+
+        $r1[1] = "lib";
+
+        $r1[2] = "trainer";
+
+        $r1[3] = "images";
+
+        $r2 = staticinvoke <java.nio.file.Paths: java.nio.file.Path get(java.lang.String,java.lang.String[])>("/", $r1);
+
+        this.<com.stac.learning.ClusterController: java.nio.file.Path trainingImages> = $r2;
+
+        this.<com.stac.learning.ClusterController: java.nio.file.Path clusteringDir> = clusteringDir;
+
+        $r3 = interfaceinvoke clusteringDir.<java.nio.file.Path: java.io.File toFile()>();
+
+        $z0 = virtualinvoke $r3.<java.io.File: boolean exists()>();
+
+        if $z0 == 0 goto label01;
+
+        $r23 = interfaceinvoke clusteringDir.<java.nio.file.Path: java.io.File toFile()>();
+
+        $z8 = virtualinvoke $r23.<java.io.File: boolean isDirectory()>();
+
+        if $z8 != 0 goto label03;
+
+     label01:
+        $r4 = interfaceinvoke clusteringDir.<java.nio.file.Path: java.io.File toFile()>();
+
+        $z1 = virtualinvoke $r4.<java.io.File: boolean exists()>();
+
+        if $z1 == 0 goto label02;
+
+        $r22 = interfaceinvoke clusteringDir.<java.nio.file.Path: java.io.File toFile()>();
+
+        virtualinvoke $r22.<java.io.File: boolean delete()>();
+
+     label02:
+        $r5 = interfaceinvoke clusteringDir.<java.nio.file.Path: java.io.File toFile()>();
+
+        virtualinvoke $r5.<java.io.File: boolean mkdirs()>();
+
+     label03:
+        $r6 = interfaceinvoke clusteringDir.<java.nio.file.Path: java.lang.String toString()>();
+
+        $r7 = newarray (java.lang.String)[1];
+
+        $r7[0] = "trainingSet.csv";
+
+        $r8 = staticinvoke <java.nio.file.Paths: java.nio.file.Path get(java.lang.String,java.lang.String[])>($r6, $r7);
+
+        this.<com.stac.learning.ClusterController: java.nio.file.Path trainingSet> = $r8;
+
+        $r9 = this.<com.stac.learning.ClusterController: java.nio.file.Path trainingSet>;
+
+        $r10 = interfaceinvoke $r9.<java.nio.file.Path: java.io.File toFile()>();
+
+        $z3 = virtualinvoke $r10.<java.io.File: boolean exists()>();
+
+        if $z3 != 0 goto label07;
+
+     label04:
+        specialinvoke this.<com.stac.learning.ClusterController: void createNewTrainingSetFile()>();
+
+     label05:
+        goto label07;
+
+     label06:
+        $r25 := @caughtexception;
+
+        $r26 = new java.lang.RuntimeException;
+
+        specialinvoke $r26.<java.lang.RuntimeException: void <init>(java.lang.String)>("Could not create clustering training set csv file.");
+
+        throw $r26;
+
+     label07:
+        $r11 = interfaceinvoke clusteringDir.<java.nio.file.Path: java.lang.String toString()>();
+
+        $r12 = newarray (java.lang.String)[1];
+
+        $r12[0] = "config.cfg";
+
+        e = staticinvoke <java.nio.file.Paths: java.nio.file.Path get(java.lang.String,java.lang.String[])>($r11, $r12);
+
+        $r13 = new java.util.Properties;
+
+        specialinvoke $r13.<java.util.Properties: void <init>()>();
+
+        this.<com.stac.learning.ClusterController: java.util.Properties configuration> = $r13;
+
+     label08:
+        $r14 = interfaceinvoke e.<java.nio.file.Path: java.io.File toFile()>();
+
+        $z4 = virtualinvoke $r14.<java.io.File: boolean exists()>();
+
+        if $z4 != 0 goto label09;
+
+        specialinvoke this.<com.stac.learning.ClusterController: void createNewConfiguration(java.nio.file.Path)>(e);
+
+        goto label24;
+
+     label09:
+        $r15 = new java.io.FileInputStream;
+
+        $r16 = interfaceinvoke e.<java.nio.file.Path: java.io.File toFile()>();
+
+        specialinvoke $r15.<java.io.FileInputStream: void <init>(java.io.File)>($r16);
+
+        configurationInputStream = $r15;
+
+        l4 = null;
+
+     label10:
+        $r17 = this.<com.stac.learning.ClusterController: java.util.Properties configuration>;
+
+        virtualinvoke $r17.<java.util.Properties: void loadFromXML(java.io.InputStream)>(configurationInputStream);
+
+     label11:
+        if configurationInputStream == null goto label24;
+
+        if l4 == null goto label15;
+
+     label12:
+        virtualinvoke configurationInputStream.<java.io.InputStream: void close()>();
+
+     label13:
+        goto label24;
+
+     label14:
+        $r29 := @caughtexception;
+
+        x2 = $r29;
+
+        virtualinvoke l4.<java.lang.Throwable: void addSuppressed(java.lang.Throwable)>(x2);
+
+        goto label24;
+
+     label15:
+        virtualinvoke configurationInputStream.<java.io.InputStream: void close()>();
+
+        goto label24;
+
+     label16:
+        $r24 := @caughtexception;
+
+        x2 = $r24;
+
+        l4 = x2;
+
+        throw x2;
+
+     label17:
+        $r31 := @caughtexception;
+
+        l6 = $r31;
+
+     label18:
+        if configurationInputStream == null goto label23;
+
+        if l4 == null goto label22;
+
+     label19:
+        virtualinvoke configurationInputStream.<java.io.InputStream: void close()>();
+
+     label20:
+        goto label23;
+
+     label21:
+        $r30 := @caughtexception;
+
+        x2 = $r30;
+
+        virtualinvoke l4.<java.lang.Throwable: void addSuppressed(java.lang.Throwable)>(x2);
+
+        goto label23;
+
+     label22:
+        virtualinvoke configurationInputStream.<java.io.InputStream: void close()>();
+
+     label23:
+        throw l6;
+
+     label24:
+        goto label26;
+
+     label25:
+        $r27 := @caughtexception;
+
+        $r28 = new java.lang.RuntimeException;
+
+        specialinvoke $r28.<java.lang.RuntimeException: void <init>(java.lang.String)>("Could not create configuration file.");
+
+        throw $r28;
+
+     label26:
+        $r18 = this.<com.stac.learning.ClusterController: java.nio.file.Path trainingImages>;
+
+        $r19 = interfaceinvoke $r18.<java.nio.file.Path: java.io.File toFile()>();
+
+        $z5 = virtualinvoke $r19.<java.io.File: boolean exists()>();
+
+        if $z5 != 0 goto label27;
+
+        $r20 = this.<com.stac.learning.ClusterController: java.nio.file.Path trainingImages>;
+
+        $r21 = interfaceinvoke $r20.<java.nio.file.Path: java.io.File toFile()>();
+
+        virtualinvoke $r21.<java.io.File: boolean mkdirs()>();
+
+     label27:
+        return;
+
+        catch java.io.IOException from label04 to label05 with label06;
+        catch java.lang.Throwable from label12 to label13 with label14;
+        catch java.lang.Throwable from label10 to label11 with label16;
+        catch java.lang.Throwable from label10 to label11 with label17;
+        catch java.lang.Throwable from label19 to label20 with label21;
+        catch java.lang.Throwable from label16 to label18 with label17;
+        catch java.io.IOException from label08 to label24 with label25;
+    }
+
+    private void createNewConfiguration(java.nio.file.Path) throws java.io.IOException
+    {
+        com.stac.learning.ClusterController this;
+        java.nio.file.Path configurationPath;
+        java.io.FileOutputStream os, $r3;
+        java.lang.Throwable l5, x2, $r6, $r7, $r8, $r9, l3;
+        java.io.File $r0, $r4;
+        java.util.Properties $r1, $r5;
+
+        this := @this: com.stac.learning.ClusterController;
+
+        configurationPath := @parameter0: java.nio.file.Path;
+
+        $r0 = interfaceinvoke configurationPath.<java.nio.file.Path: java.io.File toFile()>();
+
+        virtualinvoke $r0.<java.io.File: boolean createNewFile()>();
+
+        $r1 = this.<com.stac.learning.ClusterController: java.util.Properties configuration>;
+
+        virtualinvoke $r1.<java.util.Properties: java.lang.Object setProperty(java.lang.String,java.lang.String)>("Algorithms", "WhiteDetector, BlackDetector, BlueDetector, RedDetector, GreenDetector, Intensify, EdgingDetector");
+
+        $r3 = new java.io.FileOutputStream;
+
+        $r4 = interfaceinvoke configurationPath.<java.nio.file.Path: java.io.File toFile()>();
+
+        specialinvoke $r3.<java.io.FileOutputStream: void <init>(java.io.File)>($r4);
+
+        os = $r3;
+
+        l3 = null;
+
+     label01:
+        $r5 = this.<com.stac.learning.ClusterController: java.util.Properties configuration>;
+
+        virtualinvoke $r5.<java.util.Properties: void storeToXML(java.io.OutputStream,java.lang.String)>(os, "Default algorithm order");
+
+     label02:
+        if os == null goto label15;
+
+        if l3 == null goto label06;
+
+     label03:
+        virtualinvoke os.<java.io.OutputStream: void close()>();
+
+     label04:
+        goto label15;
+
+     label05:
+        $r9 := @caughtexception;
+
+        x2 = $r9;
+
+        virtualinvoke l3.<java.lang.Throwable: void addSuppressed(java.lang.Throwable)>(x2);
+
+        goto label15;
+
+     label06:
+        virtualinvoke os.<java.io.OutputStream: void close()>();
+
+        goto label15;
+
+     label07:
+        $r6 := @caughtexception;
+
+        x2 = $r6;
+
+        l3 = x2;
+
+        throw x2;
+
+     label08:
+        $r8 := @caughtexception;
+
+        l5 = $r8;
+
+     label09:
+        if os == null goto label14;
+
+        if l3 == null goto label13;
+
+     label10:
+        virtualinvoke os.<java.io.OutputStream: void close()>();
+
+     label11:
+        goto label14;
+
+     label12:
+        $r7 := @caughtexception;
+
+        x2 = $r7;
+
+        virtualinvoke l3.<java.lang.Throwable: void addSuppressed(java.lang.Throwable)>(x2);
+
+        goto label14;
+
+     label13:
+        virtualinvoke os.<java.io.OutputStream: void close()>();
+
+     label14:
+        throw l5;
+
+     label15:
+        return;
+
+        catch java.lang.Throwable from label03 to label04 with label05;
+        catch java.lang.Throwable from label01 to label02 with label07;
+        catch java.lang.Throwable from label01 to label02 with label08;
+        catch java.lang.Throwable from label10 to label11 with label12;
+        catch java.lang.Throwable from label07 to label09 with label08;
+    }
+
+    private boolean readTrainingSet()
+    {
+        com.stac.learning.ClusterController this;
+        java.util.HashSet files, $r0;
+        java.lang.String line, $r6, $r12, $r13, $r14, $r15, $r20, $r22, $r23, $r31, $r34, $r45, $r48;
+        java.lang.String[] split;
+        com.stac.learning.Vector attributeVector;
+        java.lang.Throwable l9, x2, $r26, $r35, $r40, $r49, l3, lineNo;
+        java.io.BufferedReader $r1, reader;
+        java.io.FileReader $r2;
+        java.nio.file.Path $r3;
+        java.io.File $r4, imageFromClusteringDir;
+        int $i0, $i1, lineNo;
+        java.lang.StringBuilder $r7, $r9, $r10, $r11, $r16, $r18, $r19, $r28, $r30, $r32, $r33, $r42, $r44, $r46, $r47;
+        java.io.PrintStream $r8, $r17, $r29, $r37, $r39, $r43;
+        boolean $z0;
+        java.util.Properties $r21;
+        com.stac.learning.VectorMap $r24;
+        java.io.IOException $r27, $r38;
+        java.io.FileNotFoundException $r36;
+        java.io.InvalidObjectException $r41;
+
+        this := @this: com.stac.learning.ClusterController;
+
+        $r0 = new java.util.HashSet;
+
+        specialinvoke $r0.<java.util.HashSet: void <init>()>();
+
+        files = $r0;
+
+     label01:
+        $r1 = new java.io.BufferedReader;
+
+        $r2 = new java.io.FileReader;
+
+        $r3 = this.<com.stac.learning.ClusterController: java.nio.file.Path trainingSet>;
+
+        $r4 = interfaceinvoke $r3.<java.nio.file.Path: java.io.File toFile()>();
+
+        specialinvoke $r2.<java.io.FileReader: void <init>(java.io.File)>($r4);
+
+        specialinvoke $r1.<java.io.BufferedReader: void <init>(java.io.Reader)>($r2);
+
+        reader = $r1;
+
+        l3 = null;
+
+     label02:
+        lineNo = 1;
+
+        virtualinvoke reader.<java.io.BufferedReader: java.lang.String readLine()>();
+
+     label03:
+        $r6 = virtualinvoke reader.<java.io.BufferedReader: java.lang.String readLine()>();
+
+        line = $r6;
+
+        if $r6 == null goto label10;
+
+        split = virtualinvoke line.<java.lang.String: java.lang.String[] split(java.lang.String)>(", ");
+
+        $i0 = lengthof split;
+
+        if $i0 != 2 goto label08;
+
+        $r13 = split[0];
+
+        $z0 = virtualinvoke files.<java.util.HashSet: boolean contains(java.lang.Object)>($r13);
+
+        if $z0 != 0 goto label08;
+
+        $r14 = split[0];
+
+        virtualinvoke files.<java.util.HashSet: boolean add(java.lang.Object)>($r14);
+
+     label04:
+        $r15 = split[0];
+
+        imageFromClusteringDir = specialinvoke this.<com.stac.learning.ClusterController: java.io.File getImageFromClusteringDir(java.lang.String)>($r15);
+
+        $r17 = <java.lang.System: java.io.PrintStream out>;
+
+        $r16 = new java.lang.StringBuilder;
+
+        specialinvoke $r16.<java.lang.StringBuilder: void <init>()>();
+
+        $r18 = virtualinvoke $r16.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("Loading image \'");
+
+        $r19 = virtualinvoke $r18.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.Object)>(imageFromClusteringDir);
+
+        $r20 = virtualinvoke $r19.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r17.<java.io.PrintStream: void println(java.lang.String)>($r20);
+
+        $r21 = this.<com.stac.learning.ClusterController: java.util.Properties configuration>;
+
+        $r22 = virtualinvoke $r21.<java.util.Properties: java.lang.String getProperty(java.lang.String)>("Algorithms");
+
+        attributeVector = staticinvoke <com.stac.image.ImageProcessing: com.stac.learning.Vector getAttributeVector(java.io.File,java.lang.String)>(imageFromClusteringDir, $r22);
+
+        $r24 = this.<com.stac.learning.ClusterController: com.stac.learning.VectorMap trainingMap>;
+
+        $r23 = split[1];
+
+        virtualinvoke $r24.<com.stac.learning.VectorMap: java.lang.Object put(java.lang.Object,java.lang.Object)>(attributeVector, $r23);
+
+     label05:
+        goto label09;
+
+     label06:
+        $r41 := @caughtexception;
+
+        $r43 = <java.lang.System: java.io.PrintStream err>;
+
+        $r42 = new java.lang.StringBuilder;
+
+        specialinvoke $r42.<java.lang.StringBuilder: void <init>()>();
+
+        $r44 = virtualinvoke $r42.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("Failed to add ");
+
+        $r45 = split[0];
+
+        $r46 = virtualinvoke $r44.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>($r45);
+
+        $r47 = virtualinvoke $r46.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" to the training set. Feature detection failed.");
+
+        $r48 = virtualinvoke $r47.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r43.<java.io.PrintStream: void println(java.lang.String)>($r48);
+
+        goto label09;
+
+     label07:
+        $r27 := @caughtexception;
+
+        $r29 = <java.lang.System: java.io.PrintStream err>;
+
+        $r28 = new java.lang.StringBuilder;
+
+        specialinvoke $r28.<java.lang.StringBuilder: void <init>()>();
+
+        $r30 = virtualinvoke $r28.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("Failed to add ");
+
+        $r31 = split[0];
+
+        $r32 = virtualinvoke $r30.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>($r31);
+
+        $r33 = virtualinvoke $r32.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" to the training set. IO Error occurred.");
+
+        $r34 = virtualinvoke $r33.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r29.<java.io.PrintStream: void println(java.lang.String)>($r34);
+
+        goto label09;
+
+     label08:
+        $i1 = virtualinvoke line.<java.lang.String: int length()>();
+
+        if $i1 <= 0 goto label09;
+
+        $r8 = <java.lang.System: java.io.PrintStream err>;
+
+        $r7 = new java.lang.StringBuilder;
+
+        specialinvoke $r7.<java.lang.StringBuilder: void <init>()>();
+
+        $r9 = virtualinvoke $r7.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("Skiping line ");
+
+        $r10 = virtualinvoke $r9.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(lineNo);
+
+        $r11 = virtualinvoke $r10.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" due to invalid line formation.");
+
+        $r12 = virtualinvoke $r11.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r8.<java.io.PrintStream: void println(java.lang.String)>($r12);
+
+     label09:
+        lineNo = lineNo + 1;
+
+        goto label03;
+
+     label10:
+        if reader == null goto label23;
+
+        if l3 == null goto label14;
+
+     label11:
+        virtualinvoke reader.<java.io.BufferedReader: void close()>();
+
+     label12:
+        goto label23;
+
+     label13:
+        $r35 := @caughtexception;
+
+        lineNo = $r35;
+
+        virtualinvoke l3.<java.lang.Throwable: void addSuppressed(java.lang.Throwable)>(lineNo);
+
+        goto label23;
+
+     label14:
+        virtualinvoke reader.<java.io.BufferedReader: void close()>();
+
+        goto label23;
+
+     label15:
+        $r40 := @caughtexception;
+
+        lineNo = $r40;
+
+        l3 = lineNo;
+
+        throw lineNo;
+
+     label16:
+        $r26 := @caughtexception;
+
+        l9 = $r26;
+
+     label17:
+        if reader == null goto label22;
+
+        if l3 == null goto label21;
+
+     label18:
+        virtualinvoke reader.<java.io.BufferedReader: void close()>();
+
+     label19:
+        goto label22;
+
+     label20:
+        $r49 := @caughtexception;
+
+        x2 = $r49;
+
+        virtualinvoke l3.<java.lang.Throwable: void addSuppressed(java.lang.Throwable)>(x2);
+
+        goto label22;
+
+     label21:
+        virtualinvoke reader.<java.io.BufferedReader: void close()>();
+
+     label22:
+        throw l9;
+
+     label23:
+        goto label26;
+
+     label24:
+        $r36 := @caughtexception;
+
+        $r37 = <java.lang.System: java.io.PrintStream err>;
+
+        virtualinvoke $r37.<java.io.PrintStream: void println(java.lang.String)>("The trainingSet file was erased before successful loading.");
+
+        return 0;
+
+     label25:
+        $r38 := @caughtexception;
+
+        $r39 = <java.lang.System: java.io.PrintStream err>;
+
+        virtualinvoke $r39.<java.io.PrintStream: void println(java.lang.String)>("Could not read the trainingSet file.");
+
+        return 0;
+
+     label26:
+        return 1;
+
+        catch java.io.InvalidObjectException from label04 to label05 with label06;
+        catch java.io.IOException from label04 to label05 with label07;
+        catch java.lang.Throwable from label11 to label12 with label13;
+        catch java.lang.Throwable from label02 to label10 with label15;
+        catch java.lang.Throwable from label02 to label10 with label16;
+        catch java.lang.Throwable from label18 to label19 with label20;
+        catch java.lang.Throwable from label15 to label17 with label16;
+        catch java.io.FileNotFoundException from label01 to label23 with label24;
+        catch java.io.IOException from label01 to label23 with label25;
+    }
+
+    public boolean setTag(java.lang.String, java.lang.String)
+    {
+        com.stac.learning.ClusterController this;
+        java.lang.String filename, tag, $r5, $r15, $r19, $r22, $r23, $r24, $r25, line;
+        java.util.HashMap trainingSet, $r0;
+        java.lang.Throwable l8, x2, l10, $r27, $r28, $r29, $r32, $r35, $r36, $r37, $r38, l5, line;
+        java.io.BufferedReader $r1, br;
+        java.io.FileReader $r2;
+        java.nio.file.Path $r3, $r9;
+        java.io.File $r4, $r10;
+        java.io.BufferedWriter $r7, br;
+        java.io.FileWriter $r8;
+        java.util.Set $r11;
+        boolean $z0, $z1;
+        java.lang.Object $r12, $r14, $r18;
+        java.lang.StringBuilder $r13, $r16, $r17, $r20, $r21;
+        int $i0;
+        java.io.IOException $r30, $r33;
+        java.io.PrintStream $r31, $r34;
+        java.lang.String[] split;
+        java.util.Iterator line;
+        java.util.Map$Entry split;
+
+        this := @this: com.stac.learning.ClusterController;
+
+        filename := @parameter0: java.lang.String;
+
+        tag := @parameter1: java.lang.String;
+
+        $r0 = new java.util.HashMap;
+
+        specialinvoke $r0.<java.util.HashMap: void <init>()>();
+
+        trainingSet = $r0;
+
+     label01:
+        $r1 = new java.io.BufferedReader;
+
+        $r2 = new java.io.FileReader;
+
+        $r3 = this.<com.stac.learning.ClusterController: java.nio.file.Path trainingSet>;
+
+        $r4 = interfaceinvoke $r3.<java.nio.file.Path: java.io.File toFile()>();
+
+        specialinvoke $r2.<java.io.FileReader: void <init>(java.io.File)>($r4);
+
+        specialinvoke $r1.<java.io.BufferedReader: void <init>(java.io.Reader)>($r2);
+
+        br = $r1;
+
+        l5 = null;
+
+     label02:
+        $r5 = virtualinvoke br.<java.io.BufferedReader: java.lang.String readLine()>();
+
+        line = $r5;
+
+        if $r5 == null goto label04;
+
+        split = virtualinvoke line.<java.lang.String: java.lang.String[] split(java.lang.String)>("\\s*,\\s*");
+
+        $i0 = lengthof split;
+
+        if $i0 != 2 goto label03;
+
+        $r23 = split[0];
+
+        $z1 = virtualinvoke $r23.<java.lang.String: boolean equals(java.lang.Object)>("Filename");
+
+        if $z1 != 0 goto label03;
+
+        $r25 = split[0];
+
+        $r24 = split[1];
+
+        virtualinvoke trainingSet.<java.util.HashMap: java.lang.Object put(java.lang.Object,java.lang.Object)>($r25, $r24);
+
+     label03:
+        goto label02;
+
+     label04:
+        if br == null goto label17;
+
+        if l5 == null goto label08;
+
+     label05:
+        virtualinvoke br.<java.io.BufferedReader: void close()>();
+
+     label06:
+        goto label17;
+
+     label07:
+        $r38 := @caughtexception;
+
+        line = $r38;
+
+        virtualinvoke l5.<java.lang.Throwable: void addSuppressed(java.lang.Throwable)>(line);
+
+        goto label17;
+
+     label08:
+        virtualinvoke br.<java.io.BufferedReader: void close()>();
+
+        goto label17;
+
+     label09:
+        $r36 := @caughtexception;
+
+        line = $r36;
+
+        l5 = line;
+
+        throw line;
+
+     label10:
+        $r35 := @caughtexception;
+
+        l8 = $r35;
+
+     label11:
+        if br == null goto label16;
+
+        if l5 == null goto label15;
+
+     label12:
+        virtualinvoke br.<java.io.BufferedReader: void close()>();
+
+     label13:
+        goto label16;
+
+     label14:
+        $r28 := @caughtexception;
+
+        x2 = $r28;
+
+        virtualinvoke l5.<java.lang.Throwable: void addSuppressed(java.lang.Throwable)>(x2);
+
+        goto label16;
+
+     label15:
+        virtualinvoke br.<java.io.BufferedReader: void close()>();
+
+     label16:
+        throw l8;
+
+     label17:
+        goto label19;
+
+     label18:
+        $r30 := @caughtexception;
+
+        $r31 = <java.lang.System: java.io.PrintStream err>;
+
+        virtualinvoke $r31.<java.io.PrintStream: void println(java.lang.String)>("Cannot tag this image in the training set. Training set could not be opened?");
+
+        return 0;
+
+     label19:
+        virtualinvoke trainingSet.<java.util.HashMap: java.lang.Object put(java.lang.Object,java.lang.Object)>(filename, tag);
+
+     label20:
+        $r7 = new java.io.BufferedWriter;
+
+        $r8 = new java.io.FileWriter;
+
+        $r9 = this.<com.stac.learning.ClusterController: java.nio.file.Path trainingSet>;
+
+        $r10 = interfaceinvoke $r9.<java.nio.file.Path: java.io.File toFile()>();
+
+        specialinvoke $r8.<java.io.FileWriter: void <init>(java.io.File)>($r10);
+
+        specialinvoke $r7.<java.io.BufferedWriter: void <init>(java.io.Writer)>($r8);
+
+        br = $r7;
+
+        l5 = null;
+
+     label21:
+        virtualinvoke br.<java.io.BufferedWriter: void write(java.lang.String)>("Filename, Type\n");
+
+        $r11 = virtualinvoke trainingSet.<java.util.HashMap: java.util.Set entrySet()>();
+
+        line = interfaceinvoke $r11.<java.util.Set: java.util.Iterator iterator()>();
+
+     label22:
+        $z0 = interfaceinvoke line.<java.util.Iterator: boolean hasNext()>();
+
+        if $z0 == 0 goto label23;
+
+        $r12 = interfaceinvoke line.<java.util.Iterator: java.lang.Object next()>();
+
+        split = (java.util.Map$Entry) $r12;
+
+        $r13 = new java.lang.StringBuilder;
+
+        specialinvoke $r13.<java.lang.StringBuilder: void <init>()>();
+
+        $r14 = interfaceinvoke split.<java.util.Map$Entry: java.lang.Object getKey()>();
+
+        $r15 = (java.lang.String) $r14;
+
+        $r16 = virtualinvoke $r13.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>($r15);
+
+        $r17 = virtualinvoke $r16.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(", ");
+
+        $r18 = interfaceinvoke split.<java.util.Map$Entry: java.lang.Object getValue()>();
+
+        $r19 = (java.lang.String) $r18;
+
+        $r20 = virtualinvoke $r17.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>($r19);
+
+        $r21 = virtualinvoke $r20.<java.lang.StringBuilder: java.lang.StringBuilder append(char)>(10);
+
+        $r22 = virtualinvoke $r21.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke br.<java.io.BufferedWriter: void write(java.lang.String)>($r22);
+
+        goto label22;
+
+     label23:
+        if br == null goto label36;
+
+        if l5 == null goto label27;
+
+     label24:
+        virtualinvoke br.<java.io.BufferedWriter: void close()>();
+
+     label25:
+        goto label36;
+
+     label26:
+        $r27 := @caughtexception;
+
+        line = $r27;
+
+        virtualinvoke l5.<java.lang.Throwable: void addSuppressed(java.lang.Throwable)>(line);
+
+        goto label36;
+
+     label27:
+        virtualinvoke br.<java.io.BufferedWriter: void close()>();
+
+        goto label36;
+
+     label28:
+        $r29 := @caughtexception;
+
+        line = $r29;
+
+        l5 = line;
+
+        throw line;
+
+     label29:
+        $r32 := @caughtexception;
+
+        l10 = $r32;
+
+     label30:
+        if br == null goto label35;
+
+        if l5 == null goto label34;
+
+     label31:
+        virtualinvoke br.<java.io.BufferedWriter: void close()>();
+
+     label32:
+        goto label35;
+
+     label33:
+        $r37 := @caughtexception;
+
+        x2 = $r37;
+
+        virtualinvoke l5.<java.lang.Throwable: void addSuppressed(java.lang.Throwable)>(x2);
+
+        goto label35;
+
+     label34:
+        virtualinvoke br.<java.io.BufferedWriter: void close()>();
+
+     label35:
+        throw l10;
+
+     label36:
+        goto label38;
+
+     label37:
+        $r33 := @caughtexception;
+
+        $r34 = <java.lang.System: java.io.PrintStream err>;
+
+        virtualinvoke $r34.<java.io.PrintStream: void println(java.lang.String)>("Cannot tag this image in the training set. Training set could not be written");
+
+        return 0;
+
+     label38:
+        return 1;
+
+        catch java.lang.Throwable from label05 to label06 with label07;
+        catch java.lang.Throwable from label02 to label04 with label09;
+        catch java.lang.Throwable from label02 to label04 with label10;
+        catch java.lang.Throwable from label12 to label13 with label14;
+        catch java.lang.Throwable from label09 to label11 with label10;
+        catch java.io.IOException from label01 to label17 with label18;
+        catch java.lang.Throwable from label24 to label25 with label26;
+        catch java.lang.Throwable from label21 to label23 with label28;
+        catch java.lang.Throwable from label21 to label23 with label29;
+        catch java.lang.Throwable from label31 to label32 with label33;
+        catch java.lang.Throwable from label28 to label30 with label29;
+        catch java.io.IOException from label20 to label36 with label37;
+    }
+
+    private java.io.File getImageFromClusteringDir(java.lang.String) throws java.io.IOException
+    {
+        com.stac.learning.ClusterController this;
+        java.lang.String filename, $r2, $r5, $r7, $r9, $r11;
+        java.nio.file.Path path, $r0, $r6, $r10, $r13;
+        java.io.File $r1, $r4, $r14;
+        java.lang.String[] $r3, $r12;
+        boolean $z0;
+        java.io.FileNotFoundException $r8;
+
+        this := @this: com.stac.learning.ClusterController;
+
+        filename := @parameter0: java.lang.String;
+
+        $r0 = this.<com.stac.learning.ClusterController: java.nio.file.Path trainingImages>;
+
+        $r1 = interfaceinvoke $r0.<java.nio.file.Path: java.io.File toFile()>();
+
+        $r2 = virtualinvoke $r1.<java.io.File: java.lang.String getCanonicalPath()>();
+
+        $r3 = newarray (java.lang.String)[1];
+
+        $r3[0] = filename;
+
+        path = staticinvoke <java.nio.file.Paths: java.nio.file.Path get(java.lang.String,java.lang.String[])>($r2, $r3);
+
+        $r4 = interfaceinvoke path.<java.nio.file.Path: java.io.File toFile()>();
+
+        $r5 = virtualinvoke $r4.<java.io.File: java.lang.String getCanonicalPath()>();
+
+        $r6 = interfaceinvoke path.<java.nio.file.Path: java.nio.file.Path toAbsolutePath()>();
+
+        $r7 = interfaceinvoke $r6.<java.nio.file.Path: java.lang.String toString()>();
+
+        $z0 = virtualinvoke $r5.<java.lang.String: boolean equals(java.lang.Object)>($r7);
+
+        if $z0 == 0 goto label1;
+
+        $r10 = this.<com.stac.learning.ClusterController: java.nio.file.Path trainingImages>;
+
+        $r11 = interfaceinvoke $r10.<java.nio.file.Path: java.lang.String toString()>();
+
+        $r12 = newarray (java.lang.String)[1];
+
+        $r12[0] = filename;
+
+        $r13 = staticinvoke <java.nio.file.Paths: java.nio.file.Path get(java.lang.String,java.lang.String[])>($r11, $r12);
+
+        $r14 = interfaceinvoke $r13.<java.nio.file.Path: java.io.File toFile()>();
+
+        return $r14;
+
+     label1:
+        $r8 = new java.io.FileNotFoundException;
+
+        $r9 = interfaceinvoke path.<java.nio.file.Path: java.lang.String toString()>();
+
+        specialinvoke $r8.<java.io.FileNotFoundException: void <init>(java.lang.String)>($r9);
+
+        throw $r8;
+    }
+
+    private void createNewTrainingSetFile() throws java.io.IOException
+    {
+        com.stac.learning.ClusterController this;
+        java.io.PrintWriter bw, $r2;
+        java.lang.Throwable l4, x2, $r6, $r7, $r8, $r9, l2;
+        java.nio.file.Path $r0, $r4;
+        java.io.File $r1, $r5;
+        java.io.FileWriter $r3;
+
+        this := @this: com.stac.learning.ClusterController;
+
+        $r0 = this.<com.stac.learning.ClusterController: java.nio.file.Path trainingSet>;
+
+        $r1 = interfaceinvoke $r0.<java.nio.file.Path: java.io.File toFile()>();
+
+        virtualinvoke $r1.<java.io.File: boolean createNewFile()>();
+
+        $r2 = new java.io.PrintWriter;
+
+        $r3 = new java.io.FileWriter;
+
+        $r4 = this.<com.stac.learning.ClusterController: java.nio.file.Path trainingSet>;
+
+        $r5 = interfaceinvoke $r4.<java.nio.file.Path: java.io.File toFile()>();
+
+        specialinvoke $r3.<java.io.FileWriter: void <init>(java.io.File)>($r5);
+
+        specialinvoke $r2.<java.io.PrintWriter: void <init>(java.io.Writer)>($r3);
+
+        bw = $r2;
+
+        l2 = null;
+
+     label01:
+        virtualinvoke bw.<java.io.PrintWriter: void println(java.lang.String)>("Filename, Type");
+
+     label02:
+        if bw == null goto label15;
+
+        if l2 == null goto label06;
+
+     label03:
+        virtualinvoke bw.<java.io.PrintWriter: void close()>();
+
+     label04:
+        goto label15;
+
+     label05:
+        $r7 := @caughtexception;
+
+        x2 = $r7;
+
+        virtualinvoke l2.<java.lang.Throwable: void addSuppressed(java.lang.Throwable)>(x2);
+
+        goto label15;
+
+     label06:
+        virtualinvoke bw.<java.io.PrintWriter: void close()>();
+
+        goto label15;
+
+     label07:
+        $r8 := @caughtexception;
+
+        x2 = $r8;
+
+        l2 = x2;
+
+        throw x2;
+
+     label08:
+        $r9 := @caughtexception;
+
+        l4 = $r9;
+
+     label09:
+        if bw == null goto label14;
+
+        if l2 == null goto label13;
+
+     label10:
+        virtualinvoke bw.<java.io.PrintWriter: void close()>();
+
+     label11:
+        goto label14;
+
+     label12:
+        $r6 := @caughtexception;
+
+        x2 = $r6;
+
+        virtualinvoke l2.<java.lang.Throwable: void addSuppressed(java.lang.Throwable)>(x2);
+
+        goto label14;
+
+     label13:
+        virtualinvoke bw.<java.io.PrintWriter: void close()>();
+
+     label14:
+        throw l4;
+
+     label15:
+        return;
+
+        catch java.lang.Throwable from label03 to label04 with label05;
+        catch java.lang.Throwable from label01 to label02 with label07;
+        catch java.lang.Throwable from label01 to label02 with label08;
+        catch java.lang.Throwable from label10 to label11 with label12;
+        catch java.lang.Throwable from label07 to label09 with label08;
+    }
+
+    public java.lang.String[] cluster(java.io.File)
+    {
+        com.stac.learning.ClusterController this;
+        java.io.File file;
+        java.lang.String[] $r0;
+
+        this := @this: com.stac.learning.ClusterController;
+
+        file := @parameter0: java.io.File;
+
+        $r0 = virtualinvoke this.<com.stac.learning.ClusterController: java.lang.String[] cluster(java.io.File,int)>(file, 5);
+
+        return $r0;
+    }
+
+    public java.lang.String[] cluster(java.io.File, int)
+    {
+        com.stac.learning.ClusterController this;
+        java.io.File file;
+        int k, $i0, i;
+        java.lang.String[] nearestStrings;
+        float[] nearestVals;
+        java.util.Iterator i$;
+        java.util.Map$Entry e;
+        float comp, $f0;
+        java.io.PrintStream $r0, $r1;
+        boolean $z0, $z1;
+        java.util.Properties $r2;
+        java.lang.String $r3, $r10;
+        com.stac.learning.VectorMap $r4;
+        java.util.Set $r5;
+        java.lang.Object $r6, $r7, $r9;
+        com.stac.learning.Vector $r8, attributeVector;
+        byte $b1;
+        java.io.IOException $r11;
+
+        this := @this: com.stac.learning.ClusterController;
+
+        file := @parameter0: java.io.File;
+
+        k := @parameter1: int;
+
+        $r0 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r0.<java.io.PrintStream: void println(java.lang.String)>("Loading clustering set...");
+
+        $z0 = specialinvoke this.<com.stac.learning.ClusterController: boolean readTrainingSet()>();
+
+        if $z0 != 0 goto label1;
+
+        return null;
+
+     label1:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("Finished loading");
+
+        nearestStrings = newarray (java.lang.String)[k];
+
+        nearestVals = newarray (float)[k];
+
+     label2:
+        $r2 = this.<com.stac.learning.ClusterController: java.util.Properties configuration>;
+
+        $r3 = virtualinvoke $r2.<java.util.Properties: java.lang.String getProperty(java.lang.String)>("Algorithms");
+
+        attributeVector = staticinvoke <com.stac.image.ImageProcessing: com.stac.learning.Vector getAttributeVector(java.io.File,java.lang.String)>(file, $r3);
+
+        $r4 = this.<com.stac.learning.ClusterController: com.stac.learning.VectorMap trainingMap>;
+
+        $r5 = virtualinvoke $r4.<com.stac.learning.VectorMap: java.util.Set entrySet()>();
+
+        i$ = interfaceinvoke $r5.<java.util.Set: java.util.Iterator iterator()>();
+
+     label3:
+        $z1 = interfaceinvoke i$.<java.util.Iterator: boolean hasNext()>();
+
+        if $z1 == 0 goto label7;
+
+        $r6 = interfaceinvoke i$.<java.util.Iterator: java.lang.Object next()>();
+
+        e = (java.util.Map$Entry) $r6;
+
+        $r7 = interfaceinvoke e.<java.util.Map$Entry: java.lang.Object getKey()>();
+
+        $r8 = (com.stac.learning.Vector) $r7;
+
+        comp = virtualinvoke $r8.<com.stac.learning.Vector: float compareTo(com.stac.learning.Vector)>(attributeVector);
+
+        i = 0;
+
+     label4:
+        $i0 = lengthof nearestVals;
+
+        if i >= $i0 goto label6;
+
+        $f0 = nearestVals[i];
+
+        $b1 = comp cmpl $f0;
+
+        if $b1 <= 0 goto label5;
+
+        nearestVals[i] = comp;
+
+        $r9 = interfaceinvoke e.<java.util.Map$Entry: java.lang.Object getValue()>();
+
+        $r10 = (java.lang.String) $r9;
+
+        nearestStrings[i] = $r10;
+
+     label5:
+        i = i + 1;
+
+        goto label4;
+
+     label6:
+        goto label3;
+
+     label7:
+        goto label9;
+
+     label8:
+        $r11 := @caughtexception;
+
+        return null;
+
+     label9:
+        return nearestStrings;
+
+        catch java.io.IOException from label2 to label7 with label8;
+    }
+}

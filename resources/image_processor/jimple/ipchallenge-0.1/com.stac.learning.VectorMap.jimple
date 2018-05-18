@@ -1,0 +1,80 @@
+public class com.stac.learning.VectorMap extends java.util.HashMap
+{
+
+    public void <init>()
+    {
+        com.stac.learning.VectorMap this;
+
+        this := @this: com.stac.learning.VectorMap;
+
+        specialinvoke this.<java.util.HashMap: void <init>()>();
+
+        return;
+    }
+
+    public java.lang.String get(com.stac.learning.Vector)
+    {
+        com.stac.learning.VectorMap this;
+        com.stac.learning.Vector key;
+        java.lang.Object $r0;
+        java.lang.String $r1;
+
+        this := @this: com.stac.learning.VectorMap;
+
+        key := @parameter0: com.stac.learning.Vector;
+
+        $r0 = specialinvoke this.<java.util.HashMap: java.lang.Object get(java.lang.Object)>(key);
+
+        $r1 = (java.lang.String) $r0;
+
+        return $r1;
+    }
+
+    public boolean containsKey(com.stac.learning.Vector)
+    {
+        com.stac.learning.VectorMap this;
+        com.stac.learning.Vector key;
+        boolean $z0;
+
+        this := @this: com.stac.learning.VectorMap;
+
+        key := @parameter0: com.stac.learning.Vector;
+
+        $z0 = specialinvoke this.<java.util.HashMap: boolean containsKey(java.lang.Object)>(key);
+
+        return $z0;
+    }
+
+    public java.lang.String remove(com.stac.learning.Vector)
+    {
+        com.stac.learning.VectorMap this;
+        com.stac.learning.Vector key;
+        java.lang.Object $r0;
+        java.lang.String $r1;
+
+        this := @this: com.stac.learning.VectorMap;
+
+        key := @parameter0: com.stac.learning.Vector;
+
+        $r0 = specialinvoke this.<java.util.HashMap: java.lang.Object remove(java.lang.Object)>(key);
+
+        $r1 = (java.lang.String) $r0;
+
+        return $r1;
+    }
+
+    public boolean containsValue(com.stac.learning.Vector)
+    {
+        com.stac.learning.VectorMap this;
+        com.stac.learning.Vector value;
+        boolean $z0;
+
+        this := @this: com.stac.learning.VectorMap;
+
+        value := @parameter0: com.stac.learning.Vector;
+
+        $z0 = specialinvoke this.<java.util.HashMap: boolean containsValue(java.lang.Object)>(value);
+
+        return $z0;
+    }
+}

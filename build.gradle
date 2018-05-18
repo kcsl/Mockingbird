@@ -1,0 +1,14 @@
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.mockito', name: 'mockito-all', version: '1.9.5'
+}
+
+task getLibs(type: Copy) {
+    into "libs"
+    from configurations.runtime
+}

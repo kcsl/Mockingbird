@@ -1,0 +1,140 @@
+public final enum class com.stac.image.algorithms.generics.Direction extends java.lang.Enum
+{
+    public static final enum com.stac.image.algorithms.generics.Direction UP45;
+    public static final enum com.stac.image.algorithms.generics.Direction DOWN45;
+    public static final enum com.stac.image.algorithms.generics.Direction HORIZONTAL;
+    public static final enum com.stac.image.algorithms.generics.Direction VERTICAL;
+    private static final com.stac.image.algorithms.generics.Direction[] $VALUES;
+
+    public static com.stac.image.algorithms.generics.Direction[] values()
+    {
+        com.stac.image.algorithms.generics.Direction[] $r0, $r2;
+        java.lang.Object $r1;
+
+        $r0 = <com.stac.image.algorithms.generics.Direction: com.stac.image.algorithms.generics.Direction[] $VALUES>;
+
+        $r1 = virtualinvoke $r0.<java.lang.Object: java.lang.Object clone()>();
+
+        $r2 = (com.stac.image.algorithms.generics.Direction[]) $r1;
+
+        return $r2;
+    }
+
+    public static com.stac.image.algorithms.generics.Direction valueOf(java.lang.String)
+    {
+        java.lang.String name;
+        java.lang.Enum $r0;
+        com.stac.image.algorithms.generics.Direction $r1;
+
+        name := @parameter0: java.lang.String;
+
+        $r0 = staticinvoke <java.lang.Enum: java.lang.Enum valueOf(java.lang.Class,java.lang.String)>(class "com/stac/image/algorithms/generics/Direction", name);
+
+        $r1 = (com.stac.image.algorithms.generics.Direction) $r0;
+
+        return $r1;
+    }
+
+    private void <init>(java.lang.String, int)
+    {
+        com.stac.image.algorithms.generics.Direction this;
+        java.lang.String l1;
+        int l2;
+
+        this := @this: com.stac.image.algorithms.generics.Direction;
+
+        l1 := @parameter0: java.lang.String;
+
+        l2 := @parameter1: int;
+
+        specialinvoke this.<java.lang.Enum: void <init>(java.lang.String,int)>(l1, l2);
+
+        return;
+    }
+
+    public static com.stac.image.algorithms.generics.Direction getDirection(int)
+    {
+        int ord, len$, $i0, i$;
+        com.stac.image.algorithms.generics.Direction[] arr$;
+        com.stac.image.algorithms.generics.Direction direction;
+
+        ord := @parameter0: int;
+
+        arr$ = staticinvoke <com.stac.image.algorithms.generics.Direction: com.stac.image.algorithms.generics.Direction[] values()>();
+
+        len$ = lengthof arr$;
+
+        i$ = 0;
+
+     label1:
+        if i$ >= len$ goto label3;
+
+        direction = arr$[i$];
+
+        $i0 = virtualinvoke direction.<com.stac.image.algorithms.generics.Direction: int ordinal()>();
+
+        if $i0 != ord goto label2;
+
+        return direction;
+
+     label2:
+        i$ = i$ + 1;
+
+        goto label1;
+
+     label3:
+        return null;
+    }
+
+    static void <clinit>()
+    {
+        com.stac.image.algorithms.generics.Direction $r0, $r1, $r2, $r3, $r5, $r6, $r7, $r8;
+        com.stac.image.algorithms.generics.Direction[] $r4;
+
+        $r0 = new com.stac.image.algorithms.generics.Direction;
+
+        specialinvoke $r0.<com.stac.image.algorithms.generics.Direction: void <init>(java.lang.String,int)>("UP45", 0);
+
+        <com.stac.image.algorithms.generics.Direction: com.stac.image.algorithms.generics.Direction UP45> = $r0;
+
+        $r1 = new com.stac.image.algorithms.generics.Direction;
+
+        specialinvoke $r1.<com.stac.image.algorithms.generics.Direction: void <init>(java.lang.String,int)>("DOWN45", 1);
+
+        <com.stac.image.algorithms.generics.Direction: com.stac.image.algorithms.generics.Direction DOWN45> = $r1;
+
+        $r2 = new com.stac.image.algorithms.generics.Direction;
+
+        specialinvoke $r2.<com.stac.image.algorithms.generics.Direction: void <init>(java.lang.String,int)>("HORIZONTAL", 2);
+
+        <com.stac.image.algorithms.generics.Direction: com.stac.image.algorithms.generics.Direction HORIZONTAL> = $r2;
+
+        $r3 = new com.stac.image.algorithms.generics.Direction;
+
+        specialinvoke $r3.<com.stac.image.algorithms.generics.Direction: void <init>(java.lang.String,int)>("VERTICAL", 3);
+
+        <com.stac.image.algorithms.generics.Direction: com.stac.image.algorithms.generics.Direction VERTICAL> = $r3;
+
+        $r4 = newarray (com.stac.image.algorithms.generics.Direction)[4];
+
+        $r5 = <com.stac.image.algorithms.generics.Direction: com.stac.image.algorithms.generics.Direction UP45>;
+
+        $r4[0] = $r5;
+
+        $r6 = <com.stac.image.algorithms.generics.Direction: com.stac.image.algorithms.generics.Direction DOWN45>;
+
+        $r4[1] = $r6;
+
+        $r7 = <com.stac.image.algorithms.generics.Direction: com.stac.image.algorithms.generics.Direction HORIZONTAL>;
+
+        $r4[2] = $r7;
+
+        $r8 = <com.stac.image.algorithms.generics.Direction: com.stac.image.algorithms.generics.Direction VERTICAL>;
+
+        $r4[3] = $r8;
+
+        <com.stac.image.algorithms.generics.Direction: com.stac.image.algorithms.generics.Direction[] $VALUES> = $r4;
+
+        return;
+    }
+}

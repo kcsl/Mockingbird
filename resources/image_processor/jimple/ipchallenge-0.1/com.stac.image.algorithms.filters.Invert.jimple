@@ -1,0 +1,116 @@
+public class com.stac.image.algorithms.filters.Invert extends com.stac.image.algorithms.Filter
+{
+    private boolean invertAlpha;
+
+    public void <init>()
+    {
+        com.stac.image.algorithms.filters.Invert this;
+
+        this := @this: com.stac.image.algorithms.filters.Invert;
+
+        specialinvoke this.<com.stac.image.algorithms.Filter: void <init>()>();
+
+        this.<com.stac.image.algorithms.filters.Invert: boolean invertAlpha> = 0;
+
+        return;
+    }
+
+    public void <init>(boolean)
+    {
+        com.stac.image.algorithms.filters.Invert this;
+        boolean invertAlpha;
+
+        this := @this: com.stac.image.algorithms.filters.Invert;
+
+        invertAlpha := @parameter0: boolean;
+
+        specialinvoke this.<com.stac.image.algorithms.Filter: void <init>()>();
+
+        this.<com.stac.image.algorithms.filters.Invert: boolean invertAlpha> = 0;
+
+        this.<com.stac.image.algorithms.filters.Invert: boolean invertAlpha> = invertAlpha;
+
+        return;
+    }
+
+    public void filter(java.awt.image.BufferedImage)
+    {
+        com.stac.image.algorithms.filters.Invert this;
+        java.awt.image.BufferedImage image;
+        int width, height, argbIn, $i0, $i1, $i2, $i3, $i4, $i5, $i6, $i7, $i8, $i9, $i10, $i11, $i12, $i13, $i14, x, y, alpha;
+        boolean $z0;
+
+        this := @this: com.stac.image.algorithms.filters.Invert;
+
+        image := @parameter0: java.awt.image.BufferedImage;
+
+        width = virtualinvoke image.<java.awt.image.BufferedImage: int getWidth()>();
+
+        height = virtualinvoke image.<java.awt.image.BufferedImage: int getHeight()>();
+
+        x = 0;
+
+     label1:
+        if x >= width goto label5;
+
+        y = 0;
+
+     label2:
+        if y >= height goto label4;
+
+        argbIn = virtualinvoke image.<java.awt.image.BufferedImage: int getRGB(int,int)>(x, y);
+
+        $i0 = argbIn >> 24;
+
+        alpha = $i0 & 255;
+
+        $z0 = this.<com.stac.image.algorithms.filters.Invert: boolean invertAlpha>;
+
+        if $z0 == 0 goto label3;
+
+        alpha = 255 - alpha;
+
+     label3:
+        $i5 = alpha << 24;
+
+        $i1 = argbIn >> 16;
+
+        $i2 = $i1 & 255;
+
+        $i3 = 255 - $i2;
+
+        $i4 = $i3 << 16;
+
+        $i10 = $i5 | $i4;
+
+        $i6 = argbIn >> 8;
+
+        $i7 = $i6 & 255;
+
+        $i8 = 255 - $i7;
+
+        $i9 = $i8 << 8;
+
+        $i13 = $i10 | $i9;
+
+        $i11 = argbIn & 255;
+
+        $i12 = 255 - $i11;
+
+        $i14 = $i13 | $i12;
+
+        virtualinvoke image.<java.awt.image.BufferedImage: void setRGB(int,int,int)>(x, y, $i14);
+
+        y = y + 1;
+
+        goto label2;
+
+     label4:
+        x = x + 1;
+
+        goto label1;
+
+     label5:
+        return;
+    }
+}
