@@ -1,10 +1,12 @@
 package com.kcsl.fuzzing.mockingbird.analysis;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-
-import javax.lang.model.element.Modifier;
+import java.util.Collections;
+import java.util.Comparator;
 
 import com.ensoftcorp.atlas.core.db.graph.Node;
+import com.ensoftcorp.atlas.core.db.set.AtlasSet;
 import com.ensoftcorp.atlas.core.query.Attr;
 import com.ensoftcorp.atlas.core.query.Q;
 import com.ensoftcorp.atlas.core.script.Common;
@@ -12,7 +14,7 @@ import com.ensoftcorp.atlas.core.script.CommonQueries;
 import com.ensoftcorp.atlas.core.xcsg.XCSG;
 
 public class MethodAnalysis {
-
+	
 	/**
 	 * Returns the class that owns the given method
 	 * @param method
@@ -67,6 +69,14 @@ public class MethodAnalysis {
 		return method.taggedWith(Attr.Node.IS_STATIC); // TODO: figure out XCSG equivalent
 	}
 	
+	public static boolean isConcrete(Node method) {
+		return !isAbstract(method);
+	}
+	
+	public static boolean isAbstract(Node method) {
+		return method.taggedWith(XCSG.abstractMethod);
+	}
+	
 	/**
 	 * Returns the name of the given method
 	 * @param clazz
@@ -76,8 +86,8 @@ public class MethodAnalysis {
 		return method.getAttr(XCSG.name).toString();
 	}
 
-	public static Modifier[] getModifiers(Node method){
-		ArrayList<Modifier> modifiers = new ArrayList<Modifier>();
+	public static Integer[] getModifiers(Node method){
+		ArrayList<Integer> modifiers = new ArrayList<Integer>();
 		
 		if(isPublic(method)){
 			modifiers.add(Modifier.PUBLIC);
@@ -97,7 +107,7 @@ public class MethodAnalysis {
 		
 		// TODO: consider other modifiers...
 		
-		Modifier[] result = new Modifier[modifiers.size()];
+		Integer[] result = new Integer[modifiers.size()];
 		modifiers.toArray(result);
 		return result;
 	}
@@ -107,17 +117,30 @@ public class MethodAnalysis {
 	public static Parameter[] getParameters(Node method){
 		ArrayList<Parameter> parameters = new ArrayList<Parameter>();
 		
-		Q parameterNodes = Common.toQ(method).children().nodes(XCSG.Parameter);
+		AtlasSet<Node> parameterNodes = Common.toQ(method).children().nodes(XCSG.Parameter).eval().nodes();
+		ArrayList<Node> sortedParameterNodes = new ArrayList<Node>();
+		for(Node parameterNode : parameterNodes){
+			sortedParameterNodes.add(parameterNode);
+		}
+		Collections.sort(sortedParameterNodes, new Comparator<Node>() {
+			@Override
+			public int compare(Node p1, Node p2) {
+				Integer p1Index = Integer.parseInt(p1.getAttr(XCSG.parameterIndex).toString());
+				Integer p2Index = Integer.parseInt(p2.getAttr(XCSG.parameterIndex).toString());
+				return p1Index.compareTo(p2Index);
+			}
+		});
+		
 		Q typeOfEdges = Common.universe().edges(XCSG.TypeOf);
 		
-		for(Node parameterNode : parameterNodes.eval().nodes()){
+		for(Node parameterNode : sortedParameterNodes){
 			Node parameterType = typeOfEdges.successors(Common.toQ(parameterNode)).eval().nodes().one();
 			
-			ArrayList<Modifier> modifiers = new ArrayList<Modifier>();
+			ArrayList<Integer> modifiers = new ArrayList<Integer>();
 			if(parameterType.taggedWith(Attr.Node.IS_FINAL)){ // TODO: replace with XCSG equivalent
 				modifiers.add(Modifier.FINAL);
 			}
-			Modifier[] parameterModifiers = new Modifier[modifiers.size()];
+			Integer[] parameterModifiers = new Integer[modifiers.size()];
 			modifiers.toArray(parameterModifiers);
 
 			String parameterName = parameterNode.getAttr(XCSG.name).toString();
@@ -165,20 +188,20 @@ public class MethodAnalysis {
 	
 	@SuppressWarnings("rawtypes")
 	public static class Parameter {
-		private Modifier[] modifiers;
+		private Integer[] modifiers;
 		private String type;
 		private String name;
 		private int arrayDimension = 0;
 		private Class primitive = null;
 		
-		public Parameter(Modifier[] modifiers, String type, String name, int arrayDimension) {
+		public Parameter(Integer[] modifiers, String type, String name, int arrayDimension) {
 			this(modifiers, type, name);
 			if(arrayDimension > 0){
 				this.arrayDimension = arrayDimension;
 			}
 		}
 		
-		public Parameter(Modifier[] modifiers, String type, String name) {
+		public Parameter(Integer[] modifiers, String type, String name) {
 			this.modifiers = modifiers;
 			this.type = type;
 			this.name = name;
@@ -203,7 +226,7 @@ public class MethodAnalysis {
 			}
 		}
 		
-		public Modifier[] getModifiers() {
+		public Integer[] getModifiers() {
 			return modifiers;
 		}
 		

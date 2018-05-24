@@ -25,6 +25,14 @@ public class ClassAnalysis {
 		return clazz.taggedWith(XCSG.publicVisibility);
 	}
 	
+	public static boolean isConcrete(Node clazz) {
+		return !isAbstract(clazz);
+	}
+	
+	public static boolean isAbstract(Node clazz) {
+		return clazz.taggedWith(XCSG.Java.AbstractClass) || clazz.taggedWith(XCSG.Java.Interface);
+	}
+	
 	/**
 	 * Returns the name of the given class
 	 * @param clazz
