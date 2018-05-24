@@ -250,6 +250,10 @@ public class MethodAnalysis {
 			return primitive;
 		}
 		
+		@Override
+		public String toString() {
+			return name + ":" + type;
+		}
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -302,6 +306,11 @@ public class MethodAnalysis {
 
 		public boolean isArray(){
 			return arrayDimension != 0;
+		}
+		
+		@Override
+		public String toString() {
+			return type;
 		}
 	}
 	
