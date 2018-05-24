@@ -113,7 +113,7 @@ public class MethodAnalysis {
 	}
 	
 	// TODO: consider ordering
-	// TODO: need to consider generics?
+	// TODO: need to consider generics, not needed for bytecode, but may be needed for source?
 	public static Parameter[] getParameters(Node method){
 		ArrayList<Parameter> parameters = new ArrayList<Parameter>();
 		
@@ -137,7 +137,7 @@ public class MethodAnalysis {
 			Node parameterType = typeOfEdges.successors(Common.toQ(parameterNode)).eval().nodes().one();
 			
 			ArrayList<Integer> modifiers = new ArrayList<Integer>();
-			if(parameterType.taggedWith(Attr.Node.IS_FINAL)){ // TODO: replace with XCSG equivalent
+			if(parameterType.taggedWith(XCSG.Java.finalMethod)){
 				modifiers.add(Modifier.FINAL);
 			}
 			Integer[] parameterModifiers = new Integer[modifiers.size()];
