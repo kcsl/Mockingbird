@@ -1,6 +1,6 @@
 package mock;
 
-import org.mockito.stubbing.Answer;
+import mock.answers.Answer;
 
 import java.lang.reflect.Method;
 

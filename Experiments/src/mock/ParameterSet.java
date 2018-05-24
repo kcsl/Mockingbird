@@ -1,6 +1,6 @@
 package mock;
 
-import org.mockito.stubbing.Answer;
+import mock.answers.Answer;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -20,6 +20,21 @@ public class ParameterSet {
         this.parameterTypes = parameterTypes;
         this.parameterRules = new ArrayList<>();
         typeIndex = -1;
+    }
+
+    private static boolean checkTypes(Class<?> t1, Class<?> t2) {
+        return t1.equals(t2) ||
+                comparePrimative(int.class, Integer.class, t1, t2) ||
+                comparePrimative(boolean.class, Boolean.class, t1, t2) ||
+                comparePrimative(char.class, Character.class, t1, t2) ||
+                comparePrimative(short.class, Short.class, t1, t2) ||
+                comparePrimative(double.class, Double.class, t1, t2) ||
+                comparePrimative(float.class, Float.class, t1, t2) ||
+                comparePrimative(long.class, Long.class, t1, t2);
+    }
+
+    private static boolean comparePrimative(Class<?> primative, Class<?> object, Class<?> t2, Class<?> t3) {
+        return (primative.equals(t2) && object.equals(t3)) || (primative.equals(t3) && object.equals(t2));
     }
 
     public void addParameterRules(Object value) {
@@ -43,7 +58,6 @@ public class ParameterSet {
         }
         return null;
     }
-
 
     public void setRule(int paramIndex, Answer<?> answer, String methodName, Class<?>[] paramTypes) throws NoSuchMethodException {
         if (paramIndex >= 0 && paramIndex < parameterRules.size()) {
@@ -83,19 +97,8 @@ public class ParameterSet {
         return rules;
     }
 
-    private static boolean checkTypes(Class<?> t1, Class<?> t2) {
-        return t1.equals(t2) ||
-                comparePrimative(int.class, Integer.class, t1, t2) ||
-                comparePrimative(boolean.class, Boolean.class, t1, t2) ||
-                comparePrimative(char.class, Character.class, t1, t2) ||
-                comparePrimative(short.class, Short.class, t1, t2) ||
-                comparePrimative(double.class, Double.class, t1, t2) ||
-                comparePrimative(float.class, Float.class, t1, t2) ||
-                comparePrimative(long.class, Long.class, t1, t2);
-    }
-
-    private static boolean comparePrimative(Class<?> primative, Class<?> object, Class<?> t2, Class<?> t3) {
-        return (primative.equals(t2) && object.equals(t3)) || (primative.equals(t3) && object.equals(t2));
+    public Class<?>[] getParameterTypes() {
+        return parameterTypes;
     }
 
     public class ParameterBuilder {
@@ -103,7 +106,7 @@ public class ParameterSet {
         private List<ParameterRules> parameterRulesList;
         private ParameterRules parameterRules;
 
-        ParameterBuilder(List<ParameterRules> parameterRuleList,  ParameterRules parameterRules) {
+        ParameterBuilder(List<ParameterRules> parameterRuleList, ParameterRules parameterRules) {
             this.parameterRulesList = parameterRuleList;
             this.parameterRules = parameterRules;
         }
@@ -142,9 +145,5 @@ public class ParameterSet {
             parameterRulesList = null;
             return index;
         }
-    }
-
-    public Class<?>[] getParameterTypes() {
-        return parameterTypes;
     }
 }

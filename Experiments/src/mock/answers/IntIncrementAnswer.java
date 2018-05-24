@@ -1,8 +1,5 @@
 package mock.answers;
 
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
 /**
  * @author Derrick Lockwood
  * @created 5/17/18.
@@ -38,9 +35,9 @@ public class IntIncrementAnswer implements Answer<Integer> {
         index = start;
     }
 
+
     @Override
-    public Integer answer(InvocationOnMock invocation) throws Throwable {
+    public Integer handle(InvocationData invocationData) throws Throwable {
         return index;
     }
-
 }

@@ -1,6 +1,6 @@
 package mock;
 
-import org.mockito.stubbing.Answer;
+import mock.answers.Answer;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -22,6 +22,7 @@ public class ParameterRules {
         this.value = value;
         this.type = value.getClass();
     }
+
     public ParameterRules(Class<?> type) {
         this.rules = new ArrayList<>();
         this.value = null;
