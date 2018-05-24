@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Byte-Buddy Agent
+Bundle-SymbolicName: net.bytebuddy.agent
+Bundle-Version: 1.8.11
+Bundle-Vendor: Rafael Winterhalter
+Automatic-Module-Name: net.bytebuddy.agent
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: net.bytebuddy.agent

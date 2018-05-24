@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Mockingbird Fuzzer
+Bundle-SymbolicName: com.kcsl.fuzzing.mockingbird;singleton:=true
+Bundle-Version: 3.3.4.qualifier
+Bundle-Activator: com.kcsl.fuzzing.mockingbird.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ com.ensoftcorp.atlas.core;bundle-version="3.1.0",
+ com.ensoftcorp.atlas.ui;bundle-version="3.1.0",
+ com.ensoftcorp.atlas.ui.shell;bundle-version="3.1.0",
+ net.bytebuddy;bundle-version="1.8.11",
+ net.bytebuddy.agent;bundle-version="1.8.11"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Automatic-Module-Name: com.kcsl.fuzzing.mockingbird
