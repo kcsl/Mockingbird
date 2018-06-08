@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="14f45e8f-51d9-4f24-abfe-5248fe7add1a" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/src/Foo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Foo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Runner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Runner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/method/MethodCall.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/method/MethodCall.java" afterDir="false" />
-    </list>
+    <list default="true" id="14f45e8f-51d9-4f24-abfe-5248fe7add1a" name="Default" comment="" />
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/.gradle/" />
     <ignored path="$PROJECT_DIR$/build/" />
@@ -54,7 +50,7 @@
       <file leaf-file-name="MethodCall.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/method/MethodCall.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="335">
+            <state relative-caret-position="415">
               <caret line="228" column="28" lean-forward="true" selection-start-line="228" selection-start-column="28" selection-end-line="228" selection-end-column="28" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -323,7 +319,7 @@
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info id="UI Designer" order="4" />
       <window_info anchor="right" id="Theme Preview" order="5" />
-      <window_info anchor="bottom" id="Debug" order="3" visible="true" weight="0.35333332" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.35333332" />
       <window_info id="Favorites" order="5" side_tool="true" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -705,7 +701,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/method/MethodCall.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="335">
+        <state relative-caret-position="415">
           <caret line="228" column="28" lean-forward="true" selection-start-line="228" selection-start-column="28" selection-end-line="228" selection-end-column="28" />
           <folding>
             <element signature="imports" expanded="true" />
