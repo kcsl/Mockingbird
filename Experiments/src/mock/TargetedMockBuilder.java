@@ -1,21 +1,18 @@
 package mock;
 
-import mock.answers.Answer;
-import mock.answers.InvocationData;
+import mock.answers.NotStubbedAnswer;
+import mock.answers.RedefineAnswer;
+import mock.answers.SubAnswer;
+import mock.answers.StaticAnswer;
 import net.bytebuddy.ByteBuddy;
-import net.bytebuddy.dynamic.DynamicType;
-import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
-import net.bytebuddy.dynamic.loading.ClassReloadingStrategy;
 import net.bytebuddy.dynamic.scaffold.subclass.ConstructorStrategy;
 import net.bytebuddy.implementation.Implementation;
-import net.bytebuddy.implementation.InvocationHandlerAdapter;
-import net.bytebuddy.matcher.ElementMatchers;
-import org.objenesis.Objenesis;
-import org.objenesis.ObjenesisStd;
+import net.bytebuddy.implementation.MethodDelegation;
+import net.bytebuddy.implementation.SuperMethodCall;
+import net.bytebuddy.implementation.bind.annotation.Origin;
+import org.objenesis.instantiator.ObjectInstantiator;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Derrick Lockwood
@@ -23,135 +20,69 @@ import java.util.List;
  */
 public class TargetedMockBuilder {
 
-    private DynamicType.Unloaded<?> allUnloaded;
-    private List<DynamicType.Unloaded<?>> createdObjects;
-    private DynamicType.Builder<?> currentBuilder;
-    private Class<?> currentType;
-    private Implementation defaultImplementation;
     private ByteBuddy byteBuddy;
-    private boolean isRedefine;
+    private InstanceCreatorHolder instanceCreatorHolder;
 
     public TargetedMockBuilder() {
-        this(invocationData -> {
-            throw new RuntimeException("Method not stubbed " + invocationData.getMethod().getName());
-        });
-    }
-
-    /*
-    Things User can do:
-    Complete Redefine of Class (Needs Load Agent)
-    Subclass the class instead and use that instance (For parameters)
-     */
-    public TargetedMockBuilder(Answer<?> defaultAnswer) {
-        this(getAnswerImplementation(defaultAnswer));
-    }
-
-    public TargetedMockBuilder(Implementation defaultImplementation) {
-        currentBuilder = null;
-        this.defaultImplementation = defaultImplementation;
+        //TODO: create rebase which is a mix of subclass and redefine where it keeps the old methods
         byteBuddy = new ByteBuddy();
-        isRedefine = false;
-        createdObjects = new ArrayList<>();
+        instanceCreatorHolder = new InstanceCreatorHolder();
     }
 
-    private static Implementation getAnswerImplementation(Answer<?> answer) {
-        return answer == null ? null : InvocationHandlerAdapter.of(((proxy, method, args) -> answer.handle(new InvocationData(proxy, method, args))));
+    static Implementation getSubAnswerImplementation(SubAnswer subAnswer) {
+        return MethodDelegation.withDefaultConfiguration().filter(SubAnswer.MATCHER).to(subAnswer, SubAnswer.class);
     }
 
-    public TargetedMockBuilder startSubclass(Class<?> type) {
-        return startSubclass(type, (Implementation) null);
+    static Implementation getRedefineAnswerImplementation(RedefineAnswer redefineAnswer) {
+        return MethodDelegation.withDefaultConfiguration().filter(RedefineAnswer.MATCHER).to(redefineAnswer, RedefineAnswer.class);
     }
 
-    public TargetedMockBuilder startSubclass(Class<?> type, Answer<?> defaultAnswer) {
-        return startSubclass(type, getAnswerImplementation(defaultAnswer));
+    public SubMockClass createSubclass(Class<?> type) {
+        return createSubclass(type, NotStubbedAnswer.newInstance());
     }
 
-    public TargetedMockBuilder startSubclass(Class<?> type, Implementation defaultImplementation) {
-        if (currentBuilder == null) {
-            currentBuilder = byteBuddy.subclass(type, ConstructorStrategy.Default.NO_CONSTRUCTORS);
-            checkDefault(type, defaultImplementation);
-            isRedefine = false;
-        }
-        return this;
+    public SubMockClass createSubclass(Class<?> type, SubAnswer defaultSubAnswer) {
+        return createSubclass(type, getSubAnswerImplementation(Objects.requireNonNullElseGet(defaultSubAnswer, NotStubbedAnswer::newInstance)));
     }
 
-    public TargetedMockBuilder startRedefine(Class<?> type) {
-        return startRedefine(type, (Implementation) null);
-    }
-
-    public TargetedMockBuilder startRedefine(Class<?> type, Answer<?> defaultAnswer) {
-        return startRedefine(type, getAnswerImplementation(defaultAnswer));
-    }
-
-    public TargetedMockBuilder startRedefine(Class<?> type, Implementation implementation) {
-        if (currentBuilder == null) {
-            currentBuilder = byteBuddy.redefine(type);
-            checkDefault(type, implementation);
-            isRedefine = true;
-        }
-        return this;
-    }
-
-    private void checkDefault(Class<?> type, Implementation defaultImplementation) {
+    public SubMockClass createSubclass(Class<?> type, Implementation defaultImplementation) {
+        SubMockClass mockClass = new SubMockClass(this, type, byteBuddy.subclass(type, ConstructorStrategy.Default.NO_CONSTRUCTORS), instanceCreatorHolder);
         if (defaultImplementation != null) {
-            currentBuilder = currentBuilder.method(ElementMatchers.any())
-                    .intercept(defaultImplementation);
-        } else if (this.defaultImplementation != null) {
-            currentBuilder = currentBuilder.method(ElementMatchers.any())
-                    .intercept(this.defaultImplementation);
+            mockClass.setDefaultImplementation(defaultImplementation);
         }
-        currentType = type;
+        return mockClass;
     }
 
-    public TargetedMockBuilder apply(Rule rule) {
-        return apply(rule.getAnswer(), rule.getMethod());
+    public SubMockClass createSubclassRealMethods(Class<?> type) {
+        return createSubclass(type, SuperMethodCall.INSTANCE);
     }
 
-    public TargetedMockBuilder apply(Answer<?> answer, String methodName, Class<?>... parameters) throws NoSuchMethodException {
-        if (currentBuilder != null) {
-            apply(answer, currentType.getMethod(methodName, parameters));
-        }
-        return this;
+    public RedefineMockClass createRedefine(Class<?> type) {
+        return createRedefine(type, NotStubbedAnswer.newInstance());
     }
 
-    public TargetedMockBuilder apply(Answer<?> answer, Method method) {
-        if (currentBuilder != null) {
-            method.setAccessible(true);
-            currentBuilder = currentBuilder.method(ElementMatchers.is(method))
-                    .intercept(getAnswerImplementation(answer));
-        }
-        return this;
+    public RedefineMockClass createRedefine(Class<?> type, RedefineAnswer defaultRedefineAnswer) {
+        return createRedefine(type, getRedefineAnswerImplementation(defaultRedefineAnswer));
     }
 
-    public TargetedMockBuilder storeSubclass() {
-        if (currentBuilder != null && !isRedefine) {
-            createdObjects.add(currentBuilder.make());
-            currentType = null;
-            currentBuilder = null;
+    public RedefineMockClass createRedefine(Class<?> type, Implementation defaultImplementation) {
+        RedefineMockClass mockClass = new RedefineMockClass(this, type, byteBuddy.redefine(type), instanceCreatorHolder);
+        if (defaultImplementation != null) {
+            mockClass.setDefaultImplementation(defaultImplementation);
         }
-        return this;
+        return mockClass;
     }
 
-    public TargetedMockBuilder storeRedefine() {
-        if (currentBuilder != null && isRedefine) {
-            currentBuilder.make()
-                    .load(this.getClass().getClassLoader(), ClassReloadingStrategy.fromInstalledAgent());
-            currentType = null;
-            currentBuilder = null;
-        }
-        return this;
+    void setObjectInstantiator(Class<?> type, ObjectInstantiator<?> objectInstantiator) {
+        instanceCreatorHolder.addObjectInstantiator(type, objectInstantiator);
     }
 
-    public Object[] loadNoParameterProxies() {
-        Object[] objects = new Object[createdObjects.size()];
-        ClassLoader classLoader = this.getClass().getClassLoader();
-        Objenesis objenesis = new ObjenesisStd();
-        for (int i = 0; i < objects.length; i++) {
-            objects[i] = objenesis.newInstance(createdObjects.get(i)
-                    .load(classLoader, ClassLoadingStrategy.Default.WRAPPER)
-                    .getLoaded());
-        }
-        return objects;
+    ObjectInstantiator<?> createObjectInstantiator(Class<?> oldType, Class<?> newType) {
+        return instanceCreatorHolder.createObjectInstantiator(oldType, newType);
+    }
+
+    Object newMockInstance(Class<?> clazz) {
+        return instanceCreatorHolder.getInstance(clazz);
     }
 
 }

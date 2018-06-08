@@ -26,7 +26,7 @@ public class com.stac.Main extends java.lang.Object
 
         $r2 = virtualinvoke $r1.<java.io.PrintStream: java.io.PrintStream append(java.lang.CharSequence)>("    Arguments: \n");
 
-        $r3 = virtualinvoke $r2.<java.io.PrintStream: java.io.PrintStream append(java.lang.CharSequence)>("       train <filename> <type>\n");
+        $r3 = virtualinvoke $r2.<java.io.PrintStream: java.io.PrintStream append(java.lang.CharSequence)>("       train <filename> <oldType>\n");
 
         $r4 = virtualinvoke $r3.<java.io.PrintStream: java.io.PrintStream append(java.lang.CharSequence)>("          Adds this image to the training set.\n");
 
@@ -125,7 +125,7 @@ public class com.stac.Main extends java.lang.Object
 
     private static boolean clusterAgainstTrainingSet(java.lang.String) throws java.io.IOException
     {
-        java.lang.String filename, type;
+        java.lang.String filename, oldType;
         java.lang.String[] nearestTypes, $r0, arr$;
         java.util.HashMap inCluster, $r5;
         int len$, $i0, $i1, $i2, i$;
@@ -186,13 +186,13 @@ public class com.stac.Main extends java.lang.Object
      label2:
         if i$ >= len$ goto label4;
 
-        type = arr$[i$];
+        oldType = arr$[i$];
 
-        $z0 = virtualinvoke inCluster.<java.util.HashMap: boolean containsKey(java.lang.Object)>(type);
+        $z0 = virtualinvoke inCluster.<java.util.HashMap: boolean containsKey(java.lang.Object)>(oldType);
 
         if $z0 == 0 goto label3;
 
-        $r20 = virtualinvoke inCluster.<java.util.HashMap: java.lang.Object get(java.lang.Object)>(type);
+        $r20 = virtualinvoke inCluster.<java.util.HashMap: java.lang.Object get(java.lang.Object)>(oldType);
 
         $r21 = (java.lang.Integer) $r20;
 
@@ -202,12 +202,12 @@ public class com.stac.Main extends java.lang.Object
 
         $r22 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>($i2);
 
-        virtualinvoke inCluster.<java.util.HashMap: java.lang.Object put(java.lang.Object,java.lang.Object)>(type, $r22);
+        virtualinvoke inCluster.<java.util.HashMap: java.lang.Object put(java.lang.Object,java.lang.Object)>(oldType, $r22);
 
      label3:
         $r18 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(1);
 
-        virtualinvoke inCluster.<java.util.HashMap: java.lang.Object put(java.lang.Object,java.lang.Object)>(type, $r18);
+        virtualinvoke inCluster.<java.util.HashMap: java.lang.Object put(java.lang.Object,java.lang.Object)>(oldType, $r18);
 
         i$ = i$ + 1;
 

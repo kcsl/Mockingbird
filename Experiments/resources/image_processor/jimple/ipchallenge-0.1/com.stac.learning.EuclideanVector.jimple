@@ -74,7 +74,7 @@ public class com.stac.learning.EuclideanVector extends com.stac.learning.Vector
 
         $r17 = new java.lang.IllegalArgumentException;
 
-        specialinvoke $r17.<java.lang.IllegalArgumentException: void <init>(java.lang.String)>("Arrays must be of the same type.");
+        specialinvoke $r17.<java.lang.IllegalArgumentException: void <init>(java.lang.String)>("Arrays must be of the same oldType.");
 
         throw $r17;
 

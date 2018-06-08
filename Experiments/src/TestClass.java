@@ -4,6 +4,12 @@
  */
 public class TestClass {
 
+    private Foo instanceObject;
+
+    public TestClass() {
+        instanceObject = new Foo();
+    }
+
     private int methodToMock(Foo foo1, Foo foo2) {
         return foo1.test(foo2);
     }
@@ -12,5 +18,9 @@ public class TestClass {
         int three = one + two;
         three += one * two;
         return three;
+    }
+
+    public String methodToMock2() {
+        return instanceObject.strTest();
     }
 }

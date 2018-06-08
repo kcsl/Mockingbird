@@ -1,26 +1,16 @@
-import com.cyberpointllc.stac.battleship.OceanBoard;
-import com.stac.image.algorithms.filters.Intensify;
-import mock.MockProcess;
-import mock.ParameterSet;
+import method.MethodCall;
+import method.callbacks.*;
+import mock.MockClass;
 import mock.TargetedMockBuilder;
-import mock.answers.Answer;
-import mock.answers.IntIncrementAnswer;
-import mock.answers.InvocationData;
-import mock.harness.ParameterHarness;
-import net.bytebuddy.ByteBuddy;
+import mock.answers.auto.AutoIncrementor;
 import net.bytebuddy.agent.ByteBuddyAgent;
-import net.bytebuddy.implementation.InvocationHandlerAdapter;
-import net.bytebuddy.implementation.MethodCall;
-import net.bytebuddy.matcher.ElementMatchers;
+import net.bytebuddy.implementation.Implementation;
+import net.bytebuddy.implementation.SuperMethodCall;
 
-import java.awt.image.BufferedImage;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.time.Duration;
-import java.util.Arrays;
+import java.time.temporal.ChronoUnit;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -29,214 +19,78 @@ import java.util.Arrays;
  */
 public class Runner {
 
-    public static void main(String[] args) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException, IOException {
-        /*
-        Options for mocked objects:
-        1. Create Object naturally supplied parameters
-        2. Create Mock Object and supply functionality of the methods
-
-        Mocked Instance of Method consists of:
-        1. Mocking parameters
-        2. Mocking new instance calls of each callgraph
-        3. Handling return of mocked method
-         */
+    public static void main(String[] args) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException, IOException, NoSuchFieldException {
 
     }
 
-    public static void testStrikeLocator() {
+    public static void instanceVariableMethodCallExample() throws NoSuchMethodException, NoSuchFieldException, InvocationTargetException, IllegalAccessException {
+        MethodCall methodCall = MethodCall.createMethodCall(TestClass.class, "methodToMock2");
+        methodCall.linkMethodCallback(PrintMethodCallback.create());
+        methodCall.createInstanceMock("instanceObject")
+                .applyMethod("Woot woot", "strTest");
+        methodCall.run();
+    }
+
+    public static void functionRoundingExample() throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        OutputRule outputRule = methodData -> {
+            long time = TimeUnit.NANOSECONDS.toMillis(methodData.getDuration().get(ChronoUnit.NANOS));
+            return time >= 1 ? methodData.getParameters()[0] + " : " + methodData.getDuration().toString() : null;
+        };
+        AutoIncrementor autoIncrementor = AutoIncrementor.createIncrementor(6690000, 100, 0);
+        MethodCallback methodCallback = IterationMethodCallback.create(10000000)
+                .link(AutoMethodCallback.create(autoIncrementor))
+                .link(LogMethodCallback.create("./resources/round.txt", outputRule));
+        MethodCall methodCall = MethodCall.createMethodCall(methodCallback, Foo.class, "function", int.class);
+        methodCall.createParameterMock(0, autoIncrementor);
+        methodCall.run();
+    }
+
+    public static void spaceExample() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        MethodCallback methodCallback = IterationMethodCallback.create(1).andAfter(methodData -> System.out.println(methodData.toString()));
+        MethodCall fooMethodCall = MethodCall.createMethodCall(methodCallback, Foo.class, "spaceTest");
+        fooMethodCall.run();
+    }
+
+    public static void autoMethodMockExample() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        MethodCallback methodCallback = IterationMethodCallback.create(5).andAfter(methodData -> System.out.println(methodData.getReturnValue() + " : " + methodData.getDuration() + " : " + methodData.getDeltaHeapMemory()));
+        MethodCall fooMethodCall = MethodCall.createMethodCall(methodCallback, Foo.class, "loops", Foo.class, Foo.class);
+        fooMethodCall.autoFillParameters();
+        fooMethodCall.run();
+    }
+
+    public static void methodMockExample() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        AutoIncrementor fooOne = AutoIncrementor.createIncrementor();
+        AutoIncrementor fooTwo = AutoIncrementor.createIncrementor();
+        MethodCallback methodCallback = IterationMethodCallback.create(5)
+                .link(AutoMethodCallback.create(fooOne, fooTwo));
+
+        MethodCall fooMethodCall = MethodCall.createMethodCall(methodCallback, Foo.class, "loops", Foo.class, Foo.class);
+        fooMethodCall.createParameterMock(0, fooOne);
+        fooMethodCall.createParameterMock(1, fooTwo);
+        fooMethodCall.run();
+    }
+
+    public static void staticMethodExample() throws NoSuchMethodException {
+        System.out.println(Foo.staticTest());
+        ByteBuddyAgent.install();
         TargetedMockBuilder targetedMockBuilder = new TargetedMockBuilder();
-        targetedMockBuilder.startSubclass(OceanBoard.class)
-
+        targetedMockBuilder.createRedefine(Foo.class, (Implementation) null)
+                .applyStaticMethod("Woot Woot", "staticTest")
+                .store();
+        System.out.println(Foo.staticTest());
     }
 
-    public static void testMaxIntensify(int size) throws NoSuchMethodException, IOException {
+    public static void instanceVariableExample() throws NoSuchMethodException, NoSuchFieldException, InvocationTargetException, IllegalAccessException {
         TargetedMockBuilder targetedMockBuilder = new TargetedMockBuilder();
-        targetedMockBuilder.startSubclass(Intensify.class, MethodCall.invokeSuper().withAllArguments()).storeSubclass();
-        ColorSpaceAnswer colorSpaceAnswer = new ColorSpaceAnswer();
-        targetedMockBuilder.startSubclass(BufferedImage.class)
-                .apply(invocationData -> size, "getWidth")
-                .apply(invocationData -> size, "getHeight")
-                .apply(colorSpaceAnswer, "getRGB", int.class, int.class)
-                .apply(invocationData -> null, "setRGB", int.class, int.class, int.class)
-                .storeSubclass();
-        Object[] objects = targetedMockBuilder.loadNoParameterProxies();
-        Intensify intensify = (Intensify) objects[0];
-        BufferedImage bufferedImage = (BufferedImage) objects[1];
+        MockClass testClassMockClass = targetedMockBuilder.createSubclass(TestClass.class, SuperMethodCall.INSTANCE);
 
-        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("./resources/intensify_graph.csv"));
-        long maxTime = -1;
-        int maxColor = -1;
-        int avgNumber = 5;
-        long startTime = System.currentTimeMillis();
-        while (colorSpaceAnswer.traverseColors()) {
-            long total = 0;
-//            System.out.print(colorSpaceAnswer.getColorValue() + " : ");
-            for (int j = 0; j < avgNumber; j++) {
-                long time = System.currentTimeMillis();
-                intensify.filter(bufferedImage);
-                time = System.currentTimeMillis() - time;
-                total += time;
-            }
-            total /= avgNumber;
-            bufferedWriter.write(colorSpaceAnswer.getColorValue() + "," + total);
-            bufferedWriter.newLine();
-//            System.out.println(total);
-            colorSpaceAnswer.increase();
-            if (total > maxTime) {
-                maxTime = total;
-                maxColor = colorSpaceAnswer.getColorValue();
-            }
-            if (total > 20) {
-                System.out.println(colorSpaceAnswer.getColorValue() + " : " + total + " t: " + String.format("%.2f", (System.currentTimeMillis() - startTime) / 1000.0));
-            }
-        }
-        bufferedWriter.flush();
-        bufferedWriter.close();
-        System.out.println(maxColor + " : " + maxTime);
-    }
+        MockClass fooMockClass = targetedMockBuilder.createSubclass(Foo.class)
+                .applyMethod("Woot Woot", "strTest");
+        fooMockClass.store();
 
-    public static void testIntensify(int size, int color) throws NoSuchMethodException {
-        TargetedMockBuilder targetedMockBuilder = new TargetedMockBuilder();
-        targetedMockBuilder.startSubclass(Intensify.class, MethodCall.invokeSuper().withAllArguments()).storeSubclass();
-        targetedMockBuilder.startSubclass(BufferedImage.class)
-                .apply(invocationData -> size, "getWidth")
-                .apply(invocationData -> size, "getHeight")
-                .apply(invocationData -> color, "getRGB", int.class, int.class)
-                .apply(invocationData -> null, "setRGB", int.class, int.class, int.class)
-                .storeSubclass();
-        Object[] objects = targetedMockBuilder.loadNoParameterProxies();
-        Intensify intensify = (Intensify) objects[0];
-        BufferedImage bufferedImage = (BufferedImage) objects[1];
-        long time = System.currentTimeMillis();
-        intensify.filter(bufferedImage);
-        System.out.println(System.currentTimeMillis() - time);
-    }
-
-    private static class ColorSpaceAnswer implements Answer<Object> {
-
-        private int index;
-        private int r, g, b;
-        private int value;
-        private int increment;
-
-        public ColorSpaceAnswer() {
-            index = 0;
-            r = 0;
-            g = 0;
-            b = 0;
-            increment = 10;
-            value = (r << 16) & (g << 8) & b;
-        }
-
-
-        @Override
-        public Object handle(InvocationData invocationData) throws Throwable {
-            return value;
-        }
-
-        public boolean traverseColors() {
-            return r < 256;
-        }
-
-        public void increase() {
-            if(b >= 255) {
-                g += increment;
-                b = 0;
-            } else {
-                b += increment;
-            }
-            if (g >= 256){
-                r += increment;
-                g = 0;
-            }
-            value = (r << 16) + (g << 8) + b;
-            index++;
-        }
-
-        public int getColorValue() {
-            return value;
-        }
-
-        public int getIndex() {
-            return index;
-        }
-    }
-
-    public static void showNecessaryMocks(Method method) {
-        /*
-        TODO: Inside method mock calls that need to be set up
-        This only makes it for the parameters
-         */
-        Class<?>[] params = method.getParameterTypes();
-        for (Class<?> type : params) {
-            analyzeObject(type);
-        }
-    }
-
-    public static void analyzeObject(Class<?> type) {
-        Method[] methods = type.getMethods();
-        for (Method method : methods) {
-            if (method.getDeclaringClass().equals(type)) {
-                System.out.println("Name: " + method.getName() + " Params: " + Arrays.toString(method.getParameterTypes()) + " Return: " + method.getReturnType().toString());
-            }
-        }
-    }
-
-    private static class IntensifyHarness implements ParameterHarness {
-
-        private ParameterSet parameterSet;
-        private IntIncrementAnswer intIncrementAnswer;
-        private int i, j;
-        private Duration[] totals;
-
-        IntensifyHarness(int size) throws NoSuchMethodException {
-            parameterSet = new ParameterSet(BufferedImage.class);
-            intIncrementAnswer = new IntIncrementAnswer();
-            parameterSet.createParameterBuilder()
-                    .addRule(invocation -> size, "getWidth")
-                    .addRule(invocation -> size, "getHeight")
-                    .addRule(intIncrementAnswer, "getRGB", int.class, int.class)
-                    .addRule(invocation -> null, "setRGB", int.class, int.class, int.class)
-                    .finish();
-            i = 0;
-            j = 0;
-            totals = new Duration[256];
-
-        }
-
-        @Override
-        public void handle(MockProcess mockProcess) {
-            if (j < totals.length - 1) {
-                intIncrementAnswer.increment();
-                j++;
-            } else {
-                j = 0;
-                i++;
-                intIncrementAnswer.reset();
-            }
-            if (totals[j] == null) {
-                totals[j] = mockProcess.getDuration();
-            } else {
-                totals[j] = totals[j].plus(mockProcess.getDuration());
-            }
-            System.out.println(i + " : " + j + " - " + totals[j] + " - " + intIncrementAnswer.getIndex());
-        }
-
-        @Override
-        public ParameterSet getRules() {
-            return parameterSet;
-        }
-
-        @Override
-        public boolean isDone() {
-            if (i >= 2) {
-                for (int i = 0; i < totals.length; i++) {
-                    System.out.println(i + " : " + totals[i].dividedBy(2));
-                }
-                return true;
-            }
-            return false;
-        }
+        TestClass testClass = (TestClass) testClassMockClass.applyField(fooMockClass.getNewType(), "instanceObject")
+                .create();
+        System.out.println(testClass.methodToMock2());
     }
 
 }

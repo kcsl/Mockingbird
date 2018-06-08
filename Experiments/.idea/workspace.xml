@@ -2,19 +2,53 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="14f45e8f-51d9-4f24-abfe-5248fe7add1a" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/mockito_all_1_9_5.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/StacColorSpaceExample.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/method/InstanceMock.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/method/MethodCall.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/method/MethodData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/method/ParameterMock.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/method/callbacks/AutoMethodCallback.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/method/callbacks/CSVMethodCallback.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/method/callbacks/IterationMethodCallback.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/method/callbacks/LogMethodCallback.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/method/callbacks/MethodCallback.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/method/callbacks/OutputRule.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/method/callbacks/PrintMethodCallback.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mock/FieldSetInterceptor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mock/InstanceCreatorHolder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mock/MockClass.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mock/MockCreator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mock/PrimitiveMockCreator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mock/RedefineMockClass.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mock/SubMockClass.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mock/answers/EmptyAnswer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mock/answers/FixedAnswer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mock/answers/NotStubbedAnswer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mock/answers/RedefineAnswer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mock/answers/StaticAnswer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mock/answers/SubAnswer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mock/answers/auto/AutoAnswer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mock/answers/auto/AutoIncrementor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MockingbirdFuzzer.iml" beforeDir="false" afterPath="$PROJECT_DIR$/MockingbirdFuzzer.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradlew" beforeDir="false" afterPath="$PROJECT_DIR$/gradlew" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/image_processor/jimple/ipchallenge-0.1/com.stac.Main.jimple" beforeDir="false" afterPath="$PROJECT_DIR$/resources/image_processor/jimple/ipchallenge-0.1/com.stac.Main.jimple" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/image_processor/jimple/ipchallenge-0.1/com.stac.learning.EuclideanVector.jimple" beforeDir="false" afterPath="$PROJECT_DIR$/resources/image_processor/jimple/ipchallenge-0.1/com.stac.learning.EuclideanVector.jimple" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/image_processor/jimple/ipchallenge-0.1/jimplesource.xml" beforeDir="false" afterPath="$PROJECT_DIR$/resources/image_processor/jimple/ipchallenge-0.1/jimplesource.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/intensify_graph.csv" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Foo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Foo.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Runner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Runner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mock/MockProcess.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mock/MockProcess.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mock/ParameterRules.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mock/ParameterRules.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mock/ParameterSet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mock/ParameterSet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mock/Rule.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mock/Rule.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/TestClass.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/TestClass.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mock/MockProcess.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mock/ParameterRules.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mock/ParameterSet.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mock/Rule.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mock/TargetedMockBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mock/TargetedMockBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mock/answers/IntIncrementAnswer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mock/answers/IntIncrementAnswer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mock/harness/RangeHarness.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mock/harness/RangeHarness.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mock/answers/Answer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mock/answers/Answer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mock/answers/IntIncrementAnswer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mock/answers/InvocationData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mock/harness/ParameterHarness.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mock/harness/RangeHarness.java" beforeDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/.gradle/" />
@@ -28,63 +62,51 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Runner.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Runner.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Runner.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="235">
-              <caret line="48" selection-start-line="48" selection-end-line="48" />
+            <state relative-caret-position="166">
+              <caret line="27" column="37" selection-start-line="27" selection-start-column="37" selection-end-line="27" selection-end-column="37" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#5671#5672#0" expanded="true" />
-                <element signature="e#5710#5711#0" expanded="true" />
-                <element signature="e#5588#5589#0" expanded="true" />
-                <element signature="e#5624#5625#0" expanded="true" />
-                <element signature="e#5740#5741#0" expanded="true" />
-                <element signature="e#5776#5777#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="StrikeLocator.class" pinned="false" current-in-tab="false">
-        <entry file="jar://$PROJECT_DIR$/resources/battleboats/lib/battleboats_1.jar!/com/cyberpointllc/stac/battleship/StrikeLocator.class">
+      <file leaf-file-name="StacColorSpaceExample.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/StacColorSpaceExample.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="299">
-              <caret line="61" column="56" selection-start-line="61" selection-start-column="56" selection-end-line="61" selection-end-column="56" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="OceanBoard.class" pinned="false" current-in-tab="true">
-        <entry file="jar://$PROJECT_DIR$/resources/battleboats/lib/battleboats_1.jar!/com/cyberpointllc/stac/battleship/OceanBoard.class">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="570">
-              <caret line="87" column="34" lean-forward="true" selection-start-line="87" selection-start-column="34" selection-end-line="87" selection-end-column="34" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="IntIncrementAnswer.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/mock/answers/IntIncrementAnswer.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="242">
-              <caret line="26" selection-start-line="26" selection-end-line="26" />
+            <state relative-caret-position="268">
+              <caret line="29" column="38" lean-forward="true" selection-start-line="29" selection-start-column="38" selection-end-line="29" selection-end-column="38" />
               <folding>
-                <element signature="e#573#574#0" expanded="true" />
+                <element signature="imports" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TargetedMockBuilder.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/mock/TargetedMockBuilder.java">
+      <file leaf-file-name="CSVMethodCallback.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/method/callbacks/CSVMethodCallback.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="181">
-              <caret line="72" column="31" selection-start-line="72" selection-start-column="31" selection-end-line="72" selection-end-column="31" />
+            <state relative-caret-position="841">
+              <caret line="78" column="112" selection-start-line="78" selection-start-column="4" selection-end-line="78" selection-end-column="112" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#1866#1867#0" expanded="true" />
-                <element signature="e#1925#1926#0" expanded="true" />
+                <element signature="e#1217#1218#0" expanded="true" />
+                <element signature="e#1245#1246#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="LogMethodCallback.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/method/callbacks/LogMethodCallback.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="534">
+              <caret line="64" column="62" selection-start-line="64" selection-start-column="62" selection-end-line="64" selection-end-column="62" />
+              <folding>
+                <element signature="imports" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -93,17 +115,36 @@
       <file leaf-file-name="Foo.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Foo.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="6" column="21" selection-start-line="6" selection-start-column="21" selection-end-line="6" selection-end-column="21" />
+            <state relative-caret-position="550">
+              <caret line="61" column="26" selection-start-line="61" selection-start-column="26" selection-end-line="61" selection-end-column="26" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="InvocationData.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/mock/answers/InvocationData.java">
+      <file leaf-file-name="MethodCall.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/method/MethodCall.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="15">
-              <caret line="1" selection-start-line="1" selection-end-line="1" />
+            <state relative-caret-position="1695">
+              <caret line="129" selection-start-line="129" selection-end-line="129" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FieldSetInterceptor.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/mock/FieldSetInterceptor.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="660">
+              <caret line="56" selection-start-line="56" selection-end-line="56" />
+              <folding>
+                <element signature="e#1302#1303#0" expanded="true" />
+                <element signature="e#1340#1341#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -113,8 +154,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Class" />
         <option value="Interface" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -126,10 +167,13 @@
       <find>add</find>
       <find>getRGB</find>
       <find>setRGB</find>
+      <find>filter</find>
+      <find>target;</find>
+      <find>static</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="GradleLocalSettings">
     <option name="modificationStamps">
@@ -145,54 +189,66 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/libs/build.gradle" />
-        <option value="$PROJECT_DIR$/src/MethodMockWrapper.java" />
-        <option value="$PROJECT_DIR$/src/mock/MockFunction.java" />
-        <option value="$PROJECT_DIR$/src/mock/MockMethod.java" />
-        <option value="$PROJECT_DIR$/src/mock/ParamAction.java" />
-        <option value="$PROJECT_DIR$/src/mock/PassThroughAction.java" />
-        <option value="$PROJECT_DIR$/src/mock/Action/Action.java" />
-        <option value="$PROJECT_DIR$/src/mock/Invocation.java" />
-        <option value="$PROJECT_DIR$/src/mock/Action/PassThroughAction.java" />
-        <option value="$PROJECT_DIR$/src/mock/MockObject.java" />
-        <option value="$PROJECT_DIR$/src/mock/TargetedMockExpectationBuilder.java" />
-        <option value="$PROJECT_DIR$/src/TargetedBuilder.java" />
-        <option value="$PROJECT_DIR$/build.gradle" />
-        <option value="$PROJECT_DIR$/src/TargetedMockObject.java" />
-        <option value="$PROJECT_DIR$/src/Rule.java" />
-        <option value="$PROJECT_DIR$/src/TargetedMockBuilder.java" />
-        <option value="$PROJECT_DIR$/src/RuleSet.java" />
-        <option value="$PROJECT_DIR$/src/ParameterSet.java" />
-        <option value="$PROJECT_DIR$/src/mock/RuleSet.java" />
-        <option value="$PROJECT_DIR$/src/mock/MockProcessor.java" />
-        <option value="$PROJECT_DIR$/.gitignore" />
-        <option value="$PROJECT_DIR$/src/mock/ParameterHarness.java" />
-        <option value="$PROJECT_DIR$/src/TestClass.java" />
-        <option value="$PROJECT_DIR$/src/mock/harness/ParameterHarness.java" />
-        <option value="$PROJECT_DIR$/src/mock/harness/RangeHarness.java" />
-        <option value="$PROJECT_DIR$/src/mock/answers/Answer.java" />
-        <option value="$PROJECT_DIR$/src/mock/MapInvocationHandler.java" />
-        <option value="$PROJECT_DIR$/src/mock/ParameterRules.java" />
-        <option value="$PROJECT_DIR$/src/mock/ParameterSet.java" />
-        <option value="$PROJECT_DIR$/src/mock/answers/IntIncrementAnswer.java" />
-        <option value="$PROJECT_DIR$/src/Foo.java" />
-        <option value="$PROJECT_DIR$/src/Handler.java" />
-        <option value="$PROJECT_DIR$/src/mock/MockProcess.java" />
-        <option value="$PROJECT_DIR$/src/mock/answers/CallRealMethodAnswer.java" />
-        <option value="$PROJECT_DIR$/src/mock/Rule.java" />
-        <option value="$PROJECT_DIR$/src/mock/answers/MapInvocationHandler.java" />
-        <option value="$PROJECT_DIR$/src/mock/TargetedMockBuilder.java" />
         <option value="$PROJECT_DIR$/src/mock/answers/InvocationData.java" />
+        <option value="$PROJECT_DIR$/src/TestClass.java" />
+        <option value="$PROJECT_DIR$/src/mock/MockRedefine.java" />
+        <option value="$PROJECT_DIR$/src/mock/MockSubClass.java" />
+        <option value="$PROJECT_DIR$/src/mock/ParameterRules.java" />
+        <option value="$PROJECT_DIR$/src/mock/FieldSetterTarget.java" />
+        <option value="$PROJECT_DIR$/src/mock/ObjectInstantiatorMap.java" />
+        <option value="$PROJECT_DIR$/src/mock/FieldSetInterceptor.java" />
+        <option value="$PROJECT_DIR$/src/mock/answers/IntIncrementAnswer.java" />
+        <option value="$PROJECT_DIR$/src/mock/SubClassMockClass.java" />
+        <option value="$PROJECT_DIR$/src/mock/FixedRedefineAnswer.java" />
+        <option value="$PROJECT_DIR$/src/mock/answers/FixedRedefineAnswer.java" />
+        <option value="$PROJECT_DIR$/src/mock/answers/FixedStaticAnswer.java" />
+        <option value="$PROJECT_DIR$/src/mock/StaticDelegator.java" />
+        <option value="$PROJECT_DIR$/src/mock/answers/StaticDelegator.java" />
+        <option value="$PROJECT_DIR$/src/mock/RedefineMockClass.java" />
+        <option value="$PROJECT_DIR$/src/mock/answers/ParameterAnswer.java" />
+        <option value="$PROJECT_DIR$/src/method/InstanceMock.java" />
+        <option value="$PROJECT_DIR$/src/method/ParameterMock.java" />
+        <option value="$PROJECT_DIR$/src/method/MethodAnalysis.java" />
+        <option value="$PROJECT_DIR$/src/mock/answers/AutoIncrementor.java" />
+        <option value="$PROJECT_DIR$/src/mock/answers/AutoAnswer.java" />
+        <option value="$PROJECT_DIR$/src/method/MethodData.java" />
+        <option value="$PROJECT_DIR$/src/method/callbacks/MethodCallback.java" />
+        <option value="$PROJECT_DIR$/src/mock/PrimitiveMockClass.java" />
+        <option value="$PROJECT_DIR$/src/mock/answers/Answer.java" />
+        <option value="$PROJECT_DIR$/src/mock/answers/auto/AutoIncrementor.java" />
+        <option value="$PROJECT_DIR$/src/mock/answers/auto/AutoAnswer.java" />
+        <option value="$PROJECT_DIR$/src/method/callbacks/AutoMethodCallback.java" />
+        <option value="$PROJECT_DIR$/src/method/callbacks/IterationMethodCallback.java" />
+        <option value="$PROJECT_DIR$/src/method/MethodCallAnalysis.java" />
+        <option value="$PROJECT_DIR$/src/mock/SubMockClass.java" />
+        <option value="$PROJECT_DIR$/src/method/callbacks/OutputRule.java" />
+        <option value="$PROJECT_DIR$/src/Foo.java" />
+        <option value="$PROJECT_DIR$/src/mock/answers/RedefineAnswer.java" />
+        <option value="$PROJECT_DIR$/src/mock/answers/StaticAnswer.java" />
+        <option value="$PROJECT_DIR$/src/mock/answers/SubAnswer.java" />
+        <option value="$PROJECT_DIR$/src/mock/answers/EmptyAnswer.java" />
+        <option value="$PROJECT_DIR$/src/mock/answers/FixedAnswer.java" />
+        <option value="$PROJECT_DIR$/src/mock/answers/NotStubbedAnswer.java" />
+        <option value="$PROJECT_DIR$/src/mock/MockCreator.java" />
+        <option value="$PROJECT_DIR$/src/mock/PrimitiveMockCreator.java" />
+        <option value="$PROJECT_DIR$/src/method/MethodCall.java" />
+        <option value="$PROJECT_DIR$/src/mock/InstanceCreatorHolder.java" />
+        <option value="$PROJECT_DIR$/src/mock/MockClass.java" />
+        <option value="$PROJECT_DIR$/src/mock/TargetedMockBuilder.java" />
+        <option value="$PROJECT_DIR$/src/method/callbacks/PrintMethodCallback.java" />
+        <option value="$PROJECT_DIR$/src/StacColorSpaceExample.java" />
+        <option value="$PROJECT_DIR$/src/method/callbacks/CSVMethodCallback.java" />
+        <option value="$PROJECT_DIR$/src/method/callbacks/LogMethodCallback.java" />
         <option value="$PROJECT_DIR$/src/Runner.java" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds">
     <option name="y" value="23" />
     <option name="width" value="1440" />
     <option name="height" value="847" />
   </component>
-  <component name="ProjectLevelVcsManager">
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="1" id="Add" />
   </component>
   <component name="ProjectView">
@@ -207,61 +263,37 @@
         <subPane>
           <expand>
             <path>
-              <item name="MockingbirdFuzzer" type="b2602c69:ProjectViewProjectNode" />
-              <item name="MockingbirdFuzzer" type="462c0819:PsiDirectoryNode" />
+              <item name="Experiments" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Experiments" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="MockingbirdFuzzer" type="b2602c69:ProjectViewProjectNode" />
-              <item name="MockingbirdFuzzer" type="462c0819:PsiDirectoryNode" />
+              <item name="Experiments" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Experiments" type="462c0819:PsiDirectoryNode" />
               <item name="resources" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="MockingbirdFuzzer" type="b2602c69:ProjectViewProjectNode" />
-              <item name="MockingbirdFuzzer" type="462c0819:PsiDirectoryNode" />
+              <item name="Experiments" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Experiments" type="462c0819:PsiDirectoryNode" />
               <item name="resources" type="462c0819:PsiDirectoryNode" />
-              <item name="lib" type="462c0819:PsiDirectoryNode" />
+              <item name="image_processor" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="MockingbirdFuzzer" type="b2602c69:ProjectViewProjectNode" />
-              <item name="MockingbirdFuzzer" type="462c0819:PsiDirectoryNode" />
-              <item name="resources" type="462c0819:PsiDirectoryNode" />
-              <item name="lib" type="462c0819:PsiDirectoryNode" />
-              <item name="battleboats_1.jar" type="ab9368bb:PsiFileNode" />
-            </path>
-            <path>
-              <item name="MockingbirdFuzzer" type="b2602c69:ProjectViewProjectNode" />
-              <item name="MockingbirdFuzzer" type="462c0819:PsiDirectoryNode" />
-              <item name="resources" type="462c0819:PsiDirectoryNode" />
-              <item name="lib" type="462c0819:PsiDirectoryNode" />
-              <item name="battleboats_1.jar" type="ab9368bb:PsiFileNode" />
-              <item name="stac" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="MockingbirdFuzzer" type="b2602c69:ProjectViewProjectNode" />
-              <item name="MockingbirdFuzzer" type="462c0819:PsiDirectoryNode" />
-              <item name="resources" type="462c0819:PsiDirectoryNode" />
-              <item name="lib" type="462c0819:PsiDirectoryNode" />
-              <item name="battleboats_1.jar" type="ab9368bb:PsiFileNode" />
-              <item name="stac" type="462c0819:PsiDirectoryNode" />
-              <item name="battleship" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="MockingbirdFuzzer" type="b2602c69:ProjectViewProjectNode" />
-              <item name="MockingbirdFuzzer" type="462c0819:PsiDirectoryNode" />
+              <item name="Experiments" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Experiments" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="MockingbirdFuzzer" type="b2602c69:ProjectViewProjectNode" />
-              <item name="MockingbirdFuzzer" type="462c0819:PsiDirectoryNode" />
+              <item name="Experiments" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Experiments" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="mock" type="462c0819:PsiDirectoryNode" />
+              <item name="method" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="MockingbirdFuzzer" type="b2602c69:ProjectViewProjectNode" />
-              <item name="MockingbirdFuzzer" type="462c0819:PsiDirectoryNode" />
+              <item name="Experiments" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Experiments" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="mock" type="462c0819:PsiDirectoryNode" />
-              <item name="answers" type="462c0819:PsiDirectoryNode" />
+              <item name="method" type="462c0819:PsiDirectoryNode" />
+              <item name="callbacks" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -273,12 +305,15 @@
     <property name="add_unversioned_files" value="true" />
     <property name="ignore_missing_gitignore" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="project.structure.last.edited" value="Libraries" />
+    <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.32988507" />
-    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.project.gradle" />
+    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
   </component>
   <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="mock" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/libs/byte-buddy" />
       <recent name="$PROJECT_DIR$/libs/byte-buddy/agent" />
@@ -364,23 +399,22 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1440" height="847" extended-state="6" />
+    <frame x="0" y="23" width="1440" height="847" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info anchor="right" id="Palette" order="3" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Messages" order="7" weight="0.32933334" />
       <window_info anchor="right" id="Palette&#9;" order="3" />
       <window_info id="Image Layers" order="2" />
       <window_info anchor="right" id="Capture Analysis" order="3" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="right" id="Maven Projects" order="3" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.36533332" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.36533332" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Terminal" order="7" />
       <window_info id="Capture Tool" order="2" />
       <window_info id="Designer" order="2" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.20529328" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25035766" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32933334" />
       <window_info anchor="right" id="Gradle" order="4" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -394,391 +428,390 @@
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Messages" order="7" weight="0.32933334" />
     </layout>
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$PROJECT_DIR$" />
+    </ignored-roots>
+  </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/mock/answers/IntIncrementAnswer.java</url>
-          <line>26</line>
+          <url>file://$PROJECT_DIR$/src/mock/MockClass.java</url>
+          <line>93</line>
           <properties />
-          <option name="timeStamp" value="45" />
+          <option name="timeStamp" value="123" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="47" />
+      <option name="time" value="124" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://$PROJECT_DIR$/libs/mockito-all-1.9.5.jar!/org/mockito/internal/handler/InvocationNotifierHandler.java">
+    <entry file="file://$PROJECT_DIR$/src/mock/StaticDelegator.java" />
+    <entry file="file://$PROJECT_DIR$/src/mock/answers/StaticDelegator.java" />
+    <entry file="jar://$PROJECT_DIR$/libs/byte-buddy/byte-buddy-1.8.11-sources.jar!/net/bytebuddy/implementation/bind/annotation/Origin.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="148">
-          <caret line="37" selection-start-line="37" selection-end-line="37" />
+        <state relative-caret-position="539">
+          <caret line="57" column="18" selection-start-line="57" selection-start-column="18" selection-end-line="57" selection-end-column="18" />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$PROJECT_DIR$/libs/mockito-all-1.9.5.jar!/org/mockito/internal/creation/MethodInterceptorFilter.java">
+    <entry file="file://$PROJECT_DIR$/src/mock/RedefineMockClass.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="188">
-          <caret line="50" selection-start-line="50" selection-end-line="50" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home/src.zip!/java/util/Queue.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-253">
-          <caret line="161" column="12" selection-start-line="161" selection-start-column="12" selection-end-line="161" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home/src.zip!/java/time/Duration.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="174">
-          <caret line="674" column="20" selection-start-line="674" selection-start-column="20" selection-end-line="674" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="116">
-          <caret line="31" lean-forward="true" selection-start-line="31" selection-end-line="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/TestClass.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="6" column="4" selection-start-line="6" selection-start-column="4" selection-end-line="6" selection-end-column="11" />
-          <folding>
-            <element signature="e#132#133#0" expanded="true" />
-            <element signature="e#170#171#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home/src.zip!/java/lang/Class.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="716">
-          <caret line="2124" column="18" selection-start-line="2124" selection-start-column="18" selection-end-line="2124" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home/src.zip!/java/awt/image/BufferedImage.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="916" column="11" selection-start-line="916" selection-start-column="11" selection-end-line="916" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/mock/harness/ParameterHarness.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="10" selection-start-line="10" selection-end-line="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/mock/harness/RangeHarness.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="36" column="25" selection-start-line="36" selection-start-column="25" selection-end-line="36" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/libs/javassist.jar!/javassist/bytecode/MethodInfo.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="65">
-          <caret line="16" column="13" selection-start-line="16" selection-start-column="13" selection-end-line="16" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/libs/javassist.jar!/javassist/CtMethod.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="31" column="11" selection-start-line="31" selection-start-column="11" selection-end-line="31" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/libs/javassist.jar!/javassist/ClassMap.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="14" column="11" selection-start-line="14" selection-start-column="11" selection-end-line="14" selection-end-column="11" />
+        <state relative-caret-position="290">
+          <caret line="53" column="37" selection-start-line="53" selection-start-column="37" selection-end-line="53" selection-end-column="37" />
         </state>
       </provider>
     </entry>
     <entry file="jar:///Library/Java/JavaVirtualMachines/jdk-10.0.1.jdk/Contents/Home/lib/src.zip!/java.base/java/lang/Class.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="915">
-          <caret line="510" column="13" selection-start-line="510" selection-start-column="13" selection-end-line="510" selection-end-column="13" />
+        <state relative-caret-position="8280">
+          <caret line="629" column="26" selection-start-line="629" selection-start-column="26" selection-end-line="629" selection-end-column="26" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/mock/ParameterRules.java">
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk-10.0.1.jdk/Contents/Home/lib/src.zip!/java.base/java/math/BigInteger.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-24">
-          <caret line="37" column="27" selection-start-line="37" selection-start-column="27" selection-end-line="37" selection-end-column="27" />
+        <state relative-caret-position="277">
+          <caret line="2617" column="22" selection-start-line="2617" selection-start-column="22" selection-end-line="2617" selection-end-column="22" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/mock/ParameterSet.java">
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk-10.0.1.jdk/Contents/Home/lib/src.zip!/java.base/java/math/BigDecimal.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="209">
-          <caret line="136" column="13" lean-forward="true" selection-start-line="136" selection-start-column="13" selection-end-line="136" selection-end-column="13" />
+        <state relative-caret-position="366">
+          <caret line="2488" column="22" selection-start-line="2488" selection-start-column="22" selection-end-line="2488" selection-end-column="22" />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$PROJECT_DIR$/libs/javassist.jar!/javassist/CannotCompileException.class">
+    <entry file="file://$PROJECT_DIR$/src/method/InstanceMock.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="140">
-          <caret line="34" column="23" lean-forward="true" selection-start-line="34" selection-start-column="22" selection-end-line="34" selection-end-column="23" />
+        <state relative-caret-position="165">
+          <caret line="11" selection-start-line="11" selection-end-line="11" />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$PROJECT_DIR$/libs/javassist.jar!/javassist/CtClass.class">
+    <entry file="file://$PROJECT_DIR$/src/method/ParameterMock.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="140">
-          <caret line="100" column="16" selection-start-line="100" selection-start-column="16" selection-end-line="100" selection-end-column="16" />
+        <state relative-caret-position="345">
+          <caret line="25" column="34" selection-start-line="25" selection-start-column="34" selection-end-line="25" selection-end-column="34" />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$PROJECT_DIR$/libs/javassist.jar!/javassist/util/HotSwapper.class">
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk-10.0.1.jdk/Contents/Home/lib/src.zip!/java.base/java/util/concurrent/Callable.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-546">
-          <caret line="36" column="11" selection-start-line="36" selection-start-column="11" selection-end-line="36" selection-end-column="11" />
+        <state relative-caret-position="360">
+          <caret line="57" column="17" selection-start-line="57" selection-start-column="17" selection-end-line="57" selection-end-column="17" />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$PROJECT_DIR$/libs/javassist.jar!/javassist/Loader.class">
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk-10.0.1.jdk/Contents/Home/lib/src.zip!/java.logging/java/util/logging/Logger.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="83">
-          <caret line="77" column="16" selection-start-line="77" selection-start-column="16" selection-end-line="77" selection-end-column="16" />
+        <state relative-caret-position="97">
+          <caret line="221" column="13" selection-start-line="221" selection-start-column="13" selection-end-line="221" selection-end-column="13" />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$PROJECT_DIR$/libs/javassist.jar!/javassist/util/proxy/ProxyFactory.class">
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk-10.0.1.jdk/Contents/Home/lib/src.zip!/java.base/java/util/function/Function.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="104" column="11" selection-start-line="104" selection-start-column="11" selection-end-line="104" selection-end-column="11" />
+        <state relative-caret-position="-335">
+          <caret line="40" column="17" selection-start-line="40" selection-start-column="17" selection-end-line="40" selection-end-column="17" />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$PROJECT_DIR$/libs/javassist.jar!/javassist/ClassPool.class">
+    <entry file="file://$PROJECT_DIR$/src/mock/PrimitiveMockClass.java" />
+    <entry file="jar://$PROJECT_DIR$/libs/byte-buddy/byte-buddy-1.8.11-sources.jar!/net/bytebuddy/asm/Advice.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="171">
-          <caret line="49" column="11" selection-start-line="49" selection-start-column="11" selection-end-line="49" selection-end-column="11" />
+        <state relative-caret-position="284">
+          <caret line="8832" column="22" selection-start-line="8832" selection-start-column="22" selection-end-line="8832" selection-end-column="22" />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$PROJECT_DIR$/libs/javassist.jar!/javassist/util/proxy/DefineClassHelper.class">
+    <entry file="file://$PROJECT_DIR$/src/mock/answers/IntIncrementSubAnswer.java" />
+    <entry file="file://$PROJECT_DIR$/src/mock/answers/auto/AutoIncrementor.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="27" selection-start-line="27" selection-end-line="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk-10.0.1.jdk/Contents/Home/lib/src.zip!/java.instrument/java/lang/instrument/Instrumentation.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="132">
-          <caret line="70" column="17" selection-start-line="70" selection-start-column="17" selection-end-line="70" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk-10.0.1.jdk/Contents/Home/lib/src.zip!/jdk.attach/com/sun/tools/attach/spi/AttachProvider.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="667">
-          <caret line="150" column="35" selection-start-line="150" selection-start-column="35" selection-end-line="150" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk-10.0.1.jdk/Contents/Home/lib/src.zip!/jdk.attach/com/sun/tools/attach/VirtualMachine.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="237">
-          <caret line="206" column="37" selection-start-line="206" selection-start-column="37" selection-end-line="206" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/RedefineClassAgent.java" />
-    <entry file="file://$PROJECT_DIR$/src/Handler.java" />
-    <entry file="file://$PROJECT_DIR$/src/mock/answers/Answer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="6" column="17" selection-start-line="6" selection-start-column="17" selection-end-line="6" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/libs/byte-buddy-1.8.11.jar!/net/bytebuddy/dynamic/DynamicType.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="489" column="32" selection-start-line="489" selection-start-column="32" selection-end-line="489" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/mock/MockProcess.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1125">
-          <caret line="83" column="11" selection-start-line="83" selection-start-column="11" selection-end-line="83" selection-end-column="11" />
+        <state relative-caret-position="195">
+          <caret line="96" column="58" lean-forward="true" selection-start-line="96" selection-start-column="58" selection-end-line="96" selection-end-column="58" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="jar://$PROJECT_DIR$/libs/byte-buddy-1.8.11-sources.jar!/net/bytebuddy/dynamic/DynamicType.java">
+    <entry file="file://$PROJECT_DIR$/src/mock/answers/ParameterAnswer.java" />
+    <entry file="file://$PROJECT_DIR$/src/method/MethodCallAnalysis.java" />
+    <entry file="file://$PROJECT_DIR$/src/method/callbacks/MethodCallback.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-80">
-          <caret line="691" column="56" selection-start-line="691" selection-start-column="56" selection-end-line="691" selection-end-column="56" />
+        <state relative-caret-position="692">
+          <caret line="61" column="38" selection-start-line="61" selection-start-column="38" selection-end-line="61" selection-end-column="38" />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$PROJECT_DIR$/libs/byte-buddy-1.8.11-sources.jar!/net/bytebuddy/matcher/MethodParametersMatcher.java">
+    <entry file="file://$PROJECT_DIR$/src/method/callbacks/IterationMethodCallback.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="25" column="11" selection-start-line="25" selection-start-column="11" selection-end-line="25" selection-end-column="11" />
+        <state relative-caret-position="450">
+          <caret line="32" column="8" selection-start-line="32" selection-start-column="8" selection-end-line="32" selection-end-column="8" />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$PROJECT_DIR$/libs/byte-buddy-1.8.11-sources.jar!/net/bytebuddy/matcher/ElementMatchers.java">
+    <entry file="file://$PROJECT_DIR$/src/method/callbacks/AutoMethodCallback.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="19200">
-          <caret line="1315" column="37" selection-start-line="1315" selection-start-column="37" selection-end-line="1315" selection-end-column="37" />
+        <state relative-caret-position="452">
+          <caret line="40" column="8" selection-start-line="40" selection-start-column="8" selection-end-line="40" selection-end-column="8" />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$PROJECT_DIR$/libs/byte-buddy-1.8.11-sources.jar!/net/bytebuddy/dynamic/scaffold/subclass/ConstructorStrategy.java">
+    <entry file="file://$PROJECT_DIR$/resources/round.txt" />
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk-10.0.1.jdk/Contents/Home/lib/src.zip!/java.base/java/util/concurrent/locks/Condition.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="67">
-          <caret line="107" column="8" selection-start-line="107" selection-start-column="8" selection-end-line="107" selection-end-column="8" />
+        <state relative-caret-position="-2342">
+          <caret line="179" column="17" selection-start-line="179" selection-start-column="17" selection-end-line="179" selection-end-column="17" />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$PROJECT_DIR$/libs/byte-buddy-1.8.11-sources.jar!/net/bytebuddy/implementation/MethodCall.java">
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk-10.0.1.jdk/Contents/Home/lib/src.zip!/java.base/java/time/Duration.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="147">
-          <caret line="1959" column="26" selection-start-line="1959" selection-start-column="26" selection-end-line="1959" selection-end-column="26" />
+        <state relative-caret-position="217">
+          <caret line="547" column="27" selection-start-line="547" selection-start-column="27" selection-end-line="547" selection-end-column="27" />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$PROJECT_DIR$/libs/byte-buddy-1.8.11-sources.jar!/net/bytebuddy/implementation/SuperMethodCall.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="174">
-          <caret line="96" selection-start-line="96" selection-end-line="96" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/mock/answers/CallRealMethodAnswer.java">
+    <entry file="file://$PROJECT_DIR$/src/method/callbacks/OutputRule.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="135">
-          <caret line="9" column="40" selection-start-line="9" selection-start-column="40" selection-end-line="9" selection-end-column="40" />
+          <caret line="9" column="44" selection-start-line="9" selection-start-column="44" selection-end-line="9" selection-end-column="44" />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$PROJECT_DIR$/libs/byte-buddy-1.8.11-sources.jar!/net/bytebuddy/implementation/InvocationHandlerAdapter.java">
+    <entry file="file://$PROJECT_DIR$/src/TestClass.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="243">
-          <caret line="256" column="73" selection-start-line="256" selection-start-column="73" selection-end-line="256" selection-end-column="73" />
+        <state relative-caret-position="60">
+          <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$PROJECT_DIR$/libs/byte-buddy-1.8.11-sources.jar!/net/bytebuddy/implementation/LoadedTypeInitializer.java">
+    <entry file="file://$PROJECT_DIR$/src/mock/answers/auto/AutoAnswer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="90" column="18" selection-start-line="90" selection-start-column="18" selection-end-line="90" selection-end-column="18" />
+        <state relative-caret-position="267">
+          <caret line="30" column="19" selection-start-line="30" selection-start-column="19" selection-end-line="30" selection-end-column="19" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/mock/answers/MapInvocationHandler.java">
+    <entry file="file://$PROJECT_DIR$/src/mock/answers/Answer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="308">
-          <caret line="32" selection-start-line="32" selection-end-line="32" />
+        <state relative-caret-position="105">
+          <caret line="7" column="11" selection-start-line="7" selection-start-column="11" selection-end-line="7" selection-end-column="11" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/mock/Rule.java">
+    <entry file="file://$PROJECT_DIR$/src/mock/answers/RedefineAnswer.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="180">
-          <caret line="14" column="26" lean-forward="true" selection-start-line="14" selection-start-column="26" selection-end-line="14" selection-end-column="26" />
+          <caret line="18" column="4" selection-start-line="18" selection-start-column="4" selection-end-line="18" selection-end-column="4" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Foo.java">
+    <entry file="file://$PROJECT_DIR$/src/mock/answers/StaticAnswer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="6" column="21" selection-start-line="6" selection-start-column="21" selection-end-line="6" selection-end-column="21" />
+        <state relative-caret-position="165">
+          <caret line="22" column="50" selection-start-line="22" selection-start-column="50" selection-end-line="22" selection-end-column="50" />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$PROJECT_DIR$/resources/image_processor/ipchallenge-0.1.jar!/com/stac/image/algorithms/filters/Intensify.class">
+    <entry file="file://$PROJECT_DIR$/src/mock/answers/SubAnswer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="118">
-          <caret line="22" selection-start-line="22" selection-end-line="22" />
+        <state relative-caret-position="195">
+          <caret line="20" selection-start-line="20" selection-end-line="20" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/mock/answers/IntIncrementAnswer.java">
+    <entry file="file://$PROJECT_DIR$/src/mock/answers/FixedAnswer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="242">
-          <caret line="26" selection-start-line="26" selection-end-line="26" />
+        <state relative-caret-position="380">
+          <caret line="34" column="20" selection-start-line="34" selection-start-column="20" selection-end-line="34" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/mock/answers/EmptyAnswer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="160">
+          <caret line="11" column="31" selection-start-line="11" selection-start-column="31" selection-end-line="11" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/mock/answers/NotStubbedAnswer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="25" column="35" lean-forward="true" selection-start-line="25" selection-start-column="35" selection-end-line="25" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/mock/MockCreator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="11" column="99" selection-start-line="11" selection-start-column="99" selection-end-line="11" selection-end-column="99" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/mock/PrimitiveMockCreator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="347">
+          <caret line="35" column="31" lean-forward="true" selection-start-line="35" selection-start-column="31" selection-end-line="35" selection-end-column="31" />
           <folding>
-            <element signature="e#573#574#0" expanded="true" />
+            <element signature="imports" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/mock/FieldSetInterceptor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="660">
+          <caret line="56" selection-start-line="56" selection-end-line="56" />
+          <folding>
+            <element signature="e#1302#1303#0" expanded="true" />
+            <element signature="e#1340#1341#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/mock/SubMockClass.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="141">
+          <caret line="23" column="28" selection-start-line="23" selection-start-column="28" selection-end-line="23" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/mock/MockClass.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="128" column="46" lean-forward="true" selection-start-line="128" selection-start-column="46" selection-end-line="128" selection-end-column="46" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#3911#3912#0" expanded="true" />
+            <element signature="e#3939#3940#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/mock/InstanceCreatorHolder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="145">
+          <caret line="40" column="33" selection-start-line="40" selection-start-column="33" selection-end-line="40" selection-end-column="33" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/mock/TargetedMockBuilder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="181">
-          <caret line="72" column="31" selection-start-line="72" selection-start-column="31" selection-end-line="72" selection-end-column="31" />
+        <state relative-caret-position="240">
+          <caret line="79" column="46" lean-forward="true" selection-start-line="79" selection-start-column="46" selection-end-line="79" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/method/MethodCall.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1695">
+          <caret line="129" selection-start-line="129" selection-end-line="129" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#1866#1867#0" expanded="true" />
-            <element signature="e#1925#1926#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/mock/answers/InvocationData.java">
+    <entry file="file://$PROJECT_DIR$/src/method/callbacks/PrintMethodCallback.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="1" selection-start-line="1" selection-end-line="1" />
+        <state relative-caret-position="390">
+          <caret line="28" column="32" selection-start-line="28" selection-start-column="32" selection-end-line="28" selection-end-column="32" />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$PROJECT_DIR$/resources/battleboats/lib/battleboats_1.jar!/com/cyberpointllc/stac/battleship/Competition.class">
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk-10.0.1.jdk/Contents/Home/lib/src.zip!/java.base/java/lang/String.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1252">
-          <caret line="16" column="13" selection-start-line="16" selection-start-column="13" selection-end-line="16" selection-end-column="13" />
+        <state relative-caret-position="240">
+          <caret line="2786" column="25" selection-start-line="2786" selection-start-column="25" selection-end-line="2786" selection-end-column="25" />
+          <folding>
+            <element signature="e#112071#112072#0" expanded="true" />
+            <element signature="e#112133#112134#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk-10.0.1.jdk/Contents/Home/lib/src.zip!/java.base/java/util/Objects.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="159" column="25" selection-start-line="159" selection-start-column="25" selection-end-line="159" selection-end-column="25" />
+          <folding>
+            <element signature="e#5476#5477#0" expanded="true" />
+            <element signature="e#5516#5517#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/method/MethodData.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="546">
+          <caret line="70" column="21" selection-start-line="70" selection-start-column="21" selection-end-line="70" selection-end-column="21" />
+          <folding>
+            <element signature="e#1867#1868#0" expanded="true" />
+            <element signature="e#1905#1906#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Foo.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="550">
+          <caret line="61" column="26" selection-start-line="61" selection-start-column="26" selection-end-line="61" selection-end-column="26" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/method/callbacks/LogMethodCallback.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="534">
+          <caret line="64" column="62" selection-start-line="64" selection-start-column="62" selection-end-line="64" selection-end-column="62" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/method/callbacks/CSVMethodCallback.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="841">
+          <caret line="78" column="112" selection-start-line="78" selection-start-column="4" selection-end-line="78" selection-end-column="112" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#1217#1218#0" expanded="true" />
+            <element signature="e#1245#1246#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/StacColorSpaceExample.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="268">
+          <caret line="29" column="38" lean-forward="true" selection-start-line="29" selection-start-column="38" selection-end-line="29" selection-end-column="38" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Runner.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="235">
-          <caret line="48" selection-start-line="48" selection-end-line="48" />
+        <state relative-caret-position="166">
+          <caret line="27" column="37" selection-start-line="27" selection-start-column="37" selection-end-line="27" selection-end-column="37" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#5671#5672#0" expanded="true" />
-            <element signature="e#5710#5711#0" expanded="true" />
-            <element signature="e#5588#5589#0" expanded="true" />
-            <element signature="e#5624#5625#0" expanded="true" />
-            <element signature="e#5740#5741#0" expanded="true" />
-            <element signature="e#5776#5777#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/resources/battleboats/lib/battleboats_1.jar!/com/cyberpointllc/stac/battleship/StrikeLocator.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="299">
-          <caret line="61" column="56" selection-start-line="61" selection-start-column="56" selection-end-line="61" selection-end-column="56" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/resources/battleboats/lib/battleboats_1.jar!/com/cyberpointllc/stac/battleship/OceanBoard.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="570">
-          <caret line="87" column="34" lean-forward="true" selection-start-line="87" selection-start-column="34" selection-end-line="87" selection-end-column="34" />
         </state>
       </provider>
     </entry>

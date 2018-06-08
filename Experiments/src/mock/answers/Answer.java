@@ -2,8 +2,8 @@ package mock.answers;
 
 /**
  * @author Derrick Lockwood
- * @created 5/22/18.
+ * @created 6/7/18.
  */
-public interface Answer<T> {
-    T handle(InvocationData invocationData) throws Throwable;
+public interface Answer {
+    Object handle(Object proxy, Object[] parameters, String name, Class<?> returnType) throws Throwable;
 }
