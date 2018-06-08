@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 public class Runner {
 
     public static void main(String[] args) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException, IOException, NoSuchFieldException {
-
+        spaceExample();
     }
 
     public static void instanceVariableMethodCallExample() throws NoSuchMethodException, NoSuchFieldException, InvocationTargetException, IllegalAccessException {

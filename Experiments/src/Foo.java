@@ -41,7 +41,8 @@ public class Foo {
     }
 
     public void spaceTest() {
-        int size = 1000;
+        Map<String, String> map = new HashMap<>();
+        int size = 100;
         for (int j = 0; j < size; j++) {
             for(int i = 0; i < size; i++) {
                 map.put("test-"+Math.random(), "Value-"+Math.random());
