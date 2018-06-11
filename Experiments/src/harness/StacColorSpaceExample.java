@@ -1,3 +1,5 @@
+package harness;
+
 import com.stac.image.algorithms.filters.Intensify;
 import method.MethodCall;
 import method.MethodData;

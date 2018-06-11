@@ -11,29 +11,12 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class PrimitiveMockCreator implements MockCreator {
     private Class<?> type;
-    private TargetedMockBuilder builder;
-    private ObjectInstantiator<?> objectInstantiator;
+    private Answer answer;
 
     private PrimitiveMockCreator(TargetedMockBuilder builder, Class<?> type, Answer answer) {
-        this.builder = builder;
         this.type = type;
-        objectInstantiator = (ObjectInstantiator<Object>) () -> {
-            try {
-                return answer.handle(null, null, null, type);
-            } catch (Throwable throwable) {
-                throw new RuntimeException(throwable.getCause());
-            }
-        };
-    }
-
-    @Override
-    public Object create() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        return objectInstantiator.newInstance();
-    }
-
-    @Override
-    public void store() throws NoSuchMethodException, InvocationTargetException, IllegalArgumentException {
-        builder.setObjectInstantiator(type, objectInstantiator);
+        builder.setObjectInstantiator(type, this);
+        this.answer = answer;
     }
 
     @Override
@@ -56,4 +39,15 @@ public class PrimitiveMockCreator implements MockCreator {
         return null;
     }
 
+    @Override
+    public Object newInstance() {
+        try {
+            if (answer == null) {
+                throw new RuntimeException("Primitive not stubbed and no value is set " + type.getName());
+            }
+            return answer.handle(null, null, null, type);
+        } catch (Throwable throwable) {
+            throw new RuntimeException(throwable.getCause());
+        }
+    }
 }

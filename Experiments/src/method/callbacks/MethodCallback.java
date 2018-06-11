@@ -2,6 +2,8 @@ package method.callbacks;
 
 import method.MethodData;
 
+import java.util.function.Function;
+
 /**
  * @author Derrick Lockwood
  * @created 6/6/18.

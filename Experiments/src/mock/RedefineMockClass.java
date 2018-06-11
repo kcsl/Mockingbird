@@ -17,8 +17,8 @@ public class RedefineMockClass extends MockClass {
 
     private boolean staticImplApplied;
 
-    RedefineMockClass(TargetedMockBuilder targetedMockBuilder, Class<?> oldType, DynamicType.Builder<?> builder, InstanceCreatorHolder parentHolder) {
-        super(targetedMockBuilder, oldType, builder, parentHolder);
+    RedefineMockClass(TargetedMockBuilder targetedMockBuilder, Class<?> oldType, DynamicType.Builder<?> builder) {
+        super(targetedMockBuilder, oldType, builder);
         staticImplApplied = false;
     }
 

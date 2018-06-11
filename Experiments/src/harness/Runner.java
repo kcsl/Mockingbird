@@ -1,3 +1,5 @@
+package harness;
+
 import method.MethodCall;
 import method.callbacks.*;
 import mock.MockClass;
@@ -88,8 +90,8 @@ public class Runner {
                 .applyMethod("Woot Woot", "strTest");
         fooMockClass.store();
 
-        TestClass testClass = (TestClass) testClassMockClass.applyField(fooMockClass.getNewType(), "instanceObject")
-                .create();
+        TestClass testClass = (TestClass) testClassMockClass.applyField("instanceObject", fooMockClass)
+                .newInstance();
         System.out.println(testClass.methodToMock2());
     }
 

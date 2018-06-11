@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component inherit-compiler-output="true" inheritJdk="true">
+	<output-test url="file://$MODULE_DIR$/out/test/MockingbirdFuzzer"/>
+	<contentEntry url="file://$MODULE_DIR$"/>
+	<levels>
+		<level name="ipchallenge-0.1" value="project"/>
+		<level name="asm-all-6.0_BETA" value="project"/>
+		<level name="byte-buddy-1.8.11" value="project"/>
+		<level name="objenesis-2.6-javadoc" value="project"/>
+		<level name="byte-buddy-agent-1.8.11-javadoc" value="project"/>
+		<level name="battleboats_1" value="project"/>
+		<level name="harness.AFLHarness" value="project"/>
+	</levels>
+</component>

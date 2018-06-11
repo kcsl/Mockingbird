@@ -10,28 +10,27 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.List;
 
 /**
  * @author Derrick Lockwood
  * @created 5/24/18.
  */
-public abstract class MockClass implements MockCreator {
+public abstract class MockClass implements MockCreator{
 
     final Class<?> oldType;
     private final TargetedMockBuilder targetedMockBuilder;
     private DynamicType.Builder<?> builder;
     private Class<?> newType;
-    private InstanceCreatorHolder instanceCreatorHolder;
     private FieldSetInterceptor fieldSetInterceptor;
+    private ObjectInstantiator<?> objectInstantiator;
 
     MockClass(TargetedMockBuilder targetedMockBuilder,
               Class<?> oldType,
-              DynamicType.Builder<?> builder,
-              InstanceCreatorHolder parentHolder) {
+              DynamicType.Builder<?> builder) {
         this.oldType = oldType;
         this.targetedMockBuilder = targetedMockBuilder;
-        instanceCreatorHolder = new InstanceCreatorHolder(parentHolder);
-        fieldSetInterceptor = new FieldSetInterceptor(instanceCreatorHolder, oldType.getSimpleName());
+        fieldSetInterceptor = new FieldSetInterceptor(oldType.getSimpleName());
         this.builder = builder;
         this.newType = null;
     }
@@ -56,13 +55,12 @@ public abstract class MockClass implements MockCreator {
         return this;
     }
 
-    public <T> MockClass applyField(T value, String fieldName) throws NoSuchFieldException {
-        return applyField(value, oldType.getDeclaredField(fieldName));
+    public <T> MockClass applyField(String fieldName, T value) throws NoSuchFieldException {
+        return applyField(oldType.getDeclaredField(fieldName), value);
     }
 
-    public <T> MockClass applyField(T value, Field field) {
-        instanceCreatorHolder.addFixedInstantiator(value);
-        fieldSetInterceptor.putField(field, value.getClass());
+    public <T> MockClass applyField(Field field, T value) {
+        fieldSetInterceptor.putField(field, targetedMockBuilder.createObjectInstantiator(value));
         return this;
     }
 
@@ -71,31 +69,41 @@ public abstract class MockClass implements MockCreator {
     }
 
     public <T> MockClass applyField(Class<T> tClass, ObjectInstantiator<T> objectInstantiator, Field field) {
-        instanceCreatorHolder.addObjectInstantiator(tClass, objectInstantiator);
-        fieldSetInterceptor.putField(field, tClass);
+        targetedMockBuilder.addObjectInstantiator(tClass, objectInstantiator);
+        fieldSetInterceptor.putField(field, objectInstantiator);
         return this;
     }
 
-    public MockClass applyField(Class<?> mockClass, String fieldName) throws NoSuchFieldException {
-        return applyField(mockClass, oldType.getDeclaredField(fieldName));
+    public MockClass applyField(String fieldName, ObjectInstantiator<?> objectInstantiator) throws NoSuchFieldException {
+        return applyField(oldType.getDeclaredField(fieldName), objectInstantiator);
     }
 
-    public MockClass applyField(Class<?> mockClass, Field field) {
-        fieldSetInterceptor.putField(field, mockClass);
+    public MockClass applyField(Field field, ObjectInstantiator<?> objectInstantiator) {
+        fieldSetInterceptor.putField(field, objectInstantiator);
         return this;
     }
 
 
-    public Object create() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    private Object create() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Object newObject;
         if (newType != null) {
-            return targetedMockBuilder.newMockInstance(newType);
+            newObject = objectInstantiator.newInstance();
+        } else {
+            newObject = makeInstantiator().newInstance();
         }
-        Object object = makeInstantiator().newInstance();
-        if (!fieldSetInterceptor.isEmpty()) {
-            Method method = newType.getDeclaredMethod(fieldSetInterceptor.getInterceptorName());
-            method.invoke(object);
+        fieldSetInterceptor.reloadParameters(newObject);
+        return newObject;
+    }
+
+    public void reloadInstanceVariables(Object object, List<String> instanceVariables) {
+        if (!object.getClass().equals(newType)) {
+            return;
         }
-        return object;
+        try {
+            fieldSetInterceptor.reloadParameters(object, instanceVariables.toArray(new String[0]));
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void store() {
@@ -105,30 +113,26 @@ public abstract class MockClass implements MockCreator {
         makeInstantiator();
     }
 
-    public void reloadParameters(Object object) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        if (!object.getClass().equals(newType)) {
-            return;
-        }
-        //TODO: only reload certain parameters? using method.invoke(object, Parameters to reload) (null for all)
-        Method method = newType.getDeclaredMethod(fieldSetInterceptor.getInterceptorName());
-        method.invoke(object);
-    }
-
     @Override
     public boolean isPrimitive() {
         return false;
     }
 
     private ObjectInstantiator makeInstantiator() {
-        if (!fieldSetInterceptor.isEmpty()) {
-            builder = builder.defineMethod(fieldSetInterceptor.getInterceptorName(), Void.TYPE, Modifier.PUBLIC)
-                    .intercept(MethodDelegation.withDefaultConfiguration().
-                            filter(ElementMatchers.named("intercept")).
-                            to(fieldSetInterceptor));
-        }
+        builder = fieldSetInterceptor.addFields(builder);
         newType = createClass(builder.make());
         builder = null;
-        return targetedMockBuilder.createObjectInstantiator(oldType, newType);
+        objectInstantiator = targetedMockBuilder.createObjectInstantiator(oldType, newType);
+        return objectInstantiator;
+    }
+
+    @Override
+    public Object newInstance() {
+        try {
+            return create();
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     abstract Class<?> createClass(DynamicType.Unloaded<?> unloaded);

@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="AFLHarness">
+    <output-path>$PROJECT_DIR$/out/artifacts/AFLHarness</output-path>
+    <root id="archive" name="MockingbirdFuzzer.jar">
+      <element id="module-output" name="MockingbirdFuzzer" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/byte-buddy/agent/byte-buddy-agent-1.8.11.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/resources/image_processor/ipchallenge-0.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/objenesis/objenesis-2.6.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/resources/battleboats/lib/battleboats_1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/asm-all-6.0_BETA.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/byte-buddy/byte-buddy-1.8.11.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

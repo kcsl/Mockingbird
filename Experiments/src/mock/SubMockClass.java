@@ -13,8 +13,8 @@ import java.lang.reflect.Method;
  * @created 5/30/18.
  */
 public class SubMockClass extends MockClass {
-    SubMockClass(TargetedMockBuilder targetedMockBuilder, Class<?> oldType, DynamicType.Builder<?> builder, InstanceCreatorHolder parentHolder) {
-        super(targetedMockBuilder, oldType, builder, parentHolder);
+    SubMockClass(TargetedMockBuilder targetedMockBuilder, Class<?> oldType, DynamicType.Builder<?> builder) {
+        super(targetedMockBuilder, oldType, builder);
     }
 
     public SubMockClass applyMethod(String methodName, Class<?>... parameters) throws NoSuchMethodException {
@@ -42,4 +42,5 @@ public class SubMockClass extends MockClass {
         return unloaded.load(getClass().getClassLoader(), ClassLoadingStrategy.Default.WRAPPER)
                 .getLoaded();
     }
+
 }

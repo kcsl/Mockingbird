@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="resources"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ipchallenge-0.1"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/asm-all-6.0_BETA"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/byte-buddy-1.8.11"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/objenesis-2.6-javadoc"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/byte-buddy-agent-1.8.11-javadoc"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/battleboats_1"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/AFLHarness"/>
+	<classpathentry kind="output" path="out/production/MockingbirdFuzzer"/>
+</classpath>

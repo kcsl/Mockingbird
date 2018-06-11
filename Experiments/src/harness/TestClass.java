@@ -1,3 +1,5 @@
+package harness;
+
 /**
  * @author Derrick Lockwood
  * @created 5/15/18.
@@ -5,6 +7,7 @@
 public class TestClass {
 
     private Foo instanceObject;
+    private Foo instanceObjectTwo;
 
     public TestClass() {
         instanceObject = new Foo();

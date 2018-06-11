@@ -1,15 +1,12 @@
 package mock;
 
-import java.lang.reflect.InvocationTargetException;
+import org.objenesis.instantiator.ObjectInstantiator;
 
 /**
  * @author Derrick Lockwood
  * @created 6/7/18.
  */
-public interface MockCreator {
-    Object create() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
-
-    void store() throws NoSuchMethodException, InvocationTargetException, IllegalArgumentException;
+public interface MockCreator extends ObjectInstantiator<Object>{
 
     boolean isPrimitive();
 }
