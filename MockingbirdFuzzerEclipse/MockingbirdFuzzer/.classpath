@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="libs/byte-buddy/agent/byte-buddy-agent-1.8.11.jar"/>
+	<classpathentry kind="lib" path="libs/byte-buddy/byte-buddy-1.8.11.jar"/>
+	<classpathentry kind="lib" path="libs/objenesis/objenesis-2.6.jar"/>
+	<classpathentry kind="lib" path="libs/asm-all-6.0_BETA.jar"/>
+	<classpathentry kind="lib" path="challenge/ipchallenge-0.1.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
