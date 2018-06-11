@@ -13,7 +13,6 @@
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.nar
 *.ear
@@ -25,6 +24,7 @@
 hs_err_pid*
 ### Gradle template
 .gradle
+gradle/wrapper/gradle-wrapper.jar
 /build/
 
 # Ignore Gradle GUI config

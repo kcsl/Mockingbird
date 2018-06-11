@@ -2,6 +2,7 @@ package harness;
 
 import com.stac.image.algorithms.filters.Intensify;
 import method.MethodCall;
+import method.callbacks.ExceptionMethodCallback;
 import method.callbacks.PrintMethodCallback;
 import mock.answers.EmptyAnswer;
 import mock.answers.SubAnswer;
@@ -29,7 +30,7 @@ public class AFLHarness {
                 .applyMethod(height, "getHeight")
                 .applyMethod(getRGB, "getRGB", int.class, int.class)
                 .applyMethod( "setRGB", int.class, int.class, int.class);
-        methodCall.linkMethodCallback(PrintMethodCallback.create());
+        methodCall.linkMethodCallback(PrintMethodCallback.create().link(ExceptionMethodCallback.create()));
         methodCall.run();
         /*
         MethodCall.createMethodCall(Class.forName(args[0]), args[1]);

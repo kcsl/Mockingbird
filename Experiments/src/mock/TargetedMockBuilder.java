@@ -48,7 +48,10 @@ public class TargetedMockBuilder {
     }
 
     public SubMockClass createSubclass(Class<?> type, SubAnswer defaultSubAnswer) {
-        return createSubclass(type, getSubAnswerImplementation(Objects.requireNonNullElseGet(defaultSubAnswer, NotStubbedAnswer::newInstance)));
+        if (defaultSubAnswer == null) {
+            return createSubclass(type, getSubAnswerImplementation(NotStubbedAnswer.newInstance()));
+        }
+        return createSubclass(type, getSubAnswerImplementation(defaultSubAnswer));
     }
 
     public SubMockClass createSubclass(Class<?> type, Implementation defaultImplementation) {
