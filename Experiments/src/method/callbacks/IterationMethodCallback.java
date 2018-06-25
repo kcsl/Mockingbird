@@ -10,12 +10,16 @@ import java.math.BigInteger;
  */
 public class IterationMethodCallback implements MethodCallback {
 
-    private BigInteger i;
     private final BigInteger finish;
+    private BigInteger i;
 
     public IterationMethodCallback(BigInteger n) {
         i = BigInteger.ZERO;
         finish = n;
+    }
+
+    public static MethodCallback create(long n) {
+        return new IterationMethodCallback(BigInteger.valueOf(n));
     }
 
     @Override
@@ -36,9 +40,5 @@ public class IterationMethodCallback implements MethodCallback {
     @Override
     public boolean continueIteration() {
         return i.compareTo(this.finish) < 0;
-    }
-
-    public static MethodCallback create(long n) {
-        return new IterationMethodCallback(BigInteger.valueOf(n));
     }
 }

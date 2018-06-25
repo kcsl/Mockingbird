@@ -20,6 +20,12 @@ public class AutoMethodCallback implements MethodCallback {
         autoAnswers = new ArrayList<>();
     }
 
+    public static AutoMethodCallback create(AutoAnswer... autoAnswers) {
+        AutoMethodCallback autoMethodCallback = new AutoMethodCallback();
+        autoMethodCallback.autoAnswers.addAll(Arrays.asList(autoAnswers));
+        return autoMethodCallback;
+    }
+
     public void add(AutoIncrementor autoIncrementor) {
         autoAnswers.add(autoIncrementor);
     }
@@ -44,11 +50,5 @@ public class AutoMethodCallback implements MethodCallback {
     @Override
     public boolean continueIteration() {
         return false;
-    }
-
-    public static AutoMethodCallback create(AutoAnswer... autoAnswers) {
-        AutoMethodCallback autoMethodCallback = new AutoMethodCallback();
-        autoMethodCallback.autoAnswers.addAll(Arrays.asList(autoAnswers));
-        return autoMethodCallback;
     }
 }

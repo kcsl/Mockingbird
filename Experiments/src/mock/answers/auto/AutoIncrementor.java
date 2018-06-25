@@ -1,13 +1,7 @@
 package mock.answers.auto;
 
-import mock.answers.RedefineAnswer;
-import mock.answers.StaticAnswer;
-import mock.answers.SubAnswer;
-
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.concurrent.Callable;
 
 /**
  * @author Derrick Lockwood
@@ -17,14 +11,34 @@ public class AutoIncrementor implements AutoAnswer {
 
     private static final BigDecimal CHAR_SIZE = BigDecimal.valueOf(256);
     private static final BigDecimal TWO = BigDecimal.valueOf(2);
-
-    private BigDecimal value;
     private final BigDecimal increment;
+    private BigDecimal value;
     private IncrementorHandler handler;
 
     public AutoIncrementor(BigDecimal start, BigDecimal increment, int precision) {
         this.value = start.setScale(precision, RoundingMode.HALF_DOWN);
         this.increment = increment;
+    }
+
+    public static AutoIncrementor createPrecisionIncrementor(int precision) {
+        return new AutoIncrementor(BigDecimal.ZERO, BigDecimal.valueOf((double) 1 / Math.pow(10, precision)),
+                precision);
+    }
+
+    public static AutoIncrementor createIncrementor() {
+        return createEndPrecisionIncrementor(1);
+    }
+
+    public static AutoIncrementor createEndPrecisionIncrementor(int precision) {
+        return createIncrementPrecisionIncrementor(1, precision);
+    }
+
+    public static AutoIncrementor createIncrementPrecisionIncrementor(double increment, int precision) {
+        return createIncrementor(0, increment, precision);
+    }
+
+    public static AutoIncrementor createIncrementor(double start, double increment, int precision) {
+        return new AutoIncrementor(BigDecimal.valueOf(start), BigDecimal.valueOf(increment), precision);
     }
 
     public BigDecimal getValue() {
@@ -65,8 +79,9 @@ public class AutoIncrementor implements AutoAnswer {
         } else if (handler != null) {
             return handler.handle(type, this.value);
         }
-        throw new RuntimeException("Incrementor not allowed on class " + type.toString());
+        throw new RuntimeException("Incrementor not allowed on class " + type);
     }
+
     private String getString() {
         StringBuilder stringBuilder = new StringBuilder();
         BigDecimal[] divAndRemainder = this.value.divideAndRemainder(CHAR_SIZE);
@@ -79,26 +94,6 @@ public class AutoIncrementor implements AutoAnswer {
             stringBuilder.insert(0, (char) divAndRemainder[0].subtract(BigDecimal.ONE).intValue());
         }
         return stringBuilder.toString();
-    }
-
-    public static AutoIncrementor createPrecisionIncrementor(int precision) {
-        return new AutoIncrementor(BigDecimal.ZERO, BigDecimal.valueOf((double) 1 / Math.pow(10, precision)), precision);
-    }
-
-    public static AutoIncrementor createIncrementor() {
-        return createEndPrecisionIncrementor(1);
-    }
-
-    public static AutoIncrementor createEndPrecisionIncrementor(int precision) {
-        return createIncrementPrecisionIncrementor(1, precision);
-    }
-
-    public static AutoIncrementor createIncrementPrecisionIncrementor(double increment, int precision) {
-        return createIncrementor(0, increment, precision);
-    }
-
-    public static AutoIncrementor createIncrementor(double start, double increment, int precision) {
-        return new AutoIncrementor(BigDecimal.valueOf(start), BigDecimal.valueOf(increment), precision);
     }
 
     public interface IncrementorHandler {

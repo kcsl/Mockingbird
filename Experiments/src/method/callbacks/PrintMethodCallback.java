@@ -14,6 +14,14 @@ public class PrintMethodCallback implements MethodCallback {
         this.outputRule = outputRule;
     }
 
+    public static PrintMethodCallback create() {
+        return new PrintMethodCallback(null);
+    }
+
+    public static PrintMethodCallback create(OutputRule outputRule) {
+        return new PrintMethodCallback(outputRule);
+    }
+
     @Override
     public void onBefore(MethodData methodData) {
 
@@ -22,7 +30,7 @@ public class PrintMethodCallback implements MethodCallback {
     @Override
     public void onAfter(MethodData methodData) {
         if (outputRule == null) {
-            System.out.println(methodData.toString());
+            System.out.println(methodData);
         } else {
             String out = outputRule.getOutput(methodData);
             if (out != null) {
@@ -39,13 +47,5 @@ public class PrintMethodCallback implements MethodCallback {
     @Override
     public boolean continueIteration() {
         return false;
-    }
-
-    public static PrintMethodCallback create() {
-        return new PrintMethodCallback(null);
-    }
-
-    public static PrintMethodCallback create(OutputRule outputRule) {
-        return new PrintMethodCallback(outputRule);
     }
 }

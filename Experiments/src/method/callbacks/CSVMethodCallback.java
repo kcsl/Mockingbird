@@ -23,6 +23,18 @@ public class CSVMethodCallback implements MethodCallback {
         this.flushImmediately = flushImmediately;
     }
 
+    public static MethodCallback createWithImmediateWrite(String fileName, CSVRule csvRule) throws IOException {
+        return new CSVMethodCallback(fileName, csvRule, true);
+    }
+
+    public static MethodCallback create(String fileName, CSVRule csvRule) throws IOException {
+        return new CSVMethodCallback(fileName, csvRule, false);
+    }
+
+    public static MethodCallback create(String fileName) throws IOException {
+        return create(fileName, null);
+    }
+
     @Override
     public void onBefore(MethodData methodData) {
 
@@ -33,7 +45,7 @@ public class CSVMethodCallback implements MethodCallback {
         try {
             Object[] output;
             if (csvRule == null) {
-                output = new Object[] {
+                output = new Object[]{
                         methodData.getDeclaringClass(),
                         methodData.getMethodName(),
                         Arrays.toString(methodData.getParameterTypes()),
@@ -74,18 +86,6 @@ public class CSVMethodCallback implements MethodCallback {
     @Override
     public boolean continueIteration() {
         return false;
-    }
-
-    public static MethodCallback createWithImmediateWrite(String fileName, CSVRule csvRule) throws IOException {
-        return new CSVMethodCallback(fileName, csvRule, true);
-    }
-
-    public static MethodCallback create(String fileName, CSVRule csvRule) throws IOException {
-        return new CSVMethodCallback(fileName, csvRule, false);
-    }
-
-    public static MethodCallback create(String fileName) throws IOException {
-        return create(fileName, null);
     }
 
     public interface CSVRule {

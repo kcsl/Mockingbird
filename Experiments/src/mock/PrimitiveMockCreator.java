@@ -1,30 +1,32 @@
 package mock;
 
 import mock.answers.Answer;
-import org.objenesis.instantiator.ObjectInstantiator;
-
-import java.lang.reflect.InvocationTargetException;
+import mock.answers.ReturnTypeAnswer;
 
 /**
+ * A primitive mock creator used by the targeted method's parameters and instance variables
+ *
  * @author Derrick Lockwood
  * @created 6/7/18.
  */
 public class PrimitiveMockCreator implements MockCreator {
-    private Class<?> type;
-    private Answer answer;
+    private final Class<?> type;
+    private final TargetedMockBuilder builder;
+    private ReturnTypeAnswer answer;
+    private String name;
 
-    private PrimitiveMockCreator(TargetedMockBuilder builder, Class<?> type, Answer answer) {
+    private PrimitiveMockCreator(TargetedMockBuilder builder, Class<?> type, ReturnTypeAnswer answer) {
         this.type = type;
+        this.builder = builder;
         builder.setObjectInstantiator(type, this);
         this.answer = answer;
-    }
-
-    @Override
-    public boolean isPrimitive() {
-        return true;
+        name = null;
     }
 
     public static PrimitiveMockCreator create(TargetedMockBuilder builder, Class<?> type, Answer answer) {
+        if (!(answer instanceof ReturnTypeAnswer)) {
+            return null;
+        }
         if (type.isAssignableFrom(int.class) ||
                 type.isAssignableFrom(long.class) ||
                 type.isAssignableFrom(float.class) ||
@@ -34,9 +36,30 @@ public class PrimitiveMockCreator implements MockCreator {
                 type.isAssignableFrom(byte.class) ||
                 type.isAssignableFrom(String.class)
                 ) {
-            return new PrimitiveMockCreator(builder, type, answer);
+            return new PrimitiveMockCreator(builder, type, (ReturnTypeAnswer) answer);
         }
         return null;
+    }
+
+    @Override
+    public boolean isPrimitive() {
+        return true;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+        builder.setNamedInstance(name, type);
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public Class<?> getType() {
+        return type;
     }
 
     @Override
@@ -45,7 +68,7 @@ public class PrimitiveMockCreator implements MockCreator {
             if (answer == null) {
                 throw new RuntimeException("Primitive not stubbed and no value is set " + type.getName());
             }
-            return answer.handle(null, null, null, type);
+            return answer.createObject(type, true);
         } catch (Throwable throwable) {
             throw new RuntimeException(throwable.getCause());
         }

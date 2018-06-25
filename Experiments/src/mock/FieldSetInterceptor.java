@@ -1,6 +1,5 @@
 package mock;
 
-import javafx.util.Pair;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
@@ -23,7 +22,7 @@ import java.util.Random;
  */
 public class FieldSetInterceptor {
     private final String interceptorName;
-    private Map<String, Pair<Field, ObjectInstantiator<?>> > fields;
+    private Map<String, Pair<Field, ObjectInstantiator<?>>> fields;
 
     FieldSetInterceptor(String className) {
         fields = new HashMap<>();
@@ -56,11 +55,17 @@ public class FieldSetInterceptor {
         return fields.isEmpty();
     }
 
-    public void reloadParameters(Object object) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public void reloadParameters(Object object) throws
+            NoSuchMethodException,
+            IllegalAccessException,
+            InvocationTargetException {
         reloadParameters(object, null);
     }
 
-    public void reloadParameters(Object object, String[] parameters) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public void reloadParameters(Object object, String[] parameters) throws
+            NoSuchMethodException,
+            InvocationTargetException,
+            IllegalAccessException {
         if (!isEmpty()) {
             Class<?> type = object.getClass();
             Method method = type.getDeclaredMethod(interceptorName, String[].class);
@@ -91,6 +96,24 @@ public class FieldSetInterceptor {
             for (Map.Entry<String, Pair<Field, ObjectInstantiator<?>>> entry : fields.entrySet()) {
                 entry.getValue().getKey().set(o, entry.getValue().getValue().newInstance());
             }
+        }
+    }
+
+    private static class Pair<K, V> {
+        private final K key;
+        private final V value;
+
+        public Pair(K key, V value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public K getKey() {
+            return key;
+        }
+
+        public V getValue() {
+            return value;
         }
     }
 }

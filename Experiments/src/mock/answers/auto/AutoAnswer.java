@@ -1,8 +1,6 @@
 package mock.answers.auto;
 
-import mock.answers.RedefineAnswer;
-import mock.answers.StaticAnswer;
-import mock.answers.SubAnswer;
+import mock.answers.Answer;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
@@ -11,7 +9,7 @@ import java.util.concurrent.Callable;
  * @author Derrick Lockwood
  * @created 6/7/18.
  */
-public interface AutoAnswer extends SubAnswer, RedefineAnswer, StaticAnswer {
+public interface AutoAnswer extends Answer {
     //TODO: Abstract all auto answers
     void mutate();
 

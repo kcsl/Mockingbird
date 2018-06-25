@@ -16,6 +16,10 @@ public class Foo {
         return "Hello";
     }
 
+    public Foo createFoo() {
+        return new Foo();
+    }
+
     public int test(Foo param) {
         return -1;
     }
@@ -42,12 +46,22 @@ public class Foo {
         return total;
     }
 
+    public void testDiff(Foo a, Foo b) {
+        Foo c = new Foo();
+        a = b;
+        c = a;
+    }
+
+    public String testCreate(Foo a) {
+        return a.createFoo().createFoo().createFoo().strTest();
+    }
+
     public void spaceTest() {
         Map<String, String> map = new HashMap<>();
         int size = 100;
         for (int j = 0; j < size; j++) {
-            for(int i = 0; i < size; i++) {
-                map.put("test-"+Math.random(), "Value-"+Math.random());
+            for (int i = 0; i < size; i++) {
+                map.put("test-" + Math.random(), "Value-" + Math.random());
             }
         }
     }
@@ -55,14 +69,14 @@ public class Foo {
     public void function(int x) throws InterruptedException {
         double N = 10000000005.0;
         double z = 0;
-        for(int i = 0; i<x; i++){ // z = N*x
-            z+=N;
+        for (int i = 0; i < x; i++) { // z = N*x
+            z += N;
         }
-        double w = z/x; // w = z/x = N*x/x = N
-        if((long)Math.abs(N - w) != 0){
+        double w = z / x; // w = z/x = N*x/x = N
+        if ((long) Math.abs(N - w) != 0) {
             // Do computationally expensive calculation
             // Shouldn't happen since w == N
-            Thread.sleep(1000);
+            Thread.sleep(500);
         }
     }
 }

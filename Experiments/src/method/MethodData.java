@@ -19,12 +19,13 @@ public class MethodData {
     private transient Duration duration;
     private transient long deltaHeapMemory;
 
-    MethodData(Object mockObject,
-               Object[] parameters,
-               Class<?> declaringClass,
-               String methodName,
-               Class<?> returnType,
-               Class<?>... parameterTypes) {
+    MethodData(
+            Object mockObject,
+            Object[] parameters,
+            Class<?> declaringClass,
+            String methodName,
+            Class<?> returnType,
+            Class<?>... parameterTypes) {
         this.mockObject = mockObject;
         this.parameters = parameters;
         this.methodName = methodName;
@@ -82,6 +83,6 @@ public class MethodData {
 
     @Override
     public String toString() {
-        return "Method: " + methodName + " Duration: " + duration.toString() + " Memory: " + deltaHeapMemory + " Result: " + (returnValue == null ? (returnException == null ? "null" : returnException.toString()) : returnValue.toString());
+        return "Duration: " + (duration == null ? "none" : duration) + " Memory: " + deltaHeapMemory;
     }
 }

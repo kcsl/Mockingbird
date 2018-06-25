@@ -1,0 +1,40 @@
+{
+  "definition": {
+    "class": "TestMain",
+    "method": "test",
+    "parameters": [
+      {
+        "class": "TestMain$Foo",
+        "methods": [
+          {
+            "name": "getAnswer",
+            "parameters": [
+              "int"
+            ],
+            "constraint": {
+              "type": "original"
+            }
+          }
+        ]
+      },
+      {
+        "class": "int",
+        "constraint": {
+          "type": "range",
+          "from": 0,
+          "to": 1000
+        }
+      },
+      {
+        "class": "boolean"
+      },
+      {
+        "class": "boolean"
+      }
+    ]
+  },
+  "config": {
+    "timeout":1000,
+    "console_log_level":"INFO"
+  }
+}

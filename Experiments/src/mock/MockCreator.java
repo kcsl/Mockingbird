@@ -6,7 +6,14 @@ import org.objenesis.instantiator.ObjectInstantiator;
  * @author Derrick Lockwood
  * @created 6/7/18.
  */
-public interface MockCreator extends ObjectInstantiator<Object>{
+public interface MockCreator extends ObjectInstantiator<Object> {
 
     boolean isPrimitive();
+
+    void setName(String name);
+
+    String getName();
+
+    Class<?> getType();
+
 }

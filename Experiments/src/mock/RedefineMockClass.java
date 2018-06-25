@@ -1,10 +1,10 @@
 package mock;
 
+import mock.answers.Answer;
 import mock.answers.FixedAnswer;
-import mock.answers.RedefineAnswer;
-import mock.answers.StaticAnswer;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.dynamic.loading.ClassReloadingStrategy;
+import net.bytebuddy.implementation.Implementation;
 import net.bytebuddy.implementation.MethodDelegation;
 
 import java.lang.reflect.Method;
@@ -28,41 +28,35 @@ public class RedefineMockClass extends MockClass {
                 .getLoaded();
     }
 
-    public RedefineMockClass applyMethod(RedefineAnswer redefineAnswer, String methodName, Class<?>... parameters) throws NoSuchMethodException {
-        return applyMethod(redefineAnswer, oldType.getMethod(methodName, parameters));
+    @Override
+    Implementation getImplementation(Answer answer) {
+        return TargetedMockBuilder.getRedefineAnswerImplementation(answer);
     }
 
-    public RedefineMockClass applyMethod(RedefineAnswer redefineAnswer, Method method) {
-        return (RedefineMockClass) applyMethod(TargetedMockBuilder.getRedefineAnswerImplementation(redefineAnswer), method);
-    }
-
-    public <T> RedefineMockClass applyMethod(T value, String methodName, Class<?>... parameters) throws NoSuchMethodException {
-        return applyMethod(value, oldType.getMethod(methodName, parameters));
-    }
-
-    public <T> RedefineMockClass applyMethod(T value, Method method) {
-        return applyMethod(FixedAnswer.newInstance(value), method);
-    }
-
-    public RedefineMockClass applyStaticMethod(StaticAnswer answer, String methodName, Class<?>... params) throws NoSuchMethodException {
+    public RedefineMockClass applyStaticMethod(Answer answer, String methodName, Class<?>... params) throws
+            NoSuchMethodException {
         return applyStaticMethod(answer, oldType.getMethod(methodName, params));
     }
 
-    public RedefineMockClass applyStaticMethod(StaticAnswer answer, Method method) {
-        StaticAnswer.StaticDelegator.addDelegator(method, answer);
+    public RedefineMockClass applyStaticMethod(Answer answer, Method method) {
+        Answer.StaticDelegator.addDelegator(method, answer);
         if (!staticImplApplied) {
             staticImplApplied = true;
-            return (RedefineMockClass) applyMethod(MethodDelegation.withDefaultConfiguration().filter(StaticAnswer.MATCHER).to(StaticAnswer.StaticDelegator.class), method);
+            return (RedefineMockClass) applyMethod(
+                    MethodDelegation.withDefaultConfiguration().filter(Answer.STATIC_MATCHER).to(
+                            Answer.StaticDelegator.class),
+                    method);
         }
         return this;
     }
 
-    public <V> RedefineMockClass applyStaticMethod(V value, String methodName, Class<?>... params) throws NoSuchMethodException {
-        return applyStaticMethod(FixedAnswer.newInstance(value), methodName, params);
+    public <V> RedefineMockClass applyStaticMethod(V value, String methodName, Class<?>... params) throws
+            NoSuchMethodException {
+        return applyStaticMethod(new FixedAnswer(value), methodName, params);
     }
 
     public <V> RedefineMockClass applyStaticMethod(V value, Method method) {
-        return applyStaticMethod(FixedAnswer.newInstance(value), method);
+        return applyStaticMethod(new FixedAnswer(value), method);
     }
 
 }

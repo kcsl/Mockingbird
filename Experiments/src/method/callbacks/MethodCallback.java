@@ -2,8 +2,6 @@ package method.callbacks;
 
 import method.MethodData;
 
-import java.util.function.Function;
-
 /**
  * @author Derrick Lockwood
  * @created 6/6/18.
@@ -71,7 +69,7 @@ public interface MethodCallback {
         };
     }
 
-    public interface MethodReturn {
+    interface MethodReturn {
         void onAfter(MethodData methodData);
     }
 }

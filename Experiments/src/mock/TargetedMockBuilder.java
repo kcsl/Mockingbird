@@ -1,22 +1,20 @@
 package mock;
 
+import mock.answers.Answer;
 import mock.answers.NotStubbedAnswer;
-import mock.answers.RedefineAnswer;
-import mock.answers.SubAnswer;
-import mock.answers.StaticAnswer;
 import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.dynamic.scaffold.subclass.ConstructorStrategy;
 import net.bytebuddy.implementation.Implementation;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.SuperMethodCall;
-import net.bytebuddy.implementation.bind.annotation.Origin;
+import net.bytebuddy.matcher.ElementMatcher;
 import org.objenesis.Objenesis;
 import org.objenesis.ObjenesisStd;
 import org.objenesis.instantiator.ObjectInstantiator;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * @author Derrick Lockwood
@@ -24,30 +22,36 @@ import java.util.Objects;
  */
 public class TargetedMockBuilder {
 
+    private final Objenesis objenesis;
     private ByteBuddy byteBuddy;
     private Map<Class<?>, ObjectInstantiator<?>> instanceCreatorHolder;
-    private final Objenesis objenesis;
+    private Map<String, Class<?>> namedInstanceMap;
 
     public TargetedMockBuilder() {
         //TODO: create rebase which is a mix of subclass and redefine where it keeps the old methods
         byteBuddy = new ByteBuddy();
         instanceCreatorHolder = new HashMap<>();
+        namedInstanceMap = new HashMap<>();
         objenesis = new ObjenesisStd();
     }
 
-    static Implementation getSubAnswerImplementation(SubAnswer subAnswer) {
-        return MethodDelegation.withDefaultConfiguration().filter(SubAnswer.MATCHER).to(subAnswer, SubAnswer.class);
+    static Implementation getSubAnswerImplementation(Answer subAnswer) {
+        return getImplementation(subAnswer, Answer.SUB_MATCHER);
     }
 
-    static Implementation getRedefineAnswerImplementation(RedefineAnswer redefineAnswer) {
-        return MethodDelegation.withDefaultConfiguration().filter(RedefineAnswer.MATCHER).to(redefineAnswer, RedefineAnswer.class);
+    static Implementation getRedefineAnswerImplementation(Answer redefineAnswer) {
+        return getImplementation(redefineAnswer, Answer.REDEFINE_MATCHER);
+    }
+
+    private static Implementation getImplementation(Answer answer, ElementMatcher<? super MethodDescription> matcher) {
+        return MethodDelegation.withDefaultConfiguration().filter(matcher).to(answer, Answer.class);
     }
 
     public SubMockClass createSubclass(Class<?> type) {
         return createSubclass(type, NotStubbedAnswer.newInstance());
     }
 
-    public SubMockClass createSubclass(Class<?> type, SubAnswer defaultSubAnswer) {
+    public SubMockClass createSubclass(Class<?> type, Answer defaultSubAnswer) {
         if (defaultSubAnswer == null) {
             return createSubclass(type, getSubAnswerImplementation(NotStubbedAnswer.newInstance()));
         }
@@ -55,7 +59,8 @@ public class TargetedMockBuilder {
     }
 
     public SubMockClass createSubclass(Class<?> type, Implementation defaultImplementation) {
-        SubMockClass mockClass = new SubMockClass(this, type, byteBuddy.subclass(type, ConstructorStrategy.Default.NO_CONSTRUCTORS));
+        SubMockClass mockClass = new SubMockClass(this, type,
+                byteBuddy.subclass(type, ConstructorStrategy.Default.NO_CONSTRUCTORS));
         if (defaultImplementation != null) {
             mockClass.setDefaultImplementation(defaultImplementation);
         }
@@ -70,7 +75,7 @@ public class TargetedMockBuilder {
         return createRedefine(type, NotStubbedAnswer.newInstance());
     }
 
-    public RedefineMockClass createRedefine(Class<?> type, RedefineAnswer defaultRedefineAnswer) {
+    public RedefineMockClass createRedefine(Class<?> type, Answer defaultRedefineAnswer) {
         return createRedefine(type, getRedefineAnswerImplementation(defaultRedefineAnswer));
     }
 
@@ -83,6 +88,12 @@ public class TargetedMockBuilder {
     }
 
     @SuppressWarnings("unchecked")
+    public <T> ObjectInstantiator<T> getInstantiator(String name) {
+        Class<T> tClass = (Class<T>) namedInstanceMap.get(name);
+        return tClass == null ? null : getInstantiator(tClass);
+    }
+
+    @SuppressWarnings("unchecked")
     public <T> ObjectInstantiator<T> getInstantiator(Class<T> tClass) {
         return (ObjectInstantiator<T>) instanceCreatorHolder.get(tClass);
     }
@@ -91,13 +102,27 @@ public class TargetedMockBuilder {
         return getInstantiator(tClass).newInstance();
     }
 
+    @SuppressWarnings("unchecked")
+    public <T> T newInstance(String name) {
+        return (T) getInstantiator(name).newInstance();
+    }
+
     void setObjectInstantiator(Class<?> type, ObjectInstantiator<?> objectInstantiator) {
         instanceCreatorHolder.put(type, objectInstantiator);
     }
 
-    ObjectInstantiator<?> createObjectInstantiator(Class<?> oldType, Class<?> newType) {
-        ObjectInstantiator<?> objectInstantiator = objenesis.getInstantiatorOf(newType);
-        instanceCreatorHolder.put(oldType, objectInstantiator);
+    void setNamedInstance(String name, Class<?> type) {
+        namedInstanceMap.put(name, type);
+    }
+
+    <T> ObjectInstantiator<T> createObjectInstantiator(String name, Class<T> newType) {
+        namedInstanceMap.put(name, newType);
+        return createObjectInstantiator(newType);
+    }
+
+    <T> ObjectInstantiator<T> createObjectInstantiator(Class<T> newType) {
+        ObjectInstantiator<T> objectInstantiator = objenesis.getInstantiatorOf(newType);
+        instanceCreatorHolder.put(newType, objectInstantiator);
         return objectInstantiator;
     }
 
@@ -107,10 +132,6 @@ public class TargetedMockBuilder {
         ObjectInstantiator<T> objectInstantiator = () -> value;
         instanceCreatorHolder.put(tClass, objectInstantiator);
         return objectInstantiator;
-    }
-
-    <T> void addObjectInstantiator(Class<T> tClass, ObjectInstantiator<T> objectInstantiator) {
-        instanceCreatorHolder.put(tClass, objectInstantiator);
     }
 
 }

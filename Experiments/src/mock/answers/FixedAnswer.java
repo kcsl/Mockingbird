@@ -7,36 +7,33 @@ import java.util.concurrent.Callable;
  * @author Derrick Lockwood
  * @created 5/30/18.
  */
-public class FixedAnswer implements SubAnswer, RedefineAnswer, StaticAnswer {
+public class FixedAnswer implements Answer {
 
-    private Object value;
+    private final Object value;
 
-    private FixedAnswer(Object value) {
+    public FixedAnswer(Object value) {
         this.value = value;
     }
 
+
     @Override
-    public Object handle(Object proxy, Object[] args, Method method) throws Throwable {
+    public Object handle(Object proxy, Object[] args, Method method) {
         return value;
     }
 
     @Override
-    public Object handle(Object[] args) throws Throwable {
+    public Object handle(Object[] args) {
         return value;
     }
 
     @Override
-    public Object handle(Object proxy, Object[] args, Callable<Object> originalMethod, Method method) throws Throwable {
+    public Object handle(Object proxy, Object[] args, Callable<Object> originalMethod, Method method) {
         return value;
     }
 
     @Override
-    public Object handle(Object proxy, Object[] parameters, String name, Class<?> returnType) throws Throwable {
+    public Object handle(Object proxy, Object[] parameters, String name, Class<?> returnType) {
         return value;
-    }
-
-    public static FixedAnswer newInstance(Object value) {
-        return new FixedAnswer(value);
     }
 
 }

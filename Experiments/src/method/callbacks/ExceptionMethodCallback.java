@@ -7,6 +7,10 @@ import method.MethodData;
  * @created 6/11/18.
  */
 public class ExceptionMethodCallback implements MethodCallback {
+    public static MethodCallback create() {
+        return new ExceptionMethodCallback();
+    }
+
     @Override
     public void onBefore(MethodData methodData) {
 
@@ -27,9 +31,5 @@ public class ExceptionMethodCallback implements MethodCallback {
     @Override
     public boolean continueIteration() {
         return false;
-    }
-
-    public static MethodCallback create() {
-        return new ExceptionMethodCallback();
     }
 }
