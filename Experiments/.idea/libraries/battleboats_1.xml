@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="battleboats_1">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/resources/battleboats/lib/battleboats_1.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
