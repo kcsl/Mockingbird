@@ -27,6 +27,12 @@ public class FixedAnswer implements Answer {
     }
 
     @Override
+    public Answer duplicate() {
+        //TODO: Duplicate value? object.clone ?
+        return new FixedAnswer(value);
+    }
+
+    @Override
     public Object handle(Object proxy, Object[] args, Callable<Object> originalMethod, Method method) {
         return value;
     }

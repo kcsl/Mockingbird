@@ -22,7 +22,7 @@ public class InstanceVariableAnswer implements Answer {
         this(fieldName, null);
     }
 
-    private Object getField(Object proxy){
+    private Object getField(Object proxy) {
         Class<?> type = proxy.getClass();
         try {
             Field field = type.getDeclaredField(fieldName);
@@ -48,6 +48,11 @@ public class InstanceVariableAnswer implements Answer {
     @Override
     public Object handle(Object[] args) {
         return null;
+    }
+
+    @Override
+    public Answer duplicate() {
+        return new InstanceVariableAnswer(fieldName, setField);
     }
 
     @Override

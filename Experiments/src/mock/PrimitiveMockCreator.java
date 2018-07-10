@@ -1,6 +1,8 @@
 package mock;
 
+import method.AttributeClass;
 import mock.answers.Answer;
+import mock.answers.MultiReturnTypeAnswer;
 import mock.answers.ReturnTypeAnswer;
 
 /**
@@ -41,20 +43,33 @@ public class PrimitiveMockCreator implements MockCreator {
         return null;
     }
 
+    public static PrimitiveMockCreator create(TargetedMockBuilder builder, AttributeClass attributeClass,
+            Answer answer) {
+        if (!(answer instanceof ReturnTypeAnswer)) {
+            return null;
+        }
+        Class<?> type = attributeClass.getMockClass();
+        if (attributeClass.getAttribute(AttributeClass.IS_PRIMITIVE)) {
+            return new PrimitiveMockCreator(builder, type,
+                    new MultiReturnTypeAnswer(attributeClass, (ReturnTypeAnswer) answer));
+        }
+        return null;
+    }
+
     @Override
     public boolean isPrimitive() {
         return true;
     }
 
     @Override
-    public void setName(String name) {
-        this.name = name;
-        builder.setNamedInstance(name, type);
+    public String getName() {
+        return name;
     }
 
     @Override
-    public String getName() {
-        return name;
+    public void setName(String name) {
+        this.name = name;
+        builder.setNamedInstance(name, type);
     }
 
     @Override
@@ -69,8 +84,8 @@ public class PrimitiveMockCreator implements MockCreator {
                 throw new RuntimeException("Primitive not stubbed and no value is set " + type.getName());
             }
             return answer.createObject(type, true);
-        } catch (Throwable throwable) {
-            throw new RuntimeException(throwable.getCause());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

@@ -1,105 +1,26 @@
 package harness;
 
-import mock.MockClass;
-import mock.TargetedMockBuilder;
-import net.bytebuddy.agent.ByteBuddyAgent;
-import net.bytebuddy.implementation.Implementation;
-import net.bytebuddy.implementation.SuperMethodCall;
-
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-
-
 /**
  * @author Derrick Lockwood
  * @created 5/14/18.
  */
 public class Runner {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ClassNotFoundException {
 
+        //TODO: figure out how to get generic class then we don't have to do anything
+        /*
+        Possibly this in configuration file
+        {
+           "class":"java.util.ArrayList<Foo>"
+           ...Definition for Foo class...
+        }
+        Size is determined by a bytereader of a single integer, long etc.
+         */
+        System.out.println((int) '\7');
     }
 
-//    public static void linkingMethodCallsExample() throws NoSuchMethodException {
-//        MethodCall methodCall = MethodCall.createMethodCall(Foo.class, "testCreate", Foo.class);
-//        methodCall.createParameterMock(0)
-//                .applyMethod(CreatorSubAnswer.createDefault(methodCall.createStoredMock(Foo.class)
-//                        .applyMethod(CreatorSubAnswer.createDefault(methodCall.createStoredMock(Foo.class)
-//                                .applyMethod(CreatorSubAnswer.createDefault(methodCall.createStoredMock(Foo.class).applyMethod("Woot woot crazy methods", "strTest")), "createFoo")), "createFoo")), "createFoo");
-//        methodCall.linkMethodCallback(PrintMethodCallback.create());
-//        methodCall.run();
-//    }
-//
-//    public static void instanceVariableMethodCallExample() throws NoSuchMethodException, NoSuchFieldException, InvocationTargetException, IllegalAccessException {
-//        MethodCall methodCall = MethodCall.createMethodCall(TestClass.class, "methodToMock2");
-//        methodCall.linkMethodCallback(PrintMethodCallback.create());
-//        methodCall.createInstanceMock("instanceObject")
-//                .applyMethod("Woot woot", "strTest");
-//        methodCall.run();
-//    }
-//
-//    public static void functionRoundingExample() throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-//        OutputRule outputRule = methodData -> {
-//            long time = TimeUnit.NANOSECONDS.toMillis(methodData.getDuration().get(ChronoUnit.NANOS));
-//            return time >= 1 ? methodData.getParameters()[0] + " : " + methodData.getDuration().toString() : null;
-//        };
-//        AutoIncrementor autoIncrementor = AutoIncrementor.createIncrementor(6690000, 100, 0);
-//        MethodCallback methodCallback = IterationMethodCallback.create(10000000)
-//                .link(AutoMethodCallback.create(autoIncrementor))
-//                .link(LogMethodCallback.create("./resources/round.txt", outputRule));
-//        MethodCall methodCall = MethodCall.createMethodCall(methodCallback, Foo.class, "function", int.class);
-//        methodCall.createParameterMock(0, autoIncrementor);
-//        methodCall.run();
-//    }
-//
-//    public static void spaceExample() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-//        MethodCallback methodCallback = IterationMethodCallback.create(1).andAfter(methodData -> System.out.println(methodData.toString()));
-//        MethodCall fooMethodCall = MethodCall.createMethodCall(methodCallback, Foo.class, "spaceTest");
-//        fooMethodCall.run();
-//    }
-//
-//    public static void autoMethodMockExample() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-//        MethodCallback methodCallback = IterationMethodCallback.create(5).andAfter(methodData -> System.out.println(methodData.getReturnValue() + " : " + methodData.getDuration() + " : " + methodData.getDeltaHeapMemory()));
-//        MethodCall fooMethodCall = MethodCall.createMethodCall(methodCallback, Foo.class, "loops", Foo.class, Foo.class);
-//        fooMethodCall.autoFillParameters();
-//        fooMethodCall.run();
-//    }
-//
-//    public static void methodMockExample() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-//        AutoIncrementor fooOne = AutoIncrementor.createIncrementor();
-//        AutoIncrementor fooTwo = AutoIncrementor.createIncrementor();
-//        MethodCallback methodCallback = IterationMethodCallback.create(5)
-//                .link(AutoMethodCallback.create(fooOne, fooTwo));
-//
-//        MethodCall fooMethodCall = MethodCall.createMethodCall(methodCallback, Foo.class, "loops", Foo.class, Foo.class);
-//        fooMethodCall.createParameterMock(0, fooOne);
-//        fooMethodCall.createParameterMock(1, fooTwo);
-//        fooMethodCall.run();
-//    }
-
-    public static void staticMethodExample() throws NoSuchMethodException {
-        System.out.println(Foo.staticTest());
-        ByteBuddyAgent.install();
-        TargetedMockBuilder targetedMockBuilder = new TargetedMockBuilder();
-        targetedMockBuilder.createRedefine(Foo.class, (Implementation) null)
-                .applyStaticMethod("Woot Woot", "staticTest")
-                .store();
-        System.out.println(Foo.staticTest());
+    private static class TestGeneric<Generic> {
+        Generic generic;
     }
-
-    public static void instanceVariableExample() throws
-            NoSuchMethodException,
-            NoSuchFieldException {
-        TargetedMockBuilder targetedMockBuilder = new TargetedMockBuilder();
-        MockClass testClassMockClass = targetedMockBuilder.createSubclass(TestClass.class, SuperMethodCall.INSTANCE);
-
-        MockClass fooMockClass = targetedMockBuilder.createSubclass(Foo.class)
-                .applyMethod("Woot Woot", "strTest");
-        fooMockClass.store();
-
-        TestClass testClass = (TestClass) testClassMockClass.applyField("instanceObject", fooMockClass)
-                .newInstance();
-        System.out.println(testClass.methodToMock2());
-    }
-
 }

@@ -1,8 +1,6 @@
 package io;
 
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 /**
  * @author Derrick Lockwood
@@ -20,10 +18,40 @@ public class DataChunkInputStream extends DataInputStream {
         super(in);
     }
 
-    public DataChunk readDataChunk(int chunkSize) throws IOException {
+    public DataChunkInputStream readDataChunk(int chunkSize) throws IOException {
         byte[] bytes = new byte[chunkSize];
         int size = read(bytes);
-        return new DataChunk(bytes, size);
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+        return new DataChunkInputStream(byteArrayInputStream);
     }
 
+    public String readToNewLine() throws IOException {
+        StringBuilder stringBuilder = new StringBuilder();
+        byte c;
+        loop:
+        while (true) {
+            switch (c = readByte()) {
+                case -1:
+                case '\n':
+                    break loop;
+
+                case '\r':
+                    int c2 = readByte();
+                    if ((c2 != '\n') && (c2 != -1)) {
+                        if (!(in instanceof PushbackInputStream)) {
+                            this.in = new PushbackInputStream(in);
+                        }
+                        ((PushbackInputStream) in).unread(c2);
+                    }
+                    break loop;
+
+                default:
+                    stringBuilder.append((char) c);
+            }
+        }
+        if ((c == -1)) {
+            return null;
+        }
+        return stringBuilder.toString();
+    }
 }

@@ -9,7 +9,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static afl.Kelinci.STATUS_COMM_ERROR;
-import static afl.Kelinci.result;
 
 /**
  * @author Derrick Lockwood
@@ -20,18 +19,23 @@ public class FuzzRequest {
     public static final byte LOCAL_MODE = 1;
     private static final Logger LOGGER = Logger.getLogger(FuzzRequest.class.getName());
 
-    public final Socket clientSocket;
-    public final String fileRequest;
-    private final File tmpfile;
-
     static {
         LOGGER.setParent(Logger.getLogger(Kelinci.class.getName()));
     }
+
+    public final Socket clientSocket;
+    public final String fileRequest;
+    private final File tmpfile;
+    private int result;
 
     public FuzzRequest(File tmpFile, Socket clientSocket) throws IOException {
         this.clientSocket = clientSocket;
         fileRequest = getFileRequestFromServer(clientSocket);
         this.tmpfile = tmpFile;
+    }
+
+    public int getResult() {
+        return result;
     }
 
     private String getFileRequestFromServer(Socket request) throws IOException {

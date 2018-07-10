@@ -1,16 +1,16 @@
 package method;
 
 import mock.MockClass;
-import mock.SubMockClass;
+import mock.MockCreator;
 import mock.answers.*;
 import mock.answers.readers.ByteReader;
+import mock.answers.readers.ByteReaderList;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.objenesis.instantiator.ObjectInstantiator;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -56,8 +56,41 @@ public class MethodCallParser {
         }
     }
 
+    private static String arrayName(String name) {
+        switch (name) {
+            case "boolean":
+                return "Z";
+            case "byte":
+                return "B";
+            case "char":
+                return "C";
+            case "short":
+                return "S";
+            case "int":
+                return "I";
+            case "long":
+                return "L";
+            case "float":
+                return "F";
+            case "double":
+                return "D";
+            default:
+                return name;
+        }
+    }
+
+    private static Class<?> getClassForString(String name, String multiName) throws ClassNotFoundException {
+        if (multiName != null) {
+            switch (multiName) {
+                case "array":
+                    return Class.forName("[" + arrayName(name));
+            }
+        }
+        return getClassForString(name);
+    }
+
     private static Answer parseConstraint(MethodCall methodCall, JSONObject constraint,
-            List<ByteReader> byteReaders) throws ClassNotFoundException, NoSuchMethodException, NoSuchFieldException {
+            ByteReaderList byteReaders) throws ClassNotFoundException, NoSuchMethodException, NoSuchFieldException {
         if (constraint == null) {
             ByteReader byteReader = ByteReader.createDefault();
             byteReaders.add(byteReader);
@@ -99,7 +132,7 @@ public class MethodCallParser {
                 break;
             case "param":
                 int index = (int) constraint.get("index");
-                answer = (ParameterAnswer) parameters -> parameters[index];
+                answer = new ParameterIndexAnswer(index);
                 break;
             case "void":
                 answer = new EmptyAnswer();
@@ -123,8 +156,8 @@ public class MethodCallParser {
         return answer;
     }
 
-    private static void parseMockMethod(SubMockClass subMockClass, MethodCall methodCall, JSONObject method,
-            List<ByteReader> byteReaders) throws ClassNotFoundException, NoSuchMethodException, NoSuchFieldException {
+    private static void parseMockMethod(MockClass mockClass, MethodCall methodCall, JSONObject method,
+            ByteReaderList byteReaders) throws ClassNotFoundException, NoSuchMethodException, NoSuchFieldException {
         String name = (String) method.get("name");
         LOGGER.log(VERBOSITY, "Started Parsing Method " + name);
         Class<?>[] parameterClassesArray;
@@ -137,50 +170,54 @@ public class MethodCallParser {
         } else {
             parameterClassesArray = new Class[0];
         }
-        subMockClass.applyMethod(parseConstraint(methodCall, (JSONObject) method.get("constraint"), byteReaders), name,
+        mockClass.applyMethod(parseConstraint(methodCall, (JSONObject) method.get("constraint"), byteReaders), name,
                 parameterClassesArray);
         LOGGER.log(VERBOSITY, "Completed Parsing Method " + name + " | " + Arrays.toString(parameterClassesArray));
     }
 
-    private static void parseMockClass(SubMockClass subMockClass, MethodCall methodCall, JSONObject mockClass,
-            List<ByteReader> byteReaders) throws ClassNotFoundException, NoSuchMethodException, NoSuchFieldException {
-        LOGGER.log(VERBOSITY, "Started Parsing of Mock Class " + subMockClass.getOldType().getName());
-        JSONArray jsonArray = (JSONArray) mockClass.get("methods");
-        String name = (String) mockClass.get("name");
+    private static void parseMockClass(MockClass mockClass, MethodCall methodCall, JSONObject mockClassObject,
+            ByteReaderList byteReaders) throws ClassNotFoundException, NoSuchMethodException, NoSuchFieldException {
+        LOGGER.log(VERBOSITY, "Started Parsing of Mock Class " + mockClass.getOldType().getName());
+        JSONArray jsonArray = (JSONArray) mockClassObject.get("methods");
+        String name = (String) mockClassObject.get("name");
         if (name != null) {
-            subMockClass.setName(name);
+            mockClass.setName(name);
         }
         if (jsonArray != null) {
             for (Object aJsonArray : jsonArray) {
                 JSONObject method = (JSONObject) aJsonArray;
-                parseMockMethod(subMockClass, methodCall, method, byteReaders);
+                parseMockMethod(mockClass, methodCall, method, byteReaders);
             }
         } else {
             LOGGER.log(Level.CONFIG,
-                    "No definition of methods supplied to class " + subMockClass.getOldType().getName());
+                    "No definition of methods supplied to class " + mockClass.getOldType().getName());
         }
 
-        jsonArray = (JSONArray) mockClass.get("instance_variables");
+        jsonArray = (JSONArray) mockClassObject.get("instance_variables");
         if (jsonArray != null) {
-            parseInstanceVariables(subMockClass, methodCall, jsonArray, byteReaders);
+            parseInstanceVariables(mockClass, methodCall, jsonArray, byteReaders);
         }
-        LOGGER.log(VERBOSITY, "Completed Parsing of Mock Class " + subMockClass.getOldType().getName());
+        LOGGER.log(VERBOSITY, "Completed Parsing of Mock Class " + mockClass.getOldType().getName());
     }
 
-    private static SubMockClass parseMockClass(Class<?> type, MethodCall methodCall, JSONObject mockClass,
-            List<ByteReader> byteReaders) throws NoSuchMethodException, ClassNotFoundException, NoSuchFieldException {
-        SubMockClass subMockClass = methodCall.createStoredMock(type);
-        parseMockClass(subMockClass, methodCall, mockClass, byteReaders);
+    private static MockCreator parseMockClass(AttributeClass attributeClass, MethodCall methodCall,
+            JSONObject mockClass,
+            ByteReaderList byteReaders) throws NoSuchMethodException, ClassNotFoundException, NoSuchFieldException {
+        MockCreator subMockClass = methodCall.createStoredMock(attributeClass);
+        if (subMockClass instanceof MockClass) {
+            parseMockClass((MockClass) subMockClass, methodCall, mockClass, byteReaders);
+        }
         return subMockClass;
     }
 
-    private static SubMockClass parseMockClass(MethodCall methodCall, JSONObject mockClass,
-            List<ByteReader> byteReaders) throws ClassNotFoundException, NoSuchMethodException, NoSuchFieldException {
-        return parseMockClass(Class.forName((String) mockClass.get("class")), methodCall, mockClass, byteReaders);
+    private static MockCreator parseMockClass(MethodCall methodCall, JSONObject mockClass,
+            ByteReaderList byteReaders) throws ClassNotFoundException, NoSuchMethodException, NoSuchFieldException {
+        return parseMockClass(AttributeClass.createAttributeClass(mockClass), methodCall,
+                mockClass, byteReaders);
     }
 
     private static void parseInstanceVariable(MockClass fieldClass, MethodCall methodCall, String name,
-            JSONObject instanceVariable, List<ByteReader> byteReaders) throws
+            JSONObject instanceVariable, ByteReaderList byteReaders) throws
             NoSuchMethodException,
             ClassNotFoundException,
             NoSuchFieldException {
@@ -205,7 +242,7 @@ public class MethodCallParser {
     }
 
     private static void parseInstanceVariables(MockClass fieldClass, MethodCall methodCall, JSONArray instanceVariables,
-            List<ByteReader> byteReaders) throws NoSuchMethodException, NoSuchFieldException, ClassNotFoundException {
+            ByteReaderList byteReaders) throws NoSuchMethodException, NoSuchFieldException, ClassNotFoundException {
         if (instanceVariables == null) {
             return;
         }
@@ -222,21 +259,21 @@ public class MethodCallParser {
     }
 
     private static void parseParameter(MethodCall methodCall, int index, JSONObject parameter,
-            List<ByteReader> byteReaders) throws ClassNotFoundException, NoSuchMethodException, NoSuchFieldException {
-        if (parameter.containsKey("constraint")) { //i.e. primitive
+            ByteReaderList byteReaders) throws ClassNotFoundException, NoSuchMethodException, NoSuchFieldException {
+        AttributeClass attributeClass = methodCall.getParameterAttributeClass(index);
+        LOGGER.log(VERBOSITY, "Started Parsing of Parameter " + attributeClass.getAttribute(AttributeClass.TYPE));
+        if (attributeClass.getAttribute(AttributeClass.IS_PRIMITIVE)) {
             JSONObject constraint = (JSONObject) parameter.get("constraint");
             methodCall.createParameterMock(index, parseConstraint(methodCall, constraint, byteReaders));
-        } else if (parameter.containsKey("methods")) { //i.e. object
+            LOGGER.log(VERBOSITY, "Parsed Primitive Parameter");
+        } else {
             parseMockClass(methodCall.createParameterMock(index), methodCall, parameter, byteReaders);
-        } else { //i.e. primitive no constraint
-            ByteReader byteReader = ByteReader.createDefault();
-            byteReaders.add(byteReader);
-            methodCall.createParameterMock(index, byteReader);
         }
+        LOGGER.log(VERBOSITY, "Completed Parsing of Parameter " + attributeClass.getAttribute(AttributeClass.TYPE));
     }
 
     private static void parseParameters(MethodCall methodCall, JSONArray parameters,
-            List<ByteReader> byteReaders) throws NoSuchMethodException, ClassNotFoundException, NoSuchFieldException {
+            ByteReaderList byteReaders) throws NoSuchMethodException, ClassNotFoundException, NoSuchFieldException {
         if (parameters == null) {
             return;
         }
@@ -251,21 +288,30 @@ public class MethodCallParser {
     private static MethodCall createMethodCall(JSONObject methodCallObject) throws
             ClassNotFoundException,
             NoSuchMethodException {
-        checkKeys(methodCallObject, "class", "method", "parameters");
+        checkKeys(methodCallObject, "class", "method");
+        LOGGER.log(VERBOSITY, "Started Creating Method Call");
         Class<?> mockClass = getClassForString((String) methodCallObject.get("class"));
         String methodName = (String) methodCallObject.get("method");
         JSONArray parameters = (JSONArray) methodCallObject.get("parameters");
-        Class<?>[] parameterClasses = new Class[parameters.size()];
-        for (int i = 0; i < parameterClasses.length; i++) {
-            JSONObject object = (JSONObject) parameters.get(i);
-            parameterClasses[i] = getClassForString((String) object.get("class"));
+        AttributeClass[] parameterTypes;
+        if (parameters != null) {
+            parameterTypes = new AttributeClass[parameters.size()];
+            for (int i = 0; i < parameterTypes.length; i++) {
+                JSONObject object = (JSONObject) parameters.get(i);
+                parameterTypes[i] = AttributeClass.createAttributeClass(object);
+            }
+        } else {
+            parameterTypes = new AttributeClass[0];
         }
+
         LOGGER.log(VERBOSITY,
                 "Instrumented Class Path: " + mockClass.getProtectionDomain().getCodeSource().getLocation().getPath());
-        return MethodCall.createMethodCall(mockClass, methodName, parameterClasses);
+        MethodCall methodCall = MethodCall.createMethodCall(mockClass, methodName, parameterTypes);
+        LOGGER.log(VERBOSITY, "Finished Creating Method Call");
+        return methodCall;
     }
 
-    public static MethodCall setupMethodCall(Logger logger, JSONObject definition, List<ByteReader> byteReaders) throws
+    public static MethodCall setupMethodCall(Logger logger, JSONObject definition, ByteReaderList byteReaders) throws
             NoSuchMethodException,
             ClassNotFoundException,
             NoSuchFieldException {

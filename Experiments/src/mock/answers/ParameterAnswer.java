@@ -30,4 +30,5 @@ public interface ParameterAnswer extends Answer {
     default Object handle(Object proxy, Object[] args, Callable<Object> originalMethod, Method method) {
         return getObject(args);
     }
+
 }

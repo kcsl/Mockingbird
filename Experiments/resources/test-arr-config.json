@@ -1,0 +1,28 @@
+{
+  "definition": {
+    "class": "test.TestClass",
+    "method": "testListObj",
+    "parameters": [
+      {
+        "shape":[
+          10
+        ],
+        "class":"java.util.ArrayList<test.Foo>",
+        "methods": [
+          {
+            "name":"getA",
+            "constraint": {
+              "type":"range",
+              "from":0,
+              "to":2000
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "config": {
+    "timeout":10000,
+    "console_log_level":"CONFIG"
+  }
+}

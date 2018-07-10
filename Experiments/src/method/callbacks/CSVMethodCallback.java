@@ -3,6 +3,7 @@ package method.callbacks;
 import method.MethodData;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
@@ -16,6 +17,12 @@ public class CSVMethodCallback implements MethodCallback {
     private final BufferedWriter bufferedWriter;
     private final boolean flushImmediately;
     private CSVRule csvRule;
+
+    private CSVMethodCallback(File file, CSVRule csvRule, boolean flushImmediately) throws IOException {
+        bufferedWriter = new BufferedWriter(new FileWriter(file));
+        this.csvRule = csvRule;
+        this.flushImmediately = flushImmediately;
+    }
 
     private CSVMethodCallback(String filename, CSVRule csvRule, boolean flushImmediately) throws IOException {
         bufferedWriter = new BufferedWriter(new FileWriter(filename));
@@ -33,6 +40,10 @@ public class CSVMethodCallback implements MethodCallback {
 
     public static MethodCallback create(String fileName) throws IOException {
         return create(fileName, null);
+    }
+
+    public static MethodCallback create(File file) throws IOException {
+        return new CSVMethodCallback(file, null, true);
     }
 
     @Override

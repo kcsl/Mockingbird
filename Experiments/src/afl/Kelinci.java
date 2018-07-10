@@ -1,26 +1,22 @@
 package afl;
 
 import edu.cmu.sv.kelinci.Mem;
-import instrumentor.Options;
+import instrumentor.InstrumentLoader;
 import io.AFLConfig;
 import io.MethodCallFormatter;
 import method.MethodCall;
 import method.MethodCallParser;
 import method.MethodData;
+import method.callbacks.CSVMethodCallback;
 import method.callbacks.LogMethodCallback;
+import method.callbacks.MethodCallback;
 import mock.answers.readers.ByteReaderList;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import sun.reflect.Reflection;
 
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
 import java.net.SocketException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -36,23 +32,21 @@ import java.util.logging.Logger;
  */
 public class Kelinci {
 
-    public static final byte STATUS_SUCCESS = 0;
-    public static final byte STATUS_TIMEOUT = 1;
-    public static final byte STATUS_CRASH = 2;
-    public static final byte STATUS_QUEUE_FULL = 3;
-    public static final byte STATUS_COMM_ERROR = 4;
     public static final byte STATUS_DONE = 5;
-
-    public static final String DEFAULT_FORMAT = "[%4$s:%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS|%2$s] %5$s%6$s%n";
-    public static final int DEFAULT_PORT = 7007;
-    public static final String DEFAULT_RUN_ONCE = null;
+    static final byte STATUS_QUEUE_FULL = 3;
+    static final byte STATUS_COMM_ERROR = 4;
+    private static final byte STATUS_SUCCESS = 0;
+    private static final byte STATUS_TIMEOUT = 1;
+    private static final byte STATUS_CRASH = 2;
+    private static final String DEFAULT_FORMAT = "[%4$s:%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS|%2$s] %5$s%6$s%n";
+    private static final int DEFAULT_PORT = 7007;
+    private static final String DEFAULT_RUN_ONCE = null;
+    private static boolean isRunning = true;
     private static AFLConfig CONFIG;
     private static Logger LOGGER = Logger.getLogger(Kelinci.class.getName());
     private static MethodCall methodCall;
     private static ByteReaderList byteReaderList;
     private static AFLServer aflServer;
-
-    public static byte result;
 
     /**
      * Method to run in a thread handling one request from the queue at a time.
@@ -64,16 +58,18 @@ public class Kelinci {
         LOGGER.log(Level.INFO, "Fuzzer runs handler thread started.");
         ExecutorService service = getExecutorService();
 
-        while (true) {
+        while (isRunning) {
             try {
                 FuzzRequest request = aflServer.poll();
                 if (request != null) {
+                    int result = request.getResult();
                     Mem.clear();
                     if (request.fileRequest != null) {
                         //Set up callbacks to read from file
+                        LOGGER.log(Level.INFO, "Starting fuzz request");
                         OutputStream os = request.clientSocket.getOutputStream();
                         if (result != STATUS_COMM_ERROR) {
-                            runMethodCall(service, new File(request.fileRequest));
+                            result = runMethodCall(service, new File(request.fileRequest));
                         }
                         LOGGER.log(Level.INFO, "Result: " + result);
                         LOGGER.log(Level.FINE, Mem.print());
@@ -106,7 +102,7 @@ public class Kelinci {
         }
     }
 
-    private static void runMethodCall(ExecutorService service, File file) throws IOException {
+    private static int runMethodCall(ExecutorService service, File file) throws IOException {
         // run app with input loads byte readers with input file
         InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
         byteReaderList.setInputStream(inputStream);
@@ -115,19 +111,19 @@ public class Kelinci {
         Exception e = methodData.getReturnException();
         if (e instanceof TimeoutException) {
             LOGGER.log(Level.WARNING, "Time-out!");
-            result = STATUS_TIMEOUT;
+            return STATUS_TIMEOUT;
         } else if (e != null) {
-            if (e.getCause() instanceof RuntimeException) {
-                LOGGER.log(Level.WARNING, "RuntimeException thrown!");
+            if (e instanceof RuntimeException) {
+                LOGGER.log(Level.WARNING, "RuntimeException thrown!", e);
             } else if (e.getCause() instanceof Error) {
-                LOGGER.log(Level.WARNING, "Error thrown!");
+                LOGGER.log(Level.WARNING, "Error thrown!", e);
             } else {
-                LOGGER.log(Level.WARNING, "Uncaught throwable!");
+                LOGGER.log(Level.WARNING, "Uncaught throwable!", e);
             }
-            result = STATUS_CRASH;
+            return STATUS_CRASH;
         } else {
             LOGGER.log(Level.INFO, "Finished!");
-            result = STATUS_SUCCESS;
+            return STATUS_SUCCESS;
         }
     }
 
@@ -145,14 +141,38 @@ public class Kelinci {
         });
     }
 
-    public static void main(String args[]) throws InterruptedException{
+    private static void createRunAFLFile() throws IOException {
+        File file = new File("./run_afl.sh");
+        if (file.exists()) {
+            if (!file.delete()) {
+                throw new RuntimeException("Can't delete old run_afl.sh file");
+            }
+            if (!file.createNewFile()) {
+                throw new RuntimeException("Run AFL file not created");
+            }
+            file.deleteOnExit();
+        }
+        OutputStream outputStream = new FileOutputStream(file);
+        String s = "#!/bin/bash\n" +
+                "\n" +
+                "afl-fuzz -t " + (CONFIG.timeout + 1000) + " -i in_dir -o out_dir ./fuzzerside/interface @@";
+        outputStream.write(s.getBytes());
+        outputStream.flush();
+        outputStream.close();
+        if (!file.setExecutable(true, false)) {
+            throw new RuntimeException("Can't set run AFL file executable");
+        }
+    }
+
+    public static void main(String args[]) throws InterruptedException {
 
         /*
          * Parse command line parameters: load the main class,
          * grab -port option and store command-line parameters for fuzzing runs.
          */
         if (args.length < 2) {
-            System.err.println("Usage: java afl.Kelinci [-i <input dir / jar>] [-p N] [-r Path] <instrumented_dir> <config>");
+            System.err.println(
+                    "Usage: java afl.Kelinci [-i <input dir / jar>] [-p N] [-r Path] <instrumented_dir> <config>");
             return;
         }
 
@@ -192,10 +212,11 @@ public class Kelinci {
         }
         File instrumentedDir = new File(args[curArg]);
         curArg++;
-        if (!InstrumentLoader.loadInstrumentedClasses(inputSource, instrumentedDir)){
+
+        //Loads instrumented classes to classpath and creates instrumented classes if necessary
+        if (!InstrumentLoader.loadInstrumentedClasses(inputSource, instrumentedDir)) {
             return;
         }
-
 
         //Setup the AFLServer to get requests from interface program
         aflServer = new AFLServer(port);
@@ -226,7 +247,7 @@ public class Kelinci {
             }
             if (jsonObject.containsKey("definition")) {
                 methodCall = MethodCallParser.setupMethodCall(LOGGER, (JSONObject) jsonObject.get("definition"),
-                        byteReaderList.getByteReaders());
+                        byteReaderList);
             }
         } catch (ClassNotFoundException e) {
             LOGGER.log(Level.SEVERE, "Error can't start the fuzzer because class " + e.getMessage() + " not found");
@@ -253,9 +274,17 @@ public class Kelinci {
 
         if (methodCall == null)
             return;
-
-        methodCall.linkMethodCallback(LogMethodCallback.create(LOGGER, true).link(byteReaderList));
+        MethodCallback methodCallback = LogMethodCallback.create(LOGGER, true).link(byteReaderList);
+        if (CONFIG.logToCSV != null) {
+            try {
+                methodCallback = methodCallback.link(CSVMethodCallback.create(CONFIG.logToCSV));
+            } catch (IOException e) {
+                LOGGER.log(Level.WARNING, e, () -> "Couldn't link CSVMethodCallback continuing without it");
+            }
+        }
+        methodCall.linkMethodCallback(methodCallback);
         if (runOnce != null) {
+            int exitStatus = 0;
             ExecutorService service = getExecutorService();
             File file = new File(runOnce);
             if (file.isDirectory()) {
@@ -275,7 +304,7 @@ public class Kelinci {
             } else {
                 LOGGER.log(Level.INFO, "Running Once on file " + file.getAbsolutePath());
                 try {
-                    runMethodCall(service, file);
+                    exitStatus = runMethodCall(service, file);
                 } catch (IOException e) {
                     LOGGER.log(Level.SEVERE, "Error reading from file " + file.getAbsolutePath());
                     e.printStackTrace();
@@ -285,6 +314,14 @@ public class Kelinci {
                 }
             }
             LOGGER.log(Level.INFO, "Method Call Complete");
+            System.exit(exitStatus);
+            return;
+        }
+
+        try {
+            createRunAFLFile();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Can't create run_afl.sh file ", e);
             return;
         }
 
@@ -300,10 +337,22 @@ public class Kelinci {
 
         server.start();
         fuzzerThread.start();
-        while (fuzzerThread.isAlive()) {
-            Thread.sleep(500);
+        try {
+            System.in.read();
+            aflServer.stop(false);
+            isRunning = false;
+            while (server.isAlive()) {
+                Thread.sleep(500);
+            }
+            while (fuzzerThread.isAlive()) {
+                Thread.sleep(500);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        fuzzerThread.interrupt();
-        System.exit(0);
+        File file = new File("./run_afl.sh");
+        if (!file.delete()) {
+            LOGGER.log(Level.WARNING, "Couldn't Delete run_afl.sh file");
+        }
     }
 }

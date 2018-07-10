@@ -27,4 +27,9 @@ public class DefaultByteReader extends ByteReader {
     Object postProcessing(Class<?> returnType, Object object) {
         return object;
     }
+
+    @Override
+    ByteReader duplicateByteReader() {
+        return new DefaultByteReader();
+    }
 }

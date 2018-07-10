@@ -1,7 +1,5 @@
 package harness;
 
-import java.io.IOException;
-
 /**
  * @author Derrick Lockwood
  * @created 6/8/18.

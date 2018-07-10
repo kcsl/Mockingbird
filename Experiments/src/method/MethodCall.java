@@ -1,21 +1,20 @@
 package method;
 
-import method.callbacks.AutoMethodCallback;
-import method.callbacks.IterationMethodCallback;
+import method.callbacks.EmptyMethodCallback;
 import method.callbacks.MethodCallback;
 import mock.MockCreator;
 import mock.PrimitiveMockCreator;
 import mock.SubMockClass;
 import mock.TargetedMockBuilder;
 import mock.answers.Answer;
-import mock.answers.auto.AutoIncrementor;
+import mock.answers.NotStubbedAnswer;
 import org.objenesis.instantiator.ObjectInstantiator;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryType;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.security.PrivilegedAction;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -39,6 +38,7 @@ public class MethodCall {
     private final List<MockCreator> normalObjects;
     private final SubMockClass methodMockClass;
     private final Method method;
+    private final AttributeClass[] parameterDefinitions;
     private MemoryPoolMXBean edenSpace;
     private MemoryPoolMXBean survivorSpace;
     private MethodCallback methodCallback;
@@ -46,8 +46,9 @@ public class MethodCall {
     private Object[] mockParameters;
     private boolean isLoaded;
 
-    private MethodCall(Method method, MethodCallback methodCallback) {
+    private MethodCall(AttributeClass[] parameterDefinitions, Method method, MethodCallback methodCallback) {
         this.method = method;
+        this.parameterDefinitions = parameterDefinitions;
         builder = new TargetedMockBuilder();
         methodMockClass = builder.createSubclassRealMethods(method.getDeclaringClass());
         parameters = new MockCreator[method.getParameterCount()];
@@ -70,37 +71,35 @@ public class MethodCall {
     }
 
     /**
-     * See {@link method.MethodCall#createMethodCall(int, Class, String, Class[]) here}.
+     * Creates a mocked method call that is determined by {@code methodName} and {@code parameterTypes} which is then used to
+     * supply functionality to the mocked method. The method callback is used to control the flow of the method to be run.
      * <p>
-     * Sets the method to mock to only run once
+     * Note: Everything is createObject the form of a callback and thus should only have to create objects once if not a primitive unless
+     * otherwise specified
      *
+     * @param methodCallback callback to send back the method data and control how many times the method is run
      * @param type           the class with the method to mock
      * @param methodName     the method to mock name
      * @param parameterTypes the parameter types
      * @return Method call object to add parameters and instance variables and run the method
      * @throws NoSuchMethodException if no such method is found createObject {@code type}
      */
-    public static MethodCall createMethodCall(Class<?> type, String methodName, Class<?>... parameterTypes) throws
-            NoSuchMethodException {
-        return createMethodCall(1, type, methodName, parameterTypes);
+    public static MethodCall createMethodCall(
+            MethodCallback methodCallback,
+            Class<?> type,
+            String methodName,
+            AttributeClass... parameterTypes) throws NoSuchMethodException {
+        Class<?>[] classes = new Class[parameterTypes.length];
+        for (int i = 0; i < parameterTypes.length; i++) {
+            classes[i] = parameterTypes[i].getRealClass();
+        }
+        return new MethodCall(parameterTypes, type.getDeclaredMethod(methodName, classes), methodCallback);
     }
 
-    /**
-     * See {@link method.MethodCall#createMethodCall(MethodCallback, Class, String, Class[]) here}.
-     * <p>
-     * Sets the {@code methodCallback} to be an iterative method callback based on the number of {@code times}
-     *
-     * @param times          number of times to run the method to mock
-     * @param type           the class with the method to mock
-     * @param methodName     the method to mock name
-     * @param parameterTypes the parameter types
-     * @return Method call object to add parameters and instance variables and run the method
-     * @throws NoSuchMethodException if no such method is found createObject {@code type}
-     */
-    public static MethodCall createMethodCall(int times, Class<?> type, String methodName,
-            Class<?>... parameterTypes) throws
-            NoSuchMethodException {
-        return createMethodCall(IterationMethodCallback.create(times), type, methodName, parameterTypes);
+    public static MethodCall createMethodCall(Class<?> type,
+            String methodName,
+            AttributeClass... parameterTypes) throws NoSuchMethodException {
+        return createMethodCall(EmptyMethodCallback.create(), type, methodName, parameterTypes);
     }
 
     /**
@@ -122,7 +121,39 @@ public class MethodCall {
             Class<?> type,
             String methodName,
             Class<?>... parameterTypes) throws NoSuchMethodException {
-        return new MethodCall(type.getDeclaredMethod(methodName, parameterTypes), methodCallback);
+        AttributeClass[] attributeClasses = new AttributeClass[parameterTypes.length];
+        for (int i = 0; i < attributeClasses.length; i++) {
+            attributeClasses[i] = new AttributeClass(parameterTypes[i]);
+        }
+        return new MethodCall(attributeClasses, type.getDeclaredMethod(methodName, parameterTypes), methodCallback);
+    }
+
+
+    public static MethodCall createMethodCall(
+            MethodCallback methodCallback,
+            Class<?> type,
+            String methodName,
+            String... parameterTypes) throws NoSuchMethodException, ClassNotFoundException {
+        AttributeClass[] attributeClasses = parseParameterTypes(parameterTypes);
+        Class<?>[] classes = new Class[attributeClasses.length];
+        for (int i = 0; i < attributeClasses.length; i++) {
+            classes[i] = attributeClasses[i].getRealClass();
+        }
+        return new MethodCall(attributeClasses, type.getDeclaredMethod(methodName, classes), methodCallback);
+    }
+
+    public static MethodCall createMethodCall(Class<?> type,
+            String methodName,
+            String... parameterTypes) throws NoSuchMethodException, ClassNotFoundException {
+        return createMethodCall(EmptyMethodCallback.create(), type, methodName, parameterTypes);
+    }
+
+    private static AttributeClass[] parseParameterTypes(String... parameterTypes) throws ClassNotFoundException {
+        AttributeClass[] arr = new AttributeClass[parameterTypes.length];
+        for (int i = 0; i < parameterTypes.length; i++) {
+            arr[i] = AttributeClass.createAttributeClass(parameterTypes[i]);
+        }
+        return arr;
     }
 
     SubMockClass getMethodMockClass() {
@@ -165,7 +196,7 @@ public class MethodCall {
             //TODO: Soft ignore?
             return null;
         }
-        MockCreator parameterMock = createMockCreator(method.getParameterTypes()[index], defaultAnswer);
+        MockCreator parameterMock = createMockCreator(parameterDefinitions[index], defaultAnswer);
         parameters[index] = parameterMock;
         return parameterMock instanceof SubMockClass ? (SubMockClass) parameterMock : null;
     }
@@ -178,41 +209,32 @@ public class MethodCall {
      * @return A {@link mock.SubMockClass SubMockClass} if the class of the parameter is not a primitive, else {@code null}.
      */
     public SubMockClass createParameterMock(int index) {
-        return createParameterMock(index, null);
+        return createParameterMock(index, NotStubbedAnswer.newInstance());
     }
 
-    /**
-     * Fills createObject all parameters with the default answer
-     *
-     * @param defaultAnswer the default answer by which any method that is called createObject {@code parameters[index].type} is run.
-     *                      This is also the answer that is supplied to the primitive variables when {@code .store()}
-     *                      is run on them which just returns the value of the primitive variable.
-     */
-    public void fillParameters(Answer defaultAnswer) {
-        Class<?>[] types = method.getParameterTypes();
-        for (int i = 0; i < parameters.length; i++) {
-            parameters[i] = createMockCreator(types[i], defaultAnswer);
+    public AttributeClass getParameterAttributeClass(int index) {
+        if (index < 0 || index >= parameters.length) {
+            //TODO: Soft ignore?
+            return null;
         }
+        return parameterDefinitions[index];
     }
 
-    /**
-     * Tries to fill createObject all method parameters with auto classes that can act like fuzzing without using a fuzzer
-     */
-    public void autoFillParameters() {
-        AutoMethodCallback autoMethodCallback = AutoMethodCallback.create();
-        methodCallback = methodCallback.link(autoMethodCallback);
-        Class<?>[] types = method.getParameterTypes();
-        for (int i = 0; i < parameters.length; i++) {
-            AutoIncrementor autoIncrementor = AutoIncrementor.createIncrementor();
-            autoMethodCallback.add(autoIncrementor);
-            parameters[i] = createMockCreator(types[i], autoIncrementor);
-        }
-    }
-
-    private MockCreator createMockCreator(Class<?> type, Answer answer) {
-        MockCreator mockCreator = PrimitiveMockCreator.create(builder, type, answer);
-        if (mockCreator == null) {
-            return builder.createSubclass(type, answer);
+    private MockCreator createMockCreator(AttributeClass attributeClass, Answer answer) {
+        MockCreator mockCreator;
+        if (attributeClass.getMockClass().isPrimitive() || attributeClass.getMockClass().isAssignableFrom(
+                String.class)) {
+            if (attributeClass.getAttribute(AttributeClass.IS_ARRAY, false) || attributeClass.getAttribute(
+                    AttributeClass.IS_LIST, false)) {
+                mockCreator = PrimitiveMockCreator.create(builder, attributeClass, answer);
+            } else {
+                mockCreator = PrimitiveMockCreator.create(builder, attributeClass.getMockClass(), answer);
+            }
+        } else if (attributeClass.getAttribute(AttributeClass.IS_ARRAY, false) || attributeClass.getAttribute(
+                AttributeClass.IS_LIST, false)) {
+            mockCreator = builder.createMultipleMockClass(attributeClass);
+        } else {
+            mockCreator = builder.createSubclass(attributeClass.getMockClass());
         }
         return mockCreator;
     }
@@ -229,9 +251,10 @@ public class MethodCall {
      * @throws NoSuchFieldException if the field is not found
      */
     public SubMockClass createInstanceMock(String instanceVariableName, Answer defaultAnswer) throws
-            NoSuchFieldException {
+            NoSuchFieldException, ClassNotFoundException {
         Class<?> instanceVariableClass = method.getDeclaringClass().getDeclaredField(instanceVariableName).getType();
-        MockCreator instanceMock = createMockCreator(instanceVariableClass, defaultAnswer);
+        MockCreator instanceMock = createMockCreator(
+                AttributeClass.createAttributeClass(instanceVariableClass.getName()), defaultAnswer);
         if (instanceMock.isPrimitive()) {
             primitiveInstanceVariables.add(instanceVariableName);
         }
@@ -246,20 +269,20 @@ public class MethodCall {
      * @return A {@link mock.SubMockClass SubMockClass} if the class of the parameter is not a primitive, else {@code null}.
      * @throws NoSuchFieldException if the field is not found
      */
-    public SubMockClass createInstanceMock(String instanceVariableName) throws NoSuchFieldException {
+    public SubMockClass createInstanceMock(String instanceVariableName) throws
+            NoSuchFieldException,
+            ClassNotFoundException {
         return createInstanceMock(instanceVariableName, null);
     }
 
-    public SubMockClass createStoredMock(Class<?> type, Answer defaultAnswer) {
-        SubMockClass subMockClass = builder.createSubclass(type, defaultAnswer);
-        normalObjects.add(subMockClass);
-        return subMockClass;
+    public MockCreator createStoredMock(AttributeClass attributeClass) {
+        return createStoredMock(attributeClass, null);
     }
 
-    public SubMockClass createStoredMock(Class<?> type) {
-        SubMockClass subMockClass = builder.createSubclass(type, (Answer) null);
-        normalObjects.add(subMockClass);
-        return subMockClass;
+    public MockCreator createStoredMock(AttributeClass attributeClass, Answer defaultAnswer) {
+        MockCreator multipleMockCreator = createMockCreator(attributeClass, defaultAnswer);
+        normalObjects.add(multipleMockCreator);
+        return multipleMockCreator;
     }
 
     private void loadMethodRequirements(boolean resetEveryTime) {
@@ -330,7 +353,11 @@ public class MethodCall {
             try {
                 returnValue = method.invoke(mockObject, objects);
             } catch (Exception e) {
-                returnException = e;
+                if (e instanceof InvocationTargetException) {
+                    returnException = (Exception) e.getCause();
+                } else {
+                    returnException = e;
+                }
             }
             Duration duration = Duration.between(instant, Instant.now());
             long survivorSpaceMemory = survivorSpace.getUsage().getUsed();

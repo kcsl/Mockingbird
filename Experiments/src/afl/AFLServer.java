@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
@@ -22,12 +23,15 @@ public class AFLServer implements Runnable {
     private static final Logger LOGGER = Logger.getLogger(AFLServer.class.getName());
     private static final Queue<FuzzRequest> requestQueue = new ConcurrentLinkedQueue<>();
     private static final int maxQueue = 10;
-    private final File tmpfile;
-    private final int port;
 
     static {
         LOGGER.setParent(Logger.getLogger(Kelinci.class.getName()));
     }
+
+    private final File tmpfile;
+    private final int port;
+    private boolean isRunning = true;
+    private boolean completed = false;
 
     public AFLServer(int port) {
         this.port = port;
@@ -43,13 +47,35 @@ public class AFLServer implements Runnable {
         return requestQueue.poll();
     }
 
+    public void stop() {
+        stop(true);
+    }
+
+    public void stop(boolean block) {
+        isRunning = false;
+        if (block) {
+            while (!completed) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     @Override
     public void run() {
         try (ServerSocket ss = new ServerSocket(port)) {
             LOGGER.log(Level.INFO, "Server listening on port " + port);
-
-            while (true) {
-                Socket s = ss.accept();
+            ss.setSoTimeout(1000);
+            while (isRunning) {
+                Socket s;
+                try {
+                    s = ss.accept();
+                } catch (SocketTimeoutException e) {
+                    continue;
+                }
                 LOGGER.log(Level.INFO, "Connection established.");
 
                 boolean status = false;
@@ -76,6 +102,8 @@ public class AFLServer implements Runnable {
             LOGGER.log(Level.SEVERE, "Exception in request server");
             e.printStackTrace();
             System.exit(1);
+        } finally {
+            completed = true;
         }
     }
 }

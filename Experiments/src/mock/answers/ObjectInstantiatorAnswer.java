@@ -26,4 +26,9 @@ public class ObjectInstantiatorAnswer implements ReturnTypeAnswer {
         }
         return object;
     }
+
+    @Override
+    public Answer duplicate() {
+        return new ObjectInstantiatorAnswer(objectInstantiator);
+    }
 }

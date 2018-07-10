@@ -10,9 +10,9 @@ public interface MockCreator extends ObjectInstantiator<Object> {
 
     boolean isPrimitive();
 
-    void setName(String name);
-
     String getName();
+
+    void setName(String name);
 
     Class<?> getType();
 

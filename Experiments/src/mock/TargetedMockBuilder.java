@@ -1,5 +1,6 @@
 package mock;
 
+import method.AttributeClass;
 import mock.answers.Answer;
 import mock.answers.NotStubbedAnswer;
 import net.bytebuddy.ByteBuddy;
@@ -35,16 +36,18 @@ public class TargetedMockBuilder {
         objenesis = new ObjenesisStd();
     }
 
-    static Implementation getSubAnswerImplementation(Answer subAnswer) {
-        return getImplementation(subAnswer, Answer.SUB_MATCHER);
-    }
-
     static Implementation getRedefineAnswerImplementation(Answer redefineAnswer) {
         return getImplementation(redefineAnswer, Answer.REDEFINE_MATCHER);
     }
 
-    private static Implementation getImplementation(Answer answer, ElementMatcher<? super MethodDescription> matcher) {
+    static Implementation getImplementation(Answer answer, ElementMatcher<? super MethodDescription> matcher) {
         return MethodDelegation.withDefaultConfiguration().filter(matcher).to(answer, Answer.class);
+    }
+
+    public MultipleMockClass createMultipleMockClass(AttributeClass attributeClass) {
+        return new MultipleMockClass(this,
+                byteBuddy.subclass(attributeClass.getMockClass(), ConstructorStrategy.Default.NO_CONSTRUCTORS),
+                attributeClass);
     }
 
     public SubMockClass createSubclass(Class<?> type) {
@@ -52,10 +55,12 @@ public class TargetedMockBuilder {
     }
 
     public SubMockClass createSubclass(Class<?> type, Answer defaultSubAnswer) {
-        if (defaultSubAnswer == null) {
-            return createSubclass(type, getSubAnswerImplementation(NotStubbedAnswer.newInstance()));
+        SubMockClass mockClass = new SubMockClass(this, type,
+                byteBuddy.subclass(type, ConstructorStrategy.Default.NO_CONSTRUCTORS));
+        if (defaultSubAnswer != null) {
+            mockClass.setDefaultImplementation(mockClass.getImplementation(defaultSubAnswer));
         }
-        return createSubclass(type, getSubAnswerImplementation(defaultSubAnswer));
+        return mockClass;
     }
 
     public SubMockClass createSubclass(Class<?> type, Implementation defaultImplementation) {

@@ -1,1 +1,58 @@
-fdsafkdjsladsafdksafldsj
+"definition": {
+    "class": "testclasses.TestClass",
+    "method": "testList",
+    "parameters": [
+      {
+        "shape":[
+          10
+        ],
+        "class":"java.util.ArrayList<Integer>",
+        "constraint": {
+          "type":"range",
+          "from":0,
+          "to":2000
+        }
+      }
+    ]
+  }
+
+"definition": {
+    "class": "testclasses.TestClass",
+    "method": "testArray",
+    "parameters": [
+      {
+        "shape":[
+          10
+        ],
+        "class":"int",
+        "constraint": {
+          "type":"range",
+          "from":0,
+          "to":2000
+        }
+      }
+    ]
+  }
+
+"definition": {
+    "class": "testclasses.TestClass",
+    "method": "testArrayObj",
+    "parameters": [
+      {
+        "shape":[
+          10
+        ],
+        "class":"testclasses.Foo",
+        "methods": [
+          {
+            "name":"getA",
+            "constraint": {
+              "type":"range",
+              "from":0,
+              "to":2000
+            }
+          }
+        ]
+      }
+    ]
+  }

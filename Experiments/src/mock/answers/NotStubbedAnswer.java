@@ -26,6 +26,11 @@ public class NotStubbedAnswer implements Answer {
     }
 
     @Override
+    public Answer duplicate() {
+        return new NotStubbedAnswer();
+    }
+
+    @Override
     public Object handle(Object proxy, Object[] args, Callable<Object> originalMethod, Method method) {
         return throwExcept(method);
     }

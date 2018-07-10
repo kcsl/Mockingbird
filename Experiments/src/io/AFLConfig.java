@@ -19,6 +19,7 @@ public class AFLConfig {
     private static final String LOG_FILE = "log_file";
     private static final String BYTE_READER_OUT_ONLY = "byte_reader_out_only";
     private static final String REFRESH_OBJECTS = "refresh_objects";
+    private static final String LOG_TO_CSV = "log_to_csv";
 
     private static Map<String, Object> DEFAULTS = new HashMap<>();
 
@@ -29,6 +30,7 @@ public class AFLConfig {
         DEFAULTS.put(LOG_FILE, null);
         DEFAULTS.put(BYTE_READER_OUT_ONLY, false);
         DEFAULTS.put(REFRESH_OBJECTS, false);
+        DEFAULTS.put(LOG_TO_CSV, null);
     }
 
     public final long timeout;
@@ -37,6 +39,7 @@ public class AFLConfig {
     public final Level consoleLevel;
     public final Level fileLevel;
     public final File logFile;
+    public final File logToCSV;
 
     public AFLConfig() {
         timeout = (long) DEFAULTS.get(TIMEOUT);
@@ -45,6 +48,7 @@ public class AFLConfig {
         logFile = (File) DEFAULTS.get(LOG_FILE);
         byteReaderOutOnly = (boolean) DEFAULTS.get(BYTE_READER_OUT_ONLY);
         refreshObjects = (boolean) DEFAULTS.get(REFRESH_OBJECTS);
+        logToCSV = (File) DEFAULTS.get(LOG_TO_CSV);
     }
 
     public AFLConfig(JSONObject config) {
@@ -52,8 +56,17 @@ public class AFLConfig {
         byteReaderOutOnly = containsOrDefault(config, BYTE_READER_OUT_ONLY);
         consoleLevel = getLevel(config, CONSOLE_LEVEL);
         fileLevel = getLevel(config, FILE_LEVEL);
-        logFile = containsOrDefault(config, LOG_FILE);
+        logFile = getFile(config, LOG_FILE);
         refreshObjects = containsOrDefault(config, REFRESH_OBJECTS);
+        logToCSV = getFile(config, LOG_TO_CSV);
+    }
+
+    private static File getFile(JSONObject config, String name) {
+        String filePath = containsOrDefault(config, name);
+        if (filePath != null) {
+            return new File(filePath);
+        }
+        return null;
     }
 
     private static Level getLevel(JSONObject config, String name) {

@@ -23,7 +23,7 @@ public abstract class MockClass implements MockCreator {
 
     final Class<?> oldType;
     private final TargetedMockBuilder targetedMockBuilder;
-    private DynamicType.Builder<?> builder;
+    DynamicType.Builder<?> builder;
     private Class<?> newType;
     private FieldSetInterceptor fieldSetInterceptor;
     private ObjectInstantiator<?> objectInstantiator;
@@ -37,7 +37,9 @@ public abstract class MockClass implements MockCreator {
         this.oldType = oldType;
         this.targetedMockBuilder = targetedMockBuilder;
         fieldSetInterceptor = new FieldSetInterceptor(oldType.getSimpleName());
-        this.builder = builder;
+        //TODO: handle toString better?
+        this.builder = builder.method(ElementMatchers.named("toString").and(ElementMatchers.takesArguments(0)))
+                .intercept(getImplementation(new FixedAnswer(oldType.toString())));
         this.newType = null;
         methodMap = new HashMap<>();
         name = null;
@@ -46,10 +48,6 @@ public abstract class MockClass implements MockCreator {
     public void setDefaultImplementation(Implementation implementation) {
         builder = builder.method(ElementMatchers.any())
                 .intercept(implementation);
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public Class<?> getOldType() {
@@ -67,6 +65,10 @@ public abstract class MockClass implements MockCreator {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Answer getAnswer(String methodName, Class<?>[] parameters) throws NoSuchMethodException {

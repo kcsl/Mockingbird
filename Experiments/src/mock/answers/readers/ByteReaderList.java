@@ -37,8 +37,13 @@ public class ByteReaderList implements MethodCallback {
                 "BYTEREADERS") || record.getLevel().intValue() >= Level.WARNING.intValue();
     }
 
-    public List<ByteReader> getByteReaders() {
-        return byteReaders;
+    public void add(ByteReader byteReader) {
+        byteReader.setByteReaderListLink(this);
+        this.byteReaders.add(byteReader);
+    }
+
+    public boolean remove(ByteReader byteReader) {
+        return byteReaders.remove(byteReader);
     }
 
     public void setInputStream(InputStream inputStream) throws IOException {

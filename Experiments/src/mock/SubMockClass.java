@@ -1,19 +1,16 @@
 package mock;
 
 import mock.answers.Answer;
-import mock.answers.EmptyAnswer;
-import mock.answers.FixedAnswer;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import net.bytebuddy.implementation.Implementation;
-
-import java.lang.reflect.Method;
 
 /**
  * @author Derrick Lockwood
  * @created 5/30/18.
  */
 public class SubMockClass extends MockClass {
+
     SubMockClass(TargetedMockBuilder targetedMockBuilder, Class<?> oldType, DynamicType.Builder<?> builder) {
         super(targetedMockBuilder, oldType, builder);
     }
@@ -26,7 +23,11 @@ public class SubMockClass extends MockClass {
 
     @Override
     Implementation getImplementation(Answer answer) {
-        return TargetedMockBuilder.getSubAnswerImplementation(answer);
+        return TargetedMockBuilder.getImplementation(answer, Answer.SUB_MATCHER);
+    }
+
+    public void createField(String name, Class<?> type, int modifiers) {
+        this.builder = builder.defineField(name, type, modifiers);
     }
 
 }

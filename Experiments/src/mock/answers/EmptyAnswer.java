@@ -19,6 +19,11 @@ public class EmptyAnswer implements Answer {
     }
 
     @Override
+    public Answer duplicate() {
+        return new EmptyAnswer();
+    }
+
+    @Override
     public Object handle(Object proxy, Object[] args, Callable<Object> originalMethod, Method method) {
         return null;
     }

@@ -89,6 +89,11 @@ public class StacColorSpaceExample {
         }
 
         @Override
+        public Answer duplicate() {
+            return new ColorSpaceSubAnswer();
+        }
+
+        @Override
         public Object handle(Object proxy, Object[] parameters, String name, Class<?> returnType) {
             return value;
         }
