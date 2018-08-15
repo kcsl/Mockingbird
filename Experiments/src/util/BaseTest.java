@@ -3,14 +3,14 @@ package util;
 
 import org.junit.Assert;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 
 /**
  * @author Derrick Lockwood
@@ -87,11 +87,35 @@ public class BaseTest {
     }
 
     protected void addString(File file, String s) {
+        addString(file, s, Charset.defaultCharset().name());
+    }
+
+    protected void addString(File file, String s, String encoding) {
         try {
+            System.out.println(Arrays.toString(s.getBytes(encoding)));
             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(file));
-            bufferedOutputStream.write(s.getBytes());
+            bufferedOutputStream.write(s.getBytes(encoding));
             bufferedOutputStream.flush();
             bufferedOutputStream.close();
+        } catch (IOException e) {
+            Assert.fail(e.getMessage());
+        }
+    }
+
+    protected void addBytes(File file, byte... bytes) {
+        try {
+            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(file));
+            bufferedOutputStream.write(bytes);
+            bufferedOutputStream.flush();
+            bufferedOutputStream.close();
+        } catch (IOException e) {
+            Assert.fail(e.getMessage());
+        }
+    }
+
+    protected void clearFile(File file) {
+        try {
+            new PrintWriter(file).close();
         } catch (IOException e) {
             Assert.fail(e.getMessage());
         }

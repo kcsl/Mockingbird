@@ -1,0 +1,41 @@
+{
+  "definition": {
+    "class": "com.bbn.TransponderDevice",
+    "method": "run",
+    "parameters": [],
+    "instance_variables": [
+      {
+        "name": "w",
+        "methods": [
+          {
+            "name":"getKnownTransponders",
+            "parameters": [],
+            "constraint": {
+              "type": "manual"
+            }
+          },
+          {
+            "name":"carPassed",
+            "parameters": [
+              "int"
+            ],
+            "constraint": {
+              "type": "manual"
+            }
+          }
+        ]
+      },
+      {
+        "name": "rand",
+        "constraint": {
+          "name": "RandomConstruct",
+          "type": "construct"
+        }
+      }
+    ]
+  },
+  "config": {
+    "timeout":10000,
+    "console_log_level":"CONFIG"
+  }
+}

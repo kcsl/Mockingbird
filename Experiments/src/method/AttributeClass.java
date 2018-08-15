@@ -27,6 +27,17 @@ public class AttributeClass {
     }
 
     public static AttributeClass createAttributeClass(String type) throws ClassNotFoundException {
+        return createAttributeClass(type, ClassLoader.getSystemClassLoader());
+    }
+
+    public static AttributeClass createAttributeClass(JSONObject jsonObject) throws ClassNotFoundException {
+        return createAttributeClass(jsonObject, ClassLoader.getSystemClassLoader());
+    }
+
+    public static AttributeClass createAttributeClass(String type, ClassLoader classLoader) throws ClassNotFoundException {
+        if (type == null) {
+            return null;
+        }
         AttributeClass attributeClass;
         if (type.contains("<")) {
             String[] splits = type.split("<");
@@ -34,51 +45,51 @@ public class AttributeClass {
             String after = splits[1];
             after = after.replace(">", "");
             String[] generics = after.split(",");
-            attributeClass = new AttributeClass(Class.forName(mockType));
+            attributeClass = new AttributeClass(Class.forName(mockType, true, classLoader));
             AttributeClass[] genericClasses = new AttributeClass[generics.length];
             for (int i = 0; i < generics.length; i++) {
-                genericClasses[i] = createAttributeClass(generics[i]);
+                genericClasses[i] = createAttributeClass(generics[i], classLoader);
             }
             attributeClass.setAttribute(GENERICS, genericClasses);
             attributeClass.setAttribute(TYPE, attributeClass.getMockClass());
         } else if (type.contains("[")) {
             String mockType = type.substring(type.lastIndexOf('[') + 1);
             int[] dimensions = new int[(int) type.chars().filter(ch -> ch == '[').count()];
-            attributeClass = new AttributeClass(getClassForString(fromArrayName(mockType)));
+            attributeClass = new AttributeClass(getClassForString(fromArrayName(mockType), classLoader));
             attributeClass.setAttribute(IS_ARRAY, true);
             attributeClass.setAttribute(DIMENSIONS, dimensions);
-            attributeClass.setAttribute(TYPE, Class.forName(type.replace(mockType, toArrayName(mockType))));
+            attributeClass.setAttribute(TYPE, Class.forName(type.replace(mockType, toArrayName(mockType)), true, classLoader));
         } else {
-            attributeClass = new AttributeClass(getClassForString(type));
+            attributeClass = new AttributeClass(getClassForString(type, classLoader));
             attributeClass.setAttribute(TYPE, attributeClass.getMockClass());
         }
         setIsPrimitive(attributeClass);
         return attributeClass;
     }
 
-    public static AttributeClass createAttributeClass(JSONObject jsonObject) throws ClassNotFoundException {
+    public static AttributeClass createAttributeClass(JSONObject jsonObject, ClassLoader classLoader) throws ClassNotFoundException {
         AttributeClass attributeClass;
         String type = (String) jsonObject.get("class");
         if (type.contains("List") && jsonObject.containsKey("shape")) {
-            attributeClass = parseList(jsonObject, type);
+            attributeClass = parseList(jsonObject, classLoader, type);
         } else if (type.contains("<")) {
-            attributeClass = parseGenerics(jsonObject, type);
+            attributeClass = parseGenerics(jsonObject, classLoader, type);
         } else if (jsonObject.containsKey("shape")) {
-            attributeClass = parseArray(jsonObject, type);
+            attributeClass = parseArray(jsonObject, classLoader, type);
         } else {
-            attributeClass = new AttributeClass(getClassForString(type));
+            attributeClass = new AttributeClass(getClassForString(type, classLoader));
             attributeClass.setAttribute(TYPE, attributeClass.getMockClass());
         }
         setIsPrimitive(attributeClass);
         return attributeClass;
     }
 
-    private static AttributeClass parseList(JSONObject jsonObject, String type) throws ClassNotFoundException {
+    private static AttributeClass parseList(JSONObject jsonObject, ClassLoader classLoader, String type) throws ClassNotFoundException {
         String[] splits = type.split("<");
         String realType = splits[0];
         String mockType = splits[1];
         mockType = mockType.substring(0, mockType.length() - 1);
-        AttributeClass attributeClass = new AttributeClass(getClassForString(mockType));
+        AttributeClass attributeClass = new AttributeClass(getClassForString(mockType, classLoader));
         JSONArray shape = (JSONArray) jsonObject.get("shape");
         int[] dimensions = new int[shape.size()];
         for (int i = 0; i < dimensions.length; i++) {
@@ -86,13 +97,13 @@ public class AttributeClass {
         }
         attributeClass.setAttribute(DIMENSIONS, dimensions);
         attributeClass.setAttribute(IS_LIST, true);
-        attributeClass.setAttribute(TYPE, getClassForString(realType));
+        attributeClass.setAttribute(TYPE, getClassForString(realType, classLoader));
         return attributeClass;
     }
 
-    private static AttributeClass parseArray(JSONObject jsonObject, String type) throws ClassNotFoundException {
+    private static AttributeClass parseArray(JSONObject jsonObject, ClassLoader classLoader, String type) throws ClassNotFoundException {
         JSONArray shape = (JSONArray) jsonObject.get("shape");
-        AttributeClass attributeClass = new AttributeClass(getClassForString(type));
+        AttributeClass attributeClass = new AttributeClass(getClassForString(type, classLoader));
         int[] dimensions = new int[shape.size()];
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < dimensions.length; i++) {
@@ -102,18 +113,18 @@ public class AttributeClass {
         attributeClass.setAttribute(IS_ARRAY, true);
         attributeClass.setAttribute(DIMENSIONS, dimensions);
         stringBuilder.append(toArrayName(type));
-        attributeClass.setAttribute(TYPE, Class.forName(stringBuilder.toString()));
+        attributeClass.setAttribute(TYPE, Class.forName(stringBuilder.toString(), true, classLoader));
         return attributeClass;
     }
 
-    private static AttributeClass parseGenerics(JSONObject jsonObject, String type) throws ClassNotFoundException {
+    private static AttributeClass parseGenerics(JSONObject jsonObject, ClassLoader classLoader, String type) throws ClassNotFoundException {
         //TODO: parse various generic thoughts: Foo<Integer> mock Foo Foo<Foo<Integer>> Mock Foo then Foo?
         String[] splits = type.split("<");
         String mockType = splits[0];
         String after = splits[1];
         after = after.substring(0, after.length() - 1);
         String[] generics = after.split(",");
-        AttributeClass attributeClass = new AttributeClass(Class.forName(mockType));
+        AttributeClass attributeClass = new AttributeClass(Class.forName(mockType, true, classLoader));
         AttributeClass[] genericClasses = new AttributeClass[generics.length];
         for (int i = 0; i < generics.length; i++) {
             genericClasses[i] = createAttributeClass(generics[i]);
@@ -189,7 +200,7 @@ public class AttributeClass {
         }
     }
 
-    private static Class<?> getClassForString(String name) throws ClassNotFoundException {
+    private static Class<?> getClassForString(String name, ClassLoader classLoader) throws ClassNotFoundException {
         switch (name) {
             case "Boolean":
             case "boolean":
@@ -216,7 +227,7 @@ public class AttributeClass {
             case "double":
                 return double.class;
             default:
-                return Class.forName(name);
+                return Class.forName(name, true, classLoader);
         }
     }
 

@@ -13,8 +13,8 @@ public class RangeByteReader extends ByteReader {
     private final long min;
     private final double range;
 
-    public RangeByteReader(long min, long max) {
-        super(null, -1);
+    public RangeByteReader(String name, long min, long max) {
+        super(name, null, -1);
         if (max < min) {
             long tmp = min;
             min = max;
@@ -26,17 +26,17 @@ public class RangeByteReader extends ByteReader {
     }
 
     @Override
-    void handleReadException(IOException e) {
+    protected void handleReadException(IOException e) {
         throw new RuntimeException(e.getCause());
     }
 
     @Override
-    Object readNonPrimitiveClass(Class<?> returnType, DataInput dataInput) {
+    protected Object readNonPrimitiveClass(Class<?> returnType, DataInput dataInput) {
         return null;
     }
 
     @Override
-    Object postProcessing(Class<?> returnType, Object object) {
+    protected Object postProcessing(Class<?> returnType, Object object) {
         if (object == null) {
             return null;
         }
@@ -76,7 +76,7 @@ public class RangeByteReader extends ByteReader {
     }
 
     @Override
-    ByteReader duplicateByteReader() {
-        return new RangeByteReader(min, max);
+    protected ByteReader duplicateByteReader() {
+        return new RangeByteReader(name, min, max);
     }
 }

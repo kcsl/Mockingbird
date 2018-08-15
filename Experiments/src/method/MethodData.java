@@ -1,6 +1,9 @@
 package method;
 
+import method.callbacks.MethodCallback;
+
 import java.time.Duration;
+import java.util.function.Function;
 
 /**
  * @author Derrick Lockwood
@@ -18,6 +21,7 @@ public class MethodData {
     private transient Exception returnException;
     private transient Duration duration;
     private transient long deltaHeapMemory;
+    private transient String systemOut;
 
     MethodData(
             Object mockObject,
@@ -34,11 +38,12 @@ public class MethodData {
         this.parameterTypes = parameterTypes;
     }
 
-    void setOutput(Object returnValue, Exception returnException, Duration duration, long deltaHeapMemory) {
+    void setOutput(Object returnValue, Exception returnException, Duration duration, long deltaHeapMemory, String systemOut) {
         this.returnValue = returnValue;
         this.returnException = returnException;
         this.duration = duration;
         this.deltaHeapMemory = deltaHeapMemory;
+        this.systemOut = systemOut;
     }
 
     public Object getMockObject() {
@@ -79,6 +84,14 @@ public class MethodData {
 
     public long getDeltaHeapMemory() {
         return deltaHeapMemory;
+    }
+
+    Function<Object[], MethodData> objectMapFunction() {
+        return values -> {
+            this.setOutput(values[0], (Exception) values[1], (Duration) values[2], (long) values[3],
+                    (String) values[4]);
+            return this;
+        };
     }
 
     @Override

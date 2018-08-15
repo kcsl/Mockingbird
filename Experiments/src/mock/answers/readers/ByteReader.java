@@ -17,28 +17,37 @@ import java.util.Objects;
 public abstract class ByteReader implements ReturnTypeAnswer {
 
     protected int chunkSize;
-    ByteReaderList byteReaderList;
+    protected final String name;
+    protected ByteReaderList byteReaderList;
     private DataChunkInputStream inputStream;
     private Object object;
     private DataChunkInputStream dataChunk;
 
-    public ByteReader(InputStream inputStream, int chunkSize) {
+    public ByteReader(String name, InputStream inputStream, int chunkSize) {
+        this.name = name;
         if (inputStream != null) {
             this.inputStream = new DataChunkInputStream(inputStream);
         }
         this.chunkSize = chunkSize;
     }
 
+    public static ByteReader createDefault(String name) {
+        return new DefaultByteReader(name);
+    }
     public static ByteReader createDefault() {
-        return new DefaultByteReader();
+        return new DefaultByteReader(null);
     }
 
-    private static ByteReader createRange(long start, long finish) {
-        return new RangeByteReader(start, finish);
+    private static ByteReader createRange(String name, long start, long finish) {
+        return new RangeByteReader(name, start, finish);
     }
 
-    private static ByteReader createChunk(int chunkSize) {
-        return new ChunkByteReader(chunkSize);
+    private static ByteReader createChunk(String name, int chunkSize) {
+        return new ChunkByteReader(name, chunkSize);
+    }
+
+    public static ByteReader getByType(String type, JSONObject constraint) {
+        return getByType(null, type, constraint);
     }
 
     /**
@@ -49,23 +58,26 @@ public abstract class ByteReader implements ReturnTypeAnswer {
      * If the method's return type is void then a null empty answer is returned such that the
      * method's call reads in nothing.
      *
+     * @param name of constraint to be used as identification of byte reader
      * @param type
      * @param constraint
      * @return
      */
-    public static ByteReader getByType(String type, JSONObject constraint) {
+    public static ByteReader getByType(String name, String type, JSONObject constraint) {
         if (type == null || constraint == null) {
-            return createDefault();
+            return createDefault(name);
         }
         switch (type) {
             case "range":
-                return createRange((long) constraint.get("from"), (long) constraint.get("to"));
+                return createRange(name, (long) constraint.get("from"), (long) constraint.get("to"));
             case "chunk":
-                return createChunk((int) constraint.get("size"));
+                return createChunk(name, (int) constraint.get("size"));
             case "default":
-                return createDefault();
+                return createDefault(name);
+            case "regex":
+                return new NaiveRegexGeneratorByteReader(name, (String) constraint.get("regex"));
             default:
-                return createDefault();
+                return createDefault(name);
         }
     }
 
@@ -78,6 +90,12 @@ public abstract class ByteReader implements ReturnTypeAnswer {
         if (this.inputStream != null)
             this.inputStream.close();
         this.inputStream = new DataChunkInputStream(inputStream);
+    }
+
+    public void closeInputStream() throws IOException {
+        if (this.inputStream != null) {
+            this.inputStream.close();
+        }
     }
 
     @Override
@@ -144,15 +162,15 @@ public abstract class ByteReader implements ReturnTypeAnswer {
 
     @Override
     public String toString() {
-        return Objects.toString(object);
+        return (name != null ? name : "") + ":" + Objects.toString(object);
     }
 
-    abstract ByteReader duplicateByteReader();
+    protected abstract ByteReader duplicateByteReader();
 
-    abstract void handleReadException(IOException e);
+    protected abstract void handleReadException(IOException e);
 
-    abstract Object readNonPrimitiveClass(Class<?> returnType, DataInput dataInput) throws IOException;
+    protected abstract Object readNonPrimitiveClass(Class<?> returnType, DataInput dataInput) throws IOException;
 
-    abstract Object postProcessing(Class<?> returnType, Object object);
+    protected abstract Object postProcessing(Class<?> returnType, Object object);
 
 }

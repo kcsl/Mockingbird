@@ -5,6 +5,7 @@ import mock.MockCreator;
 import mock.answers.*;
 import mock.answers.readers.ByteReader;
 import mock.answers.readers.ByteReaderList;
+import mock.answers.readers.DefaultByteReader;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.objenesis.instantiator.ObjectInstantiator;
@@ -89,10 +90,10 @@ public class MethodCallParser {
         return getClassForString(name);
     }
 
-    private static Answer parseConstraint(MethodCall methodCall, JSONObject constraint,
+    private static Answer parseConstraint(String readerName, MethodCall methodCall, JSONObject constraint,
             ByteReaderList byteReaders) throws ClassNotFoundException, NoSuchMethodException, NoSuchFieldException {
         if (constraint == null) {
-            ByteReader byteReader = ByteReader.createDefault();
+            ByteReader byteReader = ByteReader.createDefault(readerName);
             byteReaders.add(byteReader);
             return byteReader;
         }
@@ -143,14 +144,17 @@ public class MethodCallParser {
             case "original":
                 answer = new OriginalMethodAnswer();
                 break;
+            case "construct":
+                answer = new ConstructEmptyParamAnswer();
+                break;
             default:
-                ByteReader byteReader = ByteReader.getByType(type, constraint);
+                ByteReader byteReader = ByteReader.getByType(readerName, type, constraint);
                 byteReaders.add(byteReader);
                 answer = byteReader;
                 break;
         }
         if (constraint.containsKey("constraint") && answer != null) {
-            answer = answer.link(parseConstraint(methodCall, (JSONObject) constraint.get("constraint"), byteReaders));
+            answer = answer.link(parseConstraint(readerName, methodCall, (JSONObject) constraint.get("constraint"), byteReaders));
         }
         LOGGER.log(VERBOSITY, "Completed Parsing Constraint type " + type);
         return answer;
@@ -170,7 +174,7 @@ public class MethodCallParser {
         } else {
             parameterClassesArray = new Class[0];
         }
-        mockClass.applyMethod(parseConstraint(methodCall, (JSONObject) method.get("constraint"), byteReaders), name,
+        mockClass.applyMethod(parseConstraint(name, methodCall, (JSONObject) method.get("constraint"), byteReaders), name,
                 parameterClassesArray);
         LOGGER.log(VERBOSITY, "Completed Parsing Method " + name + " | " + Arrays.toString(parameterClassesArray));
     }
@@ -193,6 +197,7 @@ public class MethodCallParser {
                     "No definition of methods supplied to class " + mockClass.getOldType().getName());
         }
 
+        //TODO: Change to object
         jsonArray = (JSONArray) mockClassObject.get("instance_variables");
         if (jsonArray != null) {
             parseInstanceVariables(mockClass, methodCall, jsonArray, byteReaders);
@@ -227,7 +232,7 @@ public class MethodCallParser {
             JSONObject constraint = (JSONObject) instanceVariable.get("constraint");
             Field field = fieldClass.getOldType().getDeclaredField(name);
             fieldClass.applyField(field,
-                    new AnswerInstantiator(parseConstraint(methodCall, constraint, byteReaders), field.getType()));
+                    new AnswerInstantiator(parseConstraint(name, methodCall, constraint, byteReaders), field.getType()));
         } else if (instanceVariable.containsKey("methods")) { //i.e. object
             LOGGER.log(VERBOSITY, "Instance variable object");
             fieldClass.applyField(name, parseMockClass(methodCall, instanceVariable, byteReaders));
@@ -264,7 +269,7 @@ public class MethodCallParser {
         LOGGER.log(VERBOSITY, "Started Parsing of Parameter " + attributeClass.getAttribute(AttributeClass.TYPE));
         if (attributeClass.getAttribute(AttributeClass.IS_PRIMITIVE)) {
             JSONObject constraint = (JSONObject) parameter.get("constraint");
-            methodCall.createParameterMock(index, parseConstraint(methodCall, constraint, byteReaders));
+            methodCall.createParameterMock(index, parseConstraint("parameter-" + index, methodCall, constraint, byteReaders));
             LOGGER.log(VERBOSITY, "Parsed Primitive Parameter");
         } else {
             parseMockClass(methodCall.createParameterMock(index), methodCall, parameter, byteReaders);
@@ -306,7 +311,7 @@ public class MethodCallParser {
 
         LOGGER.log(VERBOSITY,
                 "Instrumented Class Path: " + mockClass.getProtectionDomain().getCodeSource().getLocation().getPath());
-        MethodCall methodCall = MethodCall.createMethodCall(mockClass, methodName, parameterTypes);
+        MethodCall methodCall = MethodCallFactory.createMethodCall(mockClass, methodName, parameterTypes);
         LOGGER.log(VERBOSITY, "Finished Creating Method Call");
         return methodCall;
     }

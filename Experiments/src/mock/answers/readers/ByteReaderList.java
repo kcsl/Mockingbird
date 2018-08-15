@@ -66,7 +66,7 @@ public class ByteReaderList implements MethodCallback {
         if (!logger.isLoggable(Level.INFO))
             return;
         for (int i = 0; i < byteReaders.size(); i++) {
-            msg.append(" {").append(i).append("}");
+            msg.append(" |{").append(i).append("}|");
         }
         logger.logp(Level.INFO, methodData.getDeclaringClass().getName(), methodData.getMethodName(), msg.toString(),
                 byteReaders.toArray(new ByteReader[0]));

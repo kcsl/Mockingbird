@@ -13,22 +13,22 @@ import java.math.BigInteger;
  */
 public class ChunkByteReader extends ByteReader {
 
-    public ChunkByteReader(int chunkSize) {
-        super(null, chunkSize);
+    public ChunkByteReader(String name, int chunkSize) {
+        super(name,null, chunkSize);
     }
 
     @Override
-    ByteReader duplicateByteReader() {
-        return new ChunkByteReader(chunkSize);
+    protected ByteReader duplicateByteReader() {
+        return new ChunkByteReader(name, chunkSize);
     }
 
     @Override
-    void handleReadException(IOException e) {
+    protected void handleReadException(IOException e) {
         throw new RuntimeException(e.getCause());
     }
 
     @Override
-    Object readNonPrimitiveClass(Class<?> returnType, DataInput dataInput) throws IOException {
+    protected Object readNonPrimitiveClass(Class<?> returnType, DataInput dataInput) throws IOException {
         if (returnType.isAssignableFrom(String.class)) {
             byte[] bytes = new byte[chunkSize];
             dataInput.readFully(bytes);
@@ -47,7 +47,7 @@ public class ChunkByteReader extends ByteReader {
     }
 
     @Override
-    Object postProcessing(Class<?> returnType, Object object) {
+    protected Object postProcessing(Class<?> returnType, Object object) {
         return object;
     }
 

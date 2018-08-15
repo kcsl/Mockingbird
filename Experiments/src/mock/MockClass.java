@@ -1,11 +1,22 @@
 package mock;
 
 import mock.answers.Answer;
+import mock.answers.AnswerInstantiator;
 import mock.answers.EmptyAnswer;
 import mock.answers.FixedAnswer;
+import net.bytebuddy.asm.Advice;
+import net.bytebuddy.asm.AsmVisitorWrapper;
+import net.bytebuddy.asm.MemberSubstitution;
+import net.bytebuddy.description.field.FieldDescription;
+import net.bytebuddy.description.field.FieldList;
+import net.bytebuddy.description.method.MethodList;
+import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.implementation.Implementation;
+import net.bytebuddy.jar.asm.ClassVisitor;
+import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
+import net.bytebuddy.pool.TypePool;
 import org.objenesis.instantiator.ObjectInstantiator;
 
 import java.lang.reflect.Field;
@@ -106,6 +117,11 @@ public abstract class MockClass implements MockCreator {
         return applyField(oldType.getDeclaredField(fieldName), objectInstantiator);
     }
 
+    public MockClass applyField(String fieldName, Answer answerCreator) throws NoSuchFieldException {
+        Field field = oldType.getDeclaredField(fieldName);
+        return applyField(field, new AnswerInstantiator(answerCreator, field, field.getType()));
+    }
+
     public MockClass applyField(Field field, ObjectInstantiator<?> objectInstantiator) {
         fieldSetInterceptor.putField(field, objectInstantiator);
         return this;
@@ -113,6 +129,7 @@ public abstract class MockClass implements MockCreator {
 
     public MockClass applyMethod(Implementation implementation, Method method) {
         method.setAccessible(true);
+//        builder.visit(new AsmVisitorWrapper.ForDeclaredMethods().method(ElementMatchers.is(method), new MemberSubstitution()));
         builder = builder.method(ElementMatchers.is(method))
                 .intercept(implementation);
         return this;

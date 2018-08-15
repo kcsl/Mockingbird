@@ -49,6 +49,7 @@ public class LoaderClassWriter extends ClassWriter {
     protected String getCommonSuperClass(String type1, String type2) {
         Class<?> c = null;
         Class<?> d = null;
+        System.out.println(classLoaders);
 
         for (ClassLoader classLoader : classLoaders) {
             try {

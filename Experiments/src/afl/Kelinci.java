@@ -6,6 +6,7 @@ import io.AFLConfig;
 import io.MethodCallFormatter;
 import method.MethodCall;
 import method.MethodCallParser;
+import method.MethodCallSession;
 import method.MethodData;
 import method.callbacks.CSVMethodCallback;
 import method.callbacks.LogMethodCallback;
@@ -44,7 +45,7 @@ public class Kelinci {
     private static boolean isRunning = true;
     private static AFLConfig CONFIG;
     private static Logger LOGGER = Logger.getLogger(Kelinci.class.getName());
-    private static MethodCall methodCall;
+    private static MethodCallSession methodCallSession;
     private static ByteReaderList byteReaderList;
     private static AFLServer aflServer;
 
@@ -106,8 +107,8 @@ public class Kelinci {
         // run app with input loads byte readers with input file
         InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
         byteReaderList.setInputStream(inputStream);
-        LOGGER.log(Level.INFO, "Starting " + methodCall);
-        MethodData methodData = methodCall.runMethod(service, CONFIG.timeout, CONFIG.refreshObjects);
+        LOGGER.log(Level.INFO, "Starting " + methodCallSession);
+        MethodData methodData = methodCallSession.runMethod(service, CONFIG.timeout);
         Exception e = methodData.getReturnException();
         if (e instanceof TimeoutException) {
             LOGGER.log(Level.WARNING, "Time-out!");
@@ -172,10 +173,9 @@ public class Kelinci {
          */
         if (args.length < 2) {
             System.err.println(
-                    "Usage: java afl.Kelinci [-i <input dir / jar>] [-p N] [-r Path] <instrumented_dir> <config>");
+                    "Usage: java afl.Kelinci [-i <input dir / jar>] [-l <libs dir> [-p N] [-r Path] <instrumented_dir> <config>");
             return;
         }
-
         int port = DEFAULT_PORT;
         LOGGER.setUseParentHandlers(false);
         LOGGER.setLevel(Level.ALL);
@@ -186,6 +186,7 @@ public class Kelinci {
         LOGGER.addHandler(consoleHandler);
         String runOnce = DEFAULT_RUN_ONCE;
         File inputSource = null;
+        File libs = null;
 
         int curArg = 0;
         label:
@@ -194,6 +195,11 @@ public class Kelinci {
                 case "-i":
                 case "-input":
                     inputSource = new File(args[curArg + 1]);
+                    curArg += 2;
+                    break;
+                case "-l":
+                case "-libs":
+                    libs = new File(args[curArg + 1]);
                     curArg += 2;
                     break;
                 case "-p":
@@ -214,8 +220,8 @@ public class Kelinci {
         curArg++;
 
         //Loads instrumented classes to classpath and creates instrumented classes if necessary
-        if (!InstrumentLoader.loadInstrumentedClasses(inputSource, instrumentedDir)) {
-            return;
+        if (!InstrumentLoader.loadInstrumentedClasses(inputSource, libs, instrumentedDir)) {
+            System.exit(1);
         }
 
         //Setup the AFLServer to get requests from interface program
@@ -246,34 +252,36 @@ public class Kelinci {
                 LOGGER.addHandler(fileHandler);
             }
             if (jsonObject.containsKey("definition")) {
-                methodCall = MethodCallParser.setupMethodCall(LOGGER, (JSONObject) jsonObject.get("definition"),
+                MethodCall methodCall = MethodCallParser.setupMethodCall(LOGGER, (JSONObject) jsonObject.get("definition"),
                         byteReaderList);
+                if (methodCall == null) {
+                    return;
+                }
+                methodCallSession = methodCall.createSession();
             }
         } catch (ClassNotFoundException e) {
             LOGGER.log(Level.SEVERE, "Error can't start the fuzzer because class " + e.getMessage() + " not found");
-            methodCall = null;
+            methodCallSession = null;
         } catch (NoSuchFieldException e) {
             LOGGER.log(Level.SEVERE, "Error can't start the fuzzer because field " + e.getMessage() + " not found");
-            methodCall = null;
+            methodCallSession = null;
         } catch (NoSuchMethodException e) {
             LOGGER.log(Level.SEVERE, "Error can't start the fuzzer because method " + e.getMessage() + " not found");
-            methodCall = null;
+            methodCallSession = null;
         } catch (ParseException e) {
             LOGGER.log(Level.SEVERE, "Config Parse error");
-            methodCall = null;
+            methodCallSession = null;
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "IO Parse error");
-            methodCall = null;
+            methodCallSession = null;
         } catch (MethodCallParser.MethodCallConfigKeyException e) {
             LOGGER.log(Level.SEVERE, e.getMessage());
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, e, () -> "Other exception");
-            methodCall = null;
+            methodCallSession = null;
         }
         LOGGER.log(Level.INFO, "Parsing Finished");
 
-        if (methodCall == null)
-            return;
         MethodCallback methodCallback = LogMethodCallback.create(LOGGER, true).link(byteReaderList);
         if (CONFIG.logToCSV != null) {
             try {
@@ -282,7 +290,7 @@ public class Kelinci {
                 LOGGER.log(Level.WARNING, e, () -> "Couldn't link CSVMethodCallback continuing without it");
             }
         }
-        methodCall.linkMethodCallback(methodCallback);
+        methodCallSession.linkMethodCallback(methodCallback);
         if (runOnce != null) {
             int exitStatus = 0;
             ExecutorService service = getExecutorService();
