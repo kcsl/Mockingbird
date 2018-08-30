@@ -14,7 +14,8 @@ Require-Bundle: org.eclipse.ui,
  com.ensoftcorp.open.commons;bundle-version="3.3.0",
  com.ensoftcorp.open.java.commons;bundle-version="3.3.0",
  com.ensoftcorp.open.jimple.commons;bundle-version="3.3.0",
- org.json.simple;bundle-version="1.1.0"
+ org.json.simple;bundle-version="1.1.0",
+ com.google.gson;bundle-version="2.7.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Automatic-Module-Name: com.kcsl.fuzzing.mockingbird

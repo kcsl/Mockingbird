@@ -151,10 +151,10 @@ public class MethodAnalysis {
 				Q arrayElementTypeEdges = Common.universe().edges(XCSG.ArrayElementType);
 				parameterType = arrayElementTypeEdges.successors(Common.toQ(parameterType)).eval().nodes().one();
 				String qualifiedParameterType = getQualifiedType(parameterType);
-				parameters.add(new Parameter(parameterModifiers, qualifiedParameterType, parameterName, arrayDimension));
+				parameters.add(new Parameter(parameterNode, parameterModifiers, qualifiedParameterType, parameterName, arrayDimension));
 			} else {
 				String qualifiedParameterType = getQualifiedType(parameterType);
-				parameters.add(new Parameter(parameterModifiers, qualifiedParameterType, parameterName));
+				parameters.add(new Parameter(parameterNode, parameterModifiers, qualifiedParameterType, parameterName));
 			}
 		}
 		
@@ -188,20 +188,22 @@ public class MethodAnalysis {
 	
 	@SuppressWarnings("rawtypes")
 	public static class Parameter {
+		private Node parameterNode;
 		private Integer[] modifiers;
 		private String type;
 		private String name;
 		private int arrayDimension = 0;
 		private Class primitive = null;
 		
-		public Parameter(Integer[] modifiers, String type, String name, int arrayDimension) {
-			this(modifiers, type, name);
+		public Parameter(Node parameterNode, Integer[] modifiers, String type, String name, int arrayDimension) {
+			this(parameterNode, modifiers, type, name);
 			if(arrayDimension > 0){
 				this.arrayDimension = arrayDimension;
 			}
 		}
 		
-		public Parameter(Integer[] modifiers, String type, String name) {
+		public Parameter(Node parameterNode, Integer[] modifiers, String type, String name) {
+			this.parameterNode = parameterNode;
 			this.modifiers = modifiers;
 			this.type = type;
 			this.name = name;
@@ -224,6 +226,10 @@ public class MethodAnalysis {
 			} else if(type.equals((void.class).getName())){
 				this.primitive = void.class;
 			}
+		}
+		
+		public Node getParameterNode() {
+			return parameterNode;
 		}
 		
 		public Integer[] getModifiers() {
