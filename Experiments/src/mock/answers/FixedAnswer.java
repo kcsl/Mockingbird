@@ -1,13 +1,10 @@
 package mock.answers;
 
-import java.lang.reflect.Method;
-import java.util.concurrent.Callable;
-
 /**
  * @author Derrick Lockwood
  * @created 5/30/18.
  */
-public class FixedAnswer implements Answer {
+public class FixedAnswer implements BasicAnswer {
 
     private final Object value;
 
@@ -15,14 +12,8 @@ public class FixedAnswer implements Answer {
         this.value = value;
     }
 
-
     @Override
-    public Object handle(Object proxy, Object[] args, Method method) {
-        return value;
-    }
-
-    @Override
-    public Object handle(Object[] args) {
+    public Object apply(Object proxy, Object[] params, Class<?> returnType) {
         return value;
     }
 
@@ -30,16 +21,6 @@ public class FixedAnswer implements Answer {
     public Answer duplicate() {
         //TODO: Duplicate value? object.clone ?
         return new FixedAnswer(value);
-    }
-
-    @Override
-    public Object handle(Object proxy, Object[] args, Callable<Object> originalMethod, Method method) {
-        return value;
-    }
-
-    @Override
-    public Object handle(Object proxy, Object[] parameters, String name, Class<?> returnType) {
-        return value;
     }
 
 }

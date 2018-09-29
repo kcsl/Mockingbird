@@ -1,10 +1,10 @@
 package mock;
 
 import method.AttributeClass;
-import mock.answers.Answer;
-import mock.answers.NotStubbedAnswer;
+import mock.answers.*;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.method.MethodDescription;
+import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.dynamic.scaffold.subclass.ConstructorStrategy;
 import net.bytebuddy.implementation.Implementation;
 import net.bytebuddy.implementation.MethodDelegation;
@@ -14,6 +14,8 @@ import org.objenesis.Objenesis;
 import org.objenesis.ObjenesisStd;
 import org.objenesis.instantiator.ObjectInstantiator;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,26 +56,36 @@ public class TargetedMockBuilder {
         return createSubclass(type, NotStubbedAnswer.newInstance());
     }
 
-    public SubMockClass createSubclass(Class<?> type, Answer defaultSubAnswer) {
-        SubMockClass mockClass = new SubMockClass(this, type,
-                byteBuddy.subclass(type, ConstructorStrategy.Default.NO_CONSTRUCTORS));
+    private SubMockClass createSubclass(Class<?> type, ConstructParamAnswer constructorAnswer) {
+        return new SubMockClass(this, type, byteBuddy.subclass(type, ConstructorStrategy.Default.IMITATE_SUPER_CLASS), constructorAnswer);
+    }
+
+    public SubMockClass createSubclass(Class<?> type, Answer defaultSubAnswer, ConstructParamAnswer constructorAnswer) {
+        SubMockClass mockClass = createSubclass(type, constructorAnswer);
         if (defaultSubAnswer != null) {
             mockClass.setDefaultImplementation(mockClass.getImplementation(defaultSubAnswer));
         }
         return mockClass;
     }
 
-    public SubMockClass createSubclass(Class<?> type, Implementation defaultImplementation) {
-        SubMockClass mockClass = new SubMockClass(this, type,
-                byteBuddy.subclass(type, ConstructorStrategy.Default.NO_CONSTRUCTORS));
+    public SubMockClass createSubclass(Class<?> type, Answer defaultSubAnswer) {
+        return createSubclass(type, defaultSubAnswer, null);
+    }
+
+    public SubMockClass createSubclass(Class<?> type, Implementation defaultImplementation, ConstructParamAnswer constructorAnswer) {
+        SubMockClass mockClass = createSubclass(type, constructorAnswer);
         if (defaultImplementation != null) {
             mockClass.setDefaultImplementation(defaultImplementation);
         }
         return mockClass;
     }
 
-    public SubMockClass createSubclassRealMethods(Class<?> type) {
-        return createSubclass(type, SuperMethodCall.INSTANCE);
+    public SubMockClass createSubclass(Class<?> type, Implementation defaultImplementation) {
+        return createSubclass(type, defaultImplementation, null);
+    }
+
+    public SubMockClass createSubclassRealMethods(Class<?> type, ConstructParamAnswer constructorAnswer) {
+        return createSubclass(type, SuperMethodCall.INSTANCE, constructorAnswer);
     }
 
     public RedefineMockClass createRedefine(Class<?> type) {
@@ -121,21 +133,28 @@ public class TargetedMockBuilder {
     }
 
     <T> ObjectInstantiator<T> createObjectInstantiator(String name, Class<T> newType) {
-        namedInstanceMap.put(name, newType);
-        return createObjectInstantiator(newType);
-    }
-
-    <T> ObjectInstantiator<T> createObjectInstantiator(Class<T> newType) {
         ObjectInstantiator<T> objectInstantiator = objenesis.getInstantiatorOf(newType);
         instanceCreatorHolder.put(newType, objectInstantiator);
+        if (name != null) {
+            namedInstanceMap.put(name, newType);
+        }
         return objectInstantiator;
     }
 
     @SuppressWarnings("unchecked")
-    <T> ObjectInstantiator<T> createObjectInstantiator(T value) {
+    <T> ObjectInstantiator<T> createObjectInstantiator(String name, T value) {
         Class<T> tClass = (Class<T>) value.getClass();
         ObjectInstantiator<T> objectInstantiator = () -> value;
         instanceCreatorHolder.put(tClass, objectInstantiator);
+        return objectInstantiator;
+    }
+
+    <T> ObjectInstantiator<T> createObjectInstantiator(String name, Class<T> newType, ConstructParamAnswer constructorAnswer) {
+        ObjectInstantiator<T> objectInstantiator = () -> newType.cast(constructorAnswer.applyReturnType(newType, true));
+        instanceCreatorHolder.put(newType, objectInstantiator);
+        if (name != null) {
+            namedInstanceMap.put(name, newType);
+        }
         return objectInstantiator;
     }
 

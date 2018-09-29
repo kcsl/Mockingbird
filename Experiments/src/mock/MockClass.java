@@ -1,22 +1,9 @@
 package mock;
 
-import mock.answers.Answer;
-import mock.answers.AnswerInstantiator;
-import mock.answers.EmptyAnswer;
-import mock.answers.FixedAnswer;
-import net.bytebuddy.asm.Advice;
-import net.bytebuddy.asm.AsmVisitorWrapper;
-import net.bytebuddy.asm.MemberSubstitution;
-import net.bytebuddy.description.field.FieldDescription;
-import net.bytebuddy.description.field.FieldList;
-import net.bytebuddy.description.method.MethodList;
-import net.bytebuddy.description.type.TypeDescription;
+import mock.answers.*;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.implementation.Implementation;
-import net.bytebuddy.jar.asm.ClassVisitor;
-import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
-import net.bytebuddy.pool.TypePool;
 import org.objenesis.instantiator.ObjectInstantiator;
 
 import java.lang.reflect.Field;
@@ -40,11 +27,13 @@ public abstract class MockClass implements MockCreator {
     private ObjectInstantiator<?> objectInstantiator;
     private String name;
     private Map<Method, Answer> methodMap;
+    private final ConstructParamAnswer constructorAnswer;
+    private boolean construct;
 
     MockClass(
             TargetedMockBuilder targetedMockBuilder,
             Class<?> oldType,
-            DynamicType.Builder<?> builder) {
+            DynamicType.Builder<?> builder, ConstructParamAnswer constructorAnswer) {
         this.oldType = oldType;
         this.targetedMockBuilder = targetedMockBuilder;
         fieldSetInterceptor = new FieldSetInterceptor(oldType.getSimpleName());
@@ -54,11 +43,30 @@ public abstract class MockClass implements MockCreator {
         this.newType = null;
         methodMap = new HashMap<>();
         name = null;
+        this.constructorAnswer = constructorAnswer;
+        this.construct = true;
+    }
+
+    MockClass(
+            TargetedMockBuilder targetedMockBuilder,
+            Class<?> oldType,
+            DynamicType.Builder<?> builder) {
+        this(targetedMockBuilder, oldType, builder, null);
+        this.construct = false;
+
     }
 
     public void setDefaultImplementation(Implementation implementation) {
         builder = builder.method(ElementMatchers.any())
                 .intercept(implementation);
+    }
+
+    public void setConstruct(boolean construct) {
+        this.construct = construct;
+    }
+
+    public void setToConstruct() {
+        this.construct = true;
     }
 
     public Class<?> getOldType() {
@@ -95,7 +103,8 @@ public abstract class MockClass implements MockCreator {
     }
 
     public <T> MockClass applyField(Field field, T value) {
-        fieldSetInterceptor.putField(field, targetedMockBuilder.createObjectInstantiator(value));
+        //TODO: name objectinstantiator field?
+        fieldSetInterceptor.putField(field, targetedMockBuilder.createObjectInstantiator(null, value));
         return this;
     }
 
@@ -158,18 +167,6 @@ public abstract class MockClass implements MockCreator {
         return applyMethod(getImplementation(answer), method);
     }
 
-
-    private Object create() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Object newObject;
-        if (newType != null) {
-            newObject = objectInstantiator.newInstance();
-        } else {
-            newObject = makeInstantiator().newInstance();
-        }
-        fieldSetInterceptor.reloadParameters(newObject);
-        return newObject;
-    }
-
     public void reloadInstanceVariables(Object object, List<String> instanceVariables) {
         if (!object.getClass().equals(newType)) {
             return;
@@ -181,11 +178,41 @@ public abstract class MockClass implements MockCreator {
         }
     }
 
+    public Object create() throws
+            NoSuchMethodException,
+            InvocationTargetException,
+            IllegalAccessException {
+        Object newObject;
+        if (newType != null) {
+            newObject = objectInstantiator.newInstance();
+        } else {
+            if (construct) {
+                newObject = makeInstantiator(constructorAnswer).newInstance();
+            } else {
+                newObject = makeInstantiator().newInstance();
+            }
+        }
+        fieldSetInterceptor.reloadParameters(newObject);
+        return newObject;
+    }
+
     public void store() {
         if (newType != null) {
             return;
         }
-        makeInstantiator();
+        if (construct) {
+            makeInstantiator(constructorAnswer);
+        } else {
+            makeInstantiator();
+        }
+    }
+
+    private ObjectInstantiator makeInstantiator(ConstructParamAnswer constructorAnswer) {
+        builder = fieldSetInterceptor.addFields(builder);
+        newType = createClass(builder.make());
+        builder = null;
+        objectInstantiator = targetedMockBuilder.createObjectInstantiator(name, newType, constructorAnswer);
+        return objectInstantiator;
     }
 
     @Override
@@ -197,11 +224,7 @@ public abstract class MockClass implements MockCreator {
         builder = fieldSetInterceptor.addFields(builder);
         newType = createClass(builder.make());
         builder = null;
-        if (name != null) {
-            objectInstantiator = targetedMockBuilder.createObjectInstantiator(name, newType);
-        } else {
-            objectInstantiator = targetedMockBuilder.createObjectInstantiator(newType);
-        }
+        objectInstantiator = targetedMockBuilder.createObjectInstantiator(name, newType);
         return objectInstantiator;
     }
 

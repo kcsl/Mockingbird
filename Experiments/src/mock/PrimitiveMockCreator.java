@@ -83,7 +83,7 @@ public class PrimitiveMockCreator implements MockCreator {
             if (answer == null) {
                 throw new RuntimeException("Primitive not stubbed and no value is set " + type.getName());
             }
-            return answer.createObject(type, true);
+            return answer.applyReturnType(type, true);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

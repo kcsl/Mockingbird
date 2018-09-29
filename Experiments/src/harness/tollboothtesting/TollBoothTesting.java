@@ -43,7 +43,7 @@ public class TollBoothTesting {
 
         methodCall.overrideMethodCall(new RunOverrideMethod());
 
-        methodCall.addFieldInstantiator("rand", new ConstructEmptyParamAnswer());
+        methodCall.addFieldInstantiator("rand", new ConstructParamAnswer(null, null));
 
         SubMockClass subMockClass = methodCall.createFieldMock("w");
 
@@ -70,7 +70,7 @@ public class TollBoothTesting {
         }
 
         @Override
-        public Object createObject(Class<?> returnType, boolean forceReload) {
+        public Object applyReturnType(Class<?> returnType, boolean forceReload) {
             if (set == null) {
                 set = new HashSet<>();
                 set.add(BENIGN_USER_ID);
@@ -109,7 +109,7 @@ public class TollBoothTesting {
         }
 
         @Override
-        public Object getObject(Object[] parameters) {
+        public Object applyParameters(Object[] parameters) {
             if ((int) parameters[0] == BENIGN_USER_ID) {
                 hits++;
             } else {

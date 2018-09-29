@@ -1,6 +1,5 @@
 package mock.answers.readers;
 
-import mock.answers.readers.regexreader.RegexGeneratorByteReader;
 import org.junit.Assert;
 import org.junit.Test;
 import util.BaseTest;
@@ -9,8 +8,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-
-import static org.junit.Assert.*;
 
 /**
  * @author Derrick Lockwood
@@ -42,7 +39,7 @@ public class NaiveRegexGeneratorByteReaderTest extends BaseTest {
     private String runTest(String regex) throws IOException {
         NaiveRegexGeneratorByteReader byteReader = new NaiveRegexGeneratorByteReader("TestByteReader", regex);
         byteReader.setInputStream(new FileInputStream(tmpFile));
-        String s = (String) byteReader.createObject(String.class, false);
+        String s = (String) byteReader.applyReturnType(String.class, false);
         byteReader.closeInputStream();
         return s;
     }

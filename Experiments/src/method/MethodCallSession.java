@@ -2,6 +2,7 @@ package method;
 
 import method.callbacks.MethodCallback;
 import mock.MockCreator;
+import mock.answers.Answer;
 import util.AdvancedFuture;
 
 import java.io.ByteArrayOutputStream;
@@ -9,6 +10,7 @@ import java.io.PrintStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryType;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
 import java.time.Instant;
@@ -30,8 +32,10 @@ public class MethodCallSession {
     private boolean isLoaded;
     private boolean resetEveryTime;
 
-    MethodCallSession(MethodCall methodCall, boolean resetEveryTime) {
+    MethodCallSession(MethodCall methodCall, MethodCallback methodCallback, boolean resetEveryTime) {
         this.methodCall = methodCall;
+        this.resetEveryTime = resetEveryTime;
+        this.methodCallback = methodCallback;
         isLoaded = false;
         for (MemoryPoolMXBean bean : ManagementFactory.getMemoryPoolMXBeans()) {
             if (bean.getType() == MemoryType.HEAP) {
@@ -47,8 +51,8 @@ public class MethodCallSession {
         }
     }
 
-    MethodCallSession(MethodCall methodCall) {
-        this(methodCall, false);
+    MethodCallSession(MethodCall methodCall, MethodCallback methodCallback) {
+        this(methodCall, methodCallback, false);
     }
 
     /**
@@ -69,9 +73,12 @@ public class MethodCallSession {
         return methodCallback;
     }
 
-    private void loadMethodRequirements() {
+    private void loadMethodRequirements() throws
+            NoSuchMethodException,
+            InvocationTargetException,
+            IllegalAccessException {
         if (!isLoaded || resetEveryTime) {
-            mockObject = methodCall.methodMockClass.newInstance();
+            mockObject = methodCall.methodMockClass.create();
             mockParameters = new Object[methodCall.parameters.length];
             for (MockCreator mockCreator : methodCall.normalObjects) {
                 mockCreator.newInstance();
@@ -86,31 +93,39 @@ public class MethodCallSession {
                     mockParameters[i] = methodCall.parameters[i].newInstance();
                 }
             }
-            //Reloads the primitive instance variables defined createObject the mockObject
+            //Reloads the primitive instance variables defined applyReturnType the mockObject
             methodCall.methodMockClass.reloadInstanceVariables(mockObject, methodCall.primitiveInstanceVariables);
         }
     }
 
     public MethodData runMethod(ExecutorService executorService, long timeOut) {
+        return runMethod(executorService, timeOut, false);
+    }
+
+    public MethodData runMethod(ExecutorService executorService, long timeOut, boolean sysOutStop) {
         try {
+            //TODO: Fix Error Handling maybe? The throwables are weird and out of scope in different areas
             loadMethodRequirements();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             MethodData methodData = new MethodData(mockObject, mockParameters, methodCall.method.getDeclaringClass(),
                     methodCall.method.getName(),
                     methodCall.method.getReturnType(), methodCall.method.getParameterTypes());
+            methodCallback.onBefore(methodData);
             methodData.setOutput(null, e, null, 0, null);
+            methodCallback.onAfter(methodData);
             return methodData;
         }
         MethodData methodData = new MethodData(mockObject, mockParameters, methodCall.method.getDeclaringClass(),
                 methodCall.method.getName(),
                 methodCall.method.getReturnType(), methodCall.method.getParameterTypes());
         methodCallback.onBefore(methodData);
-        Future<Object[]> future = executorService.submit(getCallable(mockObject, mockParameters, false));
+        Future<Object[]> future = executorService.submit(getCallable(mockObject, mockParameters, sysOutStop));
         Object[] values = new Object[]{
                 null,
                 null,
                 null,
-                0L
+                0L,
+                null
         };
         try {
             if (timeOut > 0) {
@@ -164,7 +179,7 @@ public class MethodCallSession {
         return () -> {
             long currentHeapBytes = edenSpace.getUsage().getUsed();
             Object returnValue = null;
-            Exception returnException = null;
+            Throwable returnException = null;
             ByteArrayOutputStream byteArrayOutputStream = null;
             PrintStream originalOut = null;
             if (overrideSystemOut) {
@@ -175,9 +190,9 @@ public class MethodCallSession {
             Instant instant = Instant.now();
             try {
                 returnValue = methodCall.method.invoke(mockObject, objects);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 if (e instanceof InvocationTargetException) {
-                    returnException = (Exception) e.getCause();
+                    returnException = e.getCause();
                 } else {
                     returnException = e;
                 }

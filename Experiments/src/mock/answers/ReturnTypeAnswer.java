@@ -7,27 +7,13 @@ import java.util.concurrent.Callable;
  * @author Derrick Lockwood
  * @created 6/12/18.
  */
-public interface ReturnTypeAnswer extends Answer {
+public interface ReturnTypeAnswer extends BasicAnswer {
 
-    Object createObject(Class<?> returnType, boolean forceReload);
-
-    @Override
-    default Object handle(Object proxy, Object[] parameters, String name, Class<?> returnType) {
-        return createObject(returnType, false);
-    }
+    //TODO: Fix force reload it doesn't really make sense to have it here... look into finding way to adjust. Maybe AnnotatedClass?
+    Object applyReturnType(Class<?> returnType, boolean forceReload);
 
     @Override
-    default Object handle(Object[] args) {
-        return null;
-    }
-
-    @Override
-    default Object handle(Object proxy, Object[] args, Method method) {
-        return createObject(method.getReturnType(), false);
-    }
-
-    @Override
-    default Object handle(Object proxy, Object[] args, Callable<Object> originalMethod, Method method) {
-        return createObject(method.getReturnType(), false);
+    default Object apply(Object proxy, Object[] params, Class<?> returnType) {
+        return applyReturnType(returnType, true);
     }
 }

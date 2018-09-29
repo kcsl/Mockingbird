@@ -94,6 +94,9 @@ public class InstrumentLoader {
         } catch (IOException | NullPointerException e) {
             LOGGER.log(Level.SEVERE, "Error loading class " + cls, e);
             return false;
+        } catch (IllegalArgumentException e) {
+            LOGGER.log(Level.SEVERE, "Class clashes with class already loaded class in classpath " + cls, e);
+            return false;
         }
 
         try {
@@ -154,13 +157,12 @@ public class InstrumentLoader {
         if (classPath == null) {
             return false;
         }
-        return instrumentClass(clazz, instrumentedDir, classPath, libsClassPath);
+        return instrumentClass(clazz.toPath(), instrumentedDir, classPath, libsClassPath);
     }
 
-    private static boolean instrumentClass(File clazz, Path instrumentedDir, URL... classPaths) {
-        LOGGER.log(Level.INFO, "Found class: " + clazz.getPath());
-        String instrumentedPath = instrumentedDir.resolve(clazz.toPath()).toString();
-        File instrumentedClazz = new File(instrumentedPath);
+    private static boolean instrumentClass(Path clazz, Path instrumentedDir, URL... classPaths) {
+        LOGGER.log(Level.INFO, "Found class: " + clazz);
+        File instrumentedClazz = instrumentedDir.resolve(clazz.subpath(1, clazz.getNameCount())).toFile();
         LOGGER.log(Level.INFO, "Instrumenting into " + instrumentedClazz.getPath());
         try {
             Files.createDirectories(instrumentedClazz.getParentFile().toPath());
@@ -168,9 +170,9 @@ public class InstrumentLoader {
                 LOGGER.log(Level.SEVERE, "Can't create instrumented file " + instrumentedClazz.getAbsolutePath());
                 return false;
             }
-            InputStream classInputStream = new FileInputStream(clazz);
+            InputStream classInputStream = new FileInputStream(clazz.toFile());
             OutputStream classOutputStream = new FileOutputStream(instrumentedClazz);
-            if (!instrumentClass(clazz.getName(), classInputStream, classOutputStream, classPaths)) {
+            if (!instrumentClass(clazz.toString(), classInputStream, classOutputStream, classPaths)) {
                 return false;
             }
         } catch (FileNotFoundException e) {
@@ -273,12 +275,11 @@ public class InstrumentLoader {
         return true;
     }
 
-    private static File[] getAllClasses(File directory) {
+    private static Path[] getAllClasses(File directory) {
         try {
             return Files.walk(directory.toPath())
                     .filter(path -> path.toString().contains(".class"))
-                    .map(path -> new File(path.toString()))
-                    .toArray(File[]::new);
+                    .toArray(Path[]::new);
         } catch (IOException e) {
             return null;
         }
@@ -290,12 +291,12 @@ public class InstrumentLoader {
             return false;
         }
 
-        File[] classes = getAllClasses(directory);
+        Path[] classes = getAllClasses(directory);
         if (classes == null || classes.length == 0) {
             LOGGER.log(Level.SEVERE, "No files found in " + directory.getPath());
             return false;
         }
-        for (File clazz : classes) {
+        for (Path clazz : classes) {
             if (!instrumentClass(clazz, instrumentedDir, classPath, libsClasspath)) {
                 return false;
             }
@@ -305,14 +306,14 @@ public class InstrumentLoader {
 
     private static boolean copyLibs(File src, File dest, File exceptApp, List<URL> libUrlList) {
         if (src == null || !src.exists()) {
-            LOGGER.log(Level.SEVERE, "Can't copy from source directory " + src);
+            LOGGER.log(Level.WARNING, "Can't copy from source directory " + src);
             return false;
         }
         if (src.isDirectory()) {
             if (!dest.exists()) {
                 LOGGER.log(Level.INFO, "Making directory " + dest);
                 if (!dest.mkdir()) {
-                    LOGGER.log(Level.SEVERE, "Can't create destination directory " + dest);
+                    LOGGER.log(Level.WARNING, "Can't create destination directory " + dest);
                     return false;
                 }
             }
@@ -352,6 +353,7 @@ public class InstrumentLoader {
     }
 
     private static boolean instrument(File inputSource, File libs, Path instrumentedDir) {
+        //TODO: source file can be java file that this program compiles and puts in temp directory and places in instrumented directory?
         LOGGER.log(Level.INFO, "Started adding libs to instrumented directory and to classpath");
         List<URL> urls = new ArrayList<>();
         if (!copyLibs(libs, instrumentedDir.toFile(), inputSource, urls)) {
@@ -391,6 +393,7 @@ public class InstrumentLoader {
 
     public static boolean loadInstrumentedClasses(File inputSource, File libs, File instrumentedDir) {
         if (inputSource != null) {
+            LOGGER.log(Level.INFO, "Starting to instrument source " + inputSource);
             //Instrument and place in instrumented dir
             if (inputSource.exists()) {
                 if (!instrumentedDir.exists()) {
@@ -433,10 +436,12 @@ public class InstrumentLoader {
         try {
             LOGGER.log(Level.INFO, "Adding to classpath " + instrumentedDir.getPath());
             addToClassPath(instrumentedDir);
+            LOGGER.log(Level.INFO, "Completed adding to classpath " + instrumentedDir.getPath());
         } catch (NoSuchMethodException | MalformedURLException | InvocationTargetException | IllegalAccessException e) {
             LOGGER.log(Level.SEVERE, "Error with adding instrumented directory to class path", e);
             return false;
         }
+        LOGGER.log(Level.INFO, "Completed loading instrumented source");
         return true;
     }
 }

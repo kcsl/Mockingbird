@@ -18,7 +18,7 @@ public class MethodData {
     private final Object[] parameters;
 
     private transient Object returnValue;
-    private transient Exception returnException;
+    private transient Throwable returnException;
     private transient Duration duration;
     private transient long deltaHeapMemory;
     private transient String systemOut;
@@ -38,7 +38,7 @@ public class MethodData {
         this.parameterTypes = parameterTypes;
     }
 
-    void setOutput(Object returnValue, Exception returnException, Duration duration, long deltaHeapMemory, String systemOut) {
+    void setOutput(Object returnValue, Throwable returnException, Duration duration, long deltaHeapMemory, String systemOut) {
         this.returnValue = returnValue;
         this.returnException = returnException;
         this.duration = duration;
@@ -74,7 +74,7 @@ public class MethodData {
         return returnValue;
     }
 
-    public Exception getReturnException() {
+    public Throwable getReturnException() {
         return returnException;
     }
 

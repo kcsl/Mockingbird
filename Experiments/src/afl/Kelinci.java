@@ -12,6 +12,7 @@ import method.callbacks.CSVMethodCallback;
 import method.callbacks.LogMethodCallback;
 import method.callbacks.MethodCallback;
 import mock.answers.readers.ByteReaderList;
+import mock.answers.readers.inputstream.ByteReaderInputStreamList;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -46,7 +47,7 @@ public class Kelinci {
     private static AFLConfig CONFIG;
     private static Logger LOGGER = Logger.getLogger(Kelinci.class.getName());
     private static MethodCallSession methodCallSession;
-    private static ByteReaderList byteReaderList;
+    private static ByteReaderInputStreamList byteReaderList;
     private static AFLServer aflServer;
 
     /**
@@ -109,26 +110,28 @@ public class Kelinci {
         byteReaderList.setInputStream(inputStream);
         LOGGER.log(Level.INFO, "Starting " + methodCallSession);
         MethodData methodData = methodCallSession.runMethod(service, CONFIG.timeout);
-        Exception e = methodData.getReturnException();
-        if (e instanceof TimeoutException) {
-            LOGGER.log(Level.WARNING, "Time-out!");
-            return STATUS_TIMEOUT;
-        } else if (e != null) {
-            if (e instanceof RuntimeException) {
-                LOGGER.log(Level.WARNING, "RuntimeException thrown!", e);
-            } else if (e.getCause() instanceof Error) {
-                LOGGER.log(Level.WARNING, "Error thrown!", e);
+        Throwable e = methodData.getReturnException();
+        if (e != null) {
+            if (e instanceof TimeoutException) {
+                LOGGER.log(Level.WARNING, "Time-out!");
+                return STATUS_TIMEOUT;
+            }
+            Throwable throwable = e;
+            if (e.getCause() != null) {
+                throwable = e.getCause();
+            }
+            if (throwable instanceof RuntimeException) {
+                LOGGER.log(Level.WARNING, "RuntimeException thrown!", throwable);
             } else {
                 LOGGER.log(Level.WARNING, "Uncaught throwable!", e);
             }
             return STATUS_CRASH;
-        } else {
-            LOGGER.log(Level.INFO, "Finished!");
-            return STATUS_SUCCESS;
         }
+        LOGGER.log(Level.INFO, "Finished!");
+        return STATUS_SUCCESS;
     }
 
-    private static ExecutorService getExecutorService() {
+    public static ExecutorService getExecutorService() {
         //Creates the deamon thread such that the JVM can close instead of have to wait for the JVM to close
         return Executors.newSingleThreadExecutor(new ThreadFactory() {
             private ThreadFactory threadFactory = Executors.defaultThreadFactory();
@@ -184,7 +187,7 @@ public class Kelinci {
         consoleHandler.setLevel(LOGGER.getLevel());
         consoleHandler.setFormatter(new MethodCallFormatter(DEFAULT_FORMAT));
         LOGGER.addHandler(consoleHandler);
-        String runOnce = DEFAULT_RUN_ONCE;
+        String runOnceFile = DEFAULT_RUN_ONCE;
         File inputSource = null;
         File libs = null;
 
@@ -209,7 +212,7 @@ public class Kelinci {
                     break;
                 case "-r":
                 case "-runOnce":
-                    runOnce = args[curArg + 1];
+                    runOnceFile = args[curArg + 1];
                     curArg += 2;
                     break;
                 default:
@@ -230,7 +233,7 @@ public class Kelinci {
         /*
          * Parse methodcall definition and config
          */
-        byteReaderList = new ByteReaderList(LOGGER);
+        byteReaderList = new ByteReaderInputStreamList(LOGGER);
         String configFile = args[curArg];
         LOGGER.log(Level.INFO, "Parsing " + configFile);
         try {
@@ -257,7 +260,8 @@ public class Kelinci {
                 if (methodCall == null) {
                     return;
                 }
-                methodCallSession = methodCall.createSession();
+                LOGGER.log(Level.INFO, "Parsing Finished");
+                methodCallSession = methodCall.createSession(true);
             }
         } catch (ClassNotFoundException e) {
             LOGGER.log(Level.SEVERE, "Error can't start the fuzzer because class " + e.getMessage() + " not found");
@@ -280,7 +284,9 @@ public class Kelinci {
             LOGGER.log(Level.SEVERE, e, () -> "Other exception");
             methodCallSession = null;
         }
-        LOGGER.log(Level.INFO, "Parsing Finished");
+        if (methodCallSession == null) {
+            return;
+        }
 
         MethodCallback methodCallback = LogMethodCallback.create(LOGGER, true).link(byteReaderList);
         if (CONFIG.logToCSV != null) {
@@ -291,10 +297,10 @@ public class Kelinci {
             }
         }
         methodCallSession.linkMethodCallback(methodCallback);
-        if (runOnce != null) {
+        if (runOnceFile != null) {
             int exitStatus = 0;
             ExecutorService service = getExecutorService();
-            File file = new File(runOnce);
+            File file = new File(runOnceFile);
             if (file.isDirectory()) {
                 for (File f : Objects.requireNonNull(file.listFiles())) {
                     if (!f.getName().startsWith(".")) {

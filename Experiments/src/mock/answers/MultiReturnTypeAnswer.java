@@ -27,7 +27,7 @@ public class MultiReturnTypeAnswer implements ReturnTypeAnswer {
         if (dimIndex >= dimensions.length - 1) {
             Object arr = Array.newInstance(returnType, dimensions[dimIndex]);
             for (int i = 0; i < dimensions[dimIndex]; i++) {
-                Array.set(arr, i, ((ReturnTypeAnswer) Array.get(answers, i)).createObject(returnType, forceReload));
+                Array.set(arr, i, ((ReturnTypeAnswer) Array.get(answers, i)).applyReturnType(returnType, forceReload));
             }
             return arr;
         } else {
@@ -47,7 +47,7 @@ public class MultiReturnTypeAnswer implements ReturnTypeAnswer {
         if (dimIndex >= dimensions.length - 1) {
             List list = new ArrayList();
             for (int i = 0; i < dimensions[dimIndex]; i++) {
-                list.add(i, ((ReturnTypeAnswer) Array.get(answers, i)).createObject(returnType, forceReload));
+                list.add(i, ((ReturnTypeAnswer) Array.get(answers, i)).applyReturnType(returnType, forceReload));
             }
             return list;
         } else {
@@ -61,7 +61,7 @@ public class MultiReturnTypeAnswer implements ReturnTypeAnswer {
     }
 
     @Override
-    public Object createObject(Class<?> returnType, boolean forceReload) {
+    public Object applyReturnType(Class<?> returnType, boolean forceReload) {
         if (attributeClass.getAttribute(AttributeClass.IS_ARRAY, false)) {
             return constructPrimitiveArray(returnType, forceReload, answers,
                     attributeClass.getAttribute(AttributeClass.DIMENSIONS), 0);

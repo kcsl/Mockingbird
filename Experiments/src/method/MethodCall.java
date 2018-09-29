@@ -1,12 +1,15 @@
 package method;
 
+import method.callbacks.EmptyMethodCallback;
 import method.callbacks.MethodCallback;
 import mock.MockCreator;
 import mock.PrimitiveMockCreator;
 import mock.SubMockClass;
 import mock.TargetedMockBuilder;
 import mock.answers.Answer;
+import mock.answers.ConstructParamAnswer;
 import mock.answers.NotStubbedAnswer;
+import mock.answers.ReturnTypeAnswer;
 import org.objenesis.instantiator.ObjectInstantiator;
 
 import java.lang.reflect.Method;
@@ -31,11 +34,15 @@ public class MethodCall {
     final Method method;
     private final AttributeClass[] parameterDefinitions;
 
-    MethodCall(AttributeClass[] parameterDefinitions, Method method, MethodCallback methodCallback) {
+    MethodCall(AttributeClass[] parameterDefinitions, Method method) {
+        this(parameterDefinitions, method, null);
+    }
+
+    MethodCall(AttributeClass[] parameterDefinitions, Method method, ConstructParamAnswer constructorAnswer) {
         this.method = method;
         this.parameterDefinitions = parameterDefinitions;
         builder = new TargetedMockBuilder();
-        methodMockClass = builder.createSubclassRealMethods(method.getDeclaringClass());
+        methodMockClass = builder.createSubclassRealMethods(method.getDeclaringClass(), constructorAnswer);
         parameters = new MockCreator[method.getParameterCount()];
         primitiveInstanceVariables = new ArrayList<>();
         normalObjects = new ArrayList<>();
@@ -50,10 +57,10 @@ public class MethodCall {
     }
 
     public void overrideMethodCall(Answer answer) {
-        this.overrideMethodCall(answer, method);
+        this.overrideMethod(answer, method);
     }
 
-    public void overrideMethodCall(Answer answer, Method method) {
+    public void overrideMethod(Answer answer, Method method) {
         methodMockClass.applyMethod(answer, method);
     }
 
@@ -61,7 +68,7 @@ public class MethodCall {
      * Creates a parameter SubMockClass by which the parameter is instantiated
      *
      * @param index         the index of the parameter of the method
-     * @param defaultAnswer the default answer by which any method that is called createObject {@code parameters[index].type} is run.
+     * @param defaultAnswer the default answer by which any method that is called applyReturnType {@code parameters[index].type} is run.
      *                      This is also the answer that is supplied to the primitive variables when {@code .store()}
      *                      is run on them which just returns the value of the primitive variable.
      * @return A {@link mock.SubMockClass SubMockClass} if the class of the parameter is not a primitive, else {@code null}.
@@ -116,10 +123,10 @@ public class MethodCall {
 
     /**
      * Creates an instance variable mock similar to {@link method.MethodCall#createParameterMock(int, Answer) createParameterMock}
-     * but creates it for the instance variable used createObject the method to mock and supplied to the declaring object.
+     * but creates it for the instance variable used applyReturnType the method to mock and supplied to the declaring object.
      *
      * @param fieldVariableName instance variable name to mock
-     * @param defaultAnswer     the default answer by which any method that is called createObject {@code parameters[index].type} is run.
+     * @param defaultAnswer     the default answer by which any method that is called applyReturnType {@code parameters[index].type} is run.
      *                          This is also the answer that is supplied to the primitive variables when {@code .store()}
      *                          is run on them which just returns the value of the primitive variable.
      * @return A {@link mock.SubMockClass SubMockClass} if the class of the parameter is not a primitive, else {@code null}.
@@ -170,7 +177,19 @@ public class MethodCall {
     }
 
     public MethodCallSession createSession() {
-        return new MethodCallSession(this);
+        return createSession(false);
+    }
+
+    public MethodCallSession createSession(boolean resetEveryTime) {
+        return createSession(EmptyMethodCallback.create(), resetEveryTime);
+    }
+
+    public MethodCallSession createSession(MethodCallback methodCallback) {
+        return createSession(methodCallback, false);
+    }
+
+    public MethodCallSession createSession(MethodCallback methodCallback, boolean resetEveryTime) {
+        return new MethodCallSession(this, methodCallback, resetEveryTime);
     }
 
     @Override

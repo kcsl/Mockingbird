@@ -37,8 +37,8 @@ public interface Answer {
             @Origin Method method) throws
             Throwable;
 
-
-    Object handle(Object[] args) throws Throwable;
+    @RuntimeType
+    Object handle(@AllArguments Object[] args) throws Throwable;
 
     Answer duplicate();
 

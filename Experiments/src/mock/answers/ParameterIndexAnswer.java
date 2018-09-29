@@ -13,7 +13,7 @@ public class ParameterIndexAnswer implements ParameterAnswer {
     }
 
     @Override
-    public Object getObject(Object[] parameters) {
+    public Object applyParameters(Object[] parameters) {
         return parameters[index];
     }
 

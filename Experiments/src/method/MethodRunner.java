@@ -57,7 +57,7 @@ public class MethodRunner {
 //                    objects[i] = parameters[i].newInstance();
 //                }
 //            }
-//            //Reloads the primitive instance variables defined createObject the mockObject
+//            //Reloads the primitive instance variables defined applyReturnType the mockObject
 //            methodMockClass.reloadInstanceVariables(mockObject, primitiveInstanceVariables);
 //        }
 //        methodCallback.onEndIteration();

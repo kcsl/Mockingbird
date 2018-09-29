@@ -3,6 +3,7 @@ package method.callbacks;
 import method.MethodData;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.logging.*;
 
 /**
@@ -100,8 +101,13 @@ public class LogMethodCallback implements MethodCallback {
         logger.logp(Level.INFO, methodData.getDeclaringClass().getName(), methodData.getMethodName(),
                 methodData.toString());
         if (methodData.getReturnException() != null) {
-            throwing(methodData.getDeclaringClass().getName(), methodData.getMethodName(),
-                    methodData.getReturnException().getCause());
+            Throwable throwable = methodData.getReturnException().getCause();
+            if (throwable == null) {
+                throwable = methodData.getReturnException();
+            } else if (throwable instanceof InvocationTargetException) {
+                throwable = throwable.getCause();
+            }
+            throwing(methodData.getDeclaringClass().getName(), methodData.getMethodName(), throwable);
         }
         if (verbose) {
             exiting(methodData.getDeclaringClass().getName(), methodData.getMethodName(), methodData.getReturnValue());

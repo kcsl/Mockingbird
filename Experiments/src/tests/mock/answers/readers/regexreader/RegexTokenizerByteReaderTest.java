@@ -9,8 +9,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import static org.junit.Assert.*;
-
 /**
  * @author Derrick Lockwood
  * @created 8/5/18.
@@ -65,7 +63,7 @@ public class RegexTokenizerByteReaderTest extends BaseTest {
     private String runTest(String regex) throws IOException {
         RegexTokenizerByteReader byteReader = new RegexTokenizerByteReader("TestByteReader", regex);
         byteReader.setInputStream(new FileInputStream(tmpFile));
-        String s = (String) byteReader.createObject(String.class, false);
+        String s = (String) byteReader.applyReturnType(String.class, false);
         byteReader.closeInputStream();
         return s;
     }

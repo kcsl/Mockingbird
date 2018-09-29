@@ -98,7 +98,7 @@ public class RegexGeneratorByteReaderTest extends BaseTest {
     private String runTest(String regex) throws IOException {
         RegexGeneratorByteReader byteReader = new RegexGeneratorByteReader("TestByteReader", regex);
         byteReader.setInputStream(new FileInputStream(tmpFile));
-        String s = (String) byteReader.createObject(String.class, false);
+        String s = (String) byteReader.applyReturnType(String.class, false);
         byteReader.closeInputStream();
         return s;
     }

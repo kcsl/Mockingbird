@@ -17,7 +17,7 @@ public class ObjectInstantiatorAnswer implements ReturnTypeAnswer {
     }
 
     @Override
-    public Object createObject(Class<?> returnType, boolean forceReload) {
+    public Object applyReturnType(Class<?> returnType, boolean forceReload) {
         if (object != null && !forceReload) {
             return object;
         }

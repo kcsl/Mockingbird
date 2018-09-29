@@ -1,9 +1,15 @@
 package harness;
 
-import testagents.ReplicatedRandom;
+import harness.plaittesting.Plait;
+import org.objectweb.asm.ClassReader;
 
-import java.io.*;
-import java.util.Arrays;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -11,6 +17,9 @@ import java.util.Random;
  * @created 5/14/18.
  */
 public class Runner {
+
+    private static Map<Integer, Integer> map;
+    private static boolean isRunning;
 
     public static void main(String[] args) throws ClassNotFoundException, IOException, InterruptedException {
 
@@ -21,47 +30,45 @@ public class Runner {
            "class":"java.util.ArrayList<Foo>"
            ...Definition for Foo class...
         }
+
         Size is determined by a bytereader of a single integer, long etc.
          */
-
-//        Random random = new Random();
-//        int mod = 5;
-//        int[] r = new int[3];
-//        for (int i = 0 ; i<r.length; i++){
-//            r[i] = random.nextInt(mod);
+        Plait plait = new Plait("\u00e0", 8);
+        plait.normalizeCompletely();
+//        map = new HashMap<>();
+//        map.put(null, 100);
+//        System.out.println(map.containsKey(null));
+//        Random r;
+//        map.put(-1, -1);
+//        isRunning = true;
+//        Thread thread = new Thread(() -> {
+//            while (isRunning) {
+//                System.out.println(map.get(-1));
+//            }
+//        });
+//        thread.start();
+//        Thread.sleep(500);
+//        System.out.println("Start");
+//        for (int i = 0; i < 10000; i++) {
+//            map.put(i, i);
 //        }
-//        System.out.println(Arrays.toString(r));
-//        double a = ((r[1] - r[2])/(r[0] - r[1])) % mod;
-//        double c = ((r[0]*r[2] - r[1])/(r[0] - r[1])) % mod;
-//        int next = random.nextInt(mod);
-//        int pred = (int) ((a*next + c) % mod);
-//        System.out.println(pred + " : " + random.nextInt(mod));
-        Random random = new Random();
-        ReplicatedRandom replicatedRandom = new ReplicatedRandom();
-        int mod = 20;
-        int prev = random.nextInt(mod);
-        int cur = random.nextInt(mod);
-        boolean found = false;
-        while (!found) {
-            if (!replicatedRandom.replicateState(prev, cur)){
-                prev = cur;
-                cur = random.nextInt(mod);
-                continue;
-            }
-            int r1 = random.nextInt(mod);
-            int r2 = replicatedRandom.nextInt(mod);
-            System.out.println(r1 + " | " + r2);
-            if (r1 != r2) {
-                prev = cur;
-                cur = random.nextInt(mod);
-            } else {
-                found = true;
-            }
-        }
-        System.out.println(random.nextInt(mod) + " : " + replicatedRandom.nextInt(mod));
+//        isRunning = false;
+//        Thread.sleep(500);
+//        System.out.println("End: " + thread.isAlive() + " | " + isRunning);
     }
 
-    private static class TestGeneric<Generic> {
-        Generic generic;
+    public static String test() {
+        try {
+            System.out.println("In");
+            try {
+                System.out.println("In2");
+            } finally {
+                System.out.println("Here");
+                return "Out2";
+            }
+        } finally {
+            return "Out";
+        }
+
     }
 }

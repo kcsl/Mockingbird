@@ -3,7 +3,12 @@
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/libs/asm-all-6.0_BETA.jar!/" />
     </CLASSES>
-    <JAVADOC />
-    <SOURCES />
+    <JAVADOC>
+      <root url="https://repository.ow2.org/nexus/content/repositories/releases/org/ow2/asm/asm-all/6.0_BETA/asm-all-6.0_BETA-javadoc.jar" />
+      <root url="https://asm.ow2.io/javadoc/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/libs/asm-all-6.0_BETA-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

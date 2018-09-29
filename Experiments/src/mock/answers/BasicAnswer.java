@@ -30,4 +30,19 @@ public interface BasicAnswer extends Answer {
     default Object handle(Object proxy, Object[] args, Callable<Object> originalMethod, Method method) {
         return apply(proxy, args, method.getReturnType());
     }
+
+    static BasicAnswer transform(Answer answer) {
+        //TODO: make better? or not at all for applying
+        return new BasicAnswer() {
+            @Override
+            public Object apply(Object proxy, Object[] params, Class<?> returnType) {
+                return answer.handle(proxy, params, returnType.getName(), returnType);
+            }
+
+            @Override
+            public Answer duplicate() {
+                return answer.duplicate();
+            }
+        };
+    }
 }

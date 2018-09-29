@@ -99,7 +99,7 @@ public abstract class ByteReader implements ReturnTypeAnswer {
     }
 
     @Override
-    public Object createObject(Class<?> returnType, boolean forceReload) {
+    public Object applyReturnType(Class<?> returnType, boolean forceReload) {
         if (returnType == null || inputStream == null) {
             return null;
         }
