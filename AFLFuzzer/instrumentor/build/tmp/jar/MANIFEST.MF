@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Implementation-Title: Kelinci
-Implementation-Version: 0.1
-Class-Path: .
-Main-Class: edu.cmu.sv.kelinci.instrumentor.Instrumentor
-
