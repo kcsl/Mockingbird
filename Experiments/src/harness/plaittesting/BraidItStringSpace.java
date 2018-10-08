@@ -11,7 +11,7 @@ public class BraidItStringSpace implements Iterable<Space> {
 	private static class BraidItStringSpaceIterator implements Iterator<Space>{
 		private final int MIN_STRANDS = 8;
 		private final int MAX_STRANDS = 27;
-		private final int MIN_LENGTH = 1;
+		private final int MIN_LENGTH = 3;
 		private final int MAX_LENGTH = 50;
 		
 		private int i = MIN_STRANDS;

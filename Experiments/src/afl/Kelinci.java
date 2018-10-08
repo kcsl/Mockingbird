@@ -107,6 +107,7 @@ public class Kelinci {
     private static int runMethodCall(ExecutorService service, File file) throws IOException {
         // run app with input loads byte readers with input file
         InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+        System.out.println(byteReaderList);
         byteReaderList.setInputStream(inputStream);
         LOGGER.log(Level.INFO, "Starting " + methodCallSession);
         MethodData methodData = methodCallSession.runMethod(service, CONFIG.timeout);

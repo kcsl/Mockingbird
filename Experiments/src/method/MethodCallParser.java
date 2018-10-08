@@ -200,6 +200,9 @@ public class MethodCallParser {
                                 staticObjects[i] = BasicAnswer.transform(parseConstraint(readerName + ":staticObj:" + i, methodCall,
                                         (JSONObject) object, byteReaders));
                             } else {
+                                if (object instanceof Long) {
+                                    object = Math.toIntExact((Long) object);
+                                }
                                 staticObjects[i] = new FixedAnswer(object);
                             }
 
@@ -280,7 +283,7 @@ public class MethodCallParser {
             fieldClass.applyField(name, parseMockClass(methodCall, instanceVariable, byteReaders));
         } else { //i.e. primitive no constraint
             LOGGER.log(VERBOSITY, "Instance variable primitive no constraint");
-            ByteReaderInputStream byteReader = new DefaultByteReaderInputStream(null);
+            ByteReaderInputStream byteReader = new DefaultByteReaderInputStream(name);
             byteReaders.add(byteReader);
             Field field = fieldClass.getOldType().getDeclaredField(name);
             fieldClass.applyField(field, new AnswerInstantiator(byteReader, field.getType()));

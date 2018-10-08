@@ -150,6 +150,7 @@ public class TargetedMockBuilder {
     }
 
     <T> ObjectInstantiator<T> createObjectInstantiator(String name, Class<T> newType, ConstructParamAnswer constructorAnswer) {
+        System.out.println(constructorAnswer);
         ObjectInstantiator<T> objectInstantiator = () -> newType.cast(constructorAnswer.applyReturnType(newType, true));
         instanceCreatorHolder.put(newType, objectInstantiator);
         if (name != null) {

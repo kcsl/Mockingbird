@@ -42,7 +42,7 @@ public class AnswerInstantiator implements ObjectInstantiator<Object> {
         try {
             return answer.handle(proxy, params, name, returnType);
         } catch (Throwable throwable) {
-            throw new RuntimeException(throwable.getCause());
+            throw new RuntimeException(throwable);
         }
     }
 }

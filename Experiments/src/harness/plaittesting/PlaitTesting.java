@@ -4,6 +4,7 @@ import method.MethodCall;
 import method.MethodCallFactory;
 import method.MethodCallSession;
 import method.MethodData;
+import method.callbacks.MethodCallback;
 import mock.answers.Answer;
 import mock.answers.ConstructParamAnswer;
 import mock.answers.ReturnTypeAnswer;

@@ -44,7 +44,7 @@ public abstract class MockClass implements MockCreator {
         methodMap = new HashMap<>();
         name = null;
         this.constructorAnswer = constructorAnswer;
-        this.construct = true;
+        this.construct = constructorAnswer != null;
     }
 
     MockClass(
@@ -52,7 +52,6 @@ public abstract class MockClass implements MockCreator {
             Class<?> oldType,
             DynamicType.Builder<?> builder) {
         this(targetedMockBuilder, oldType, builder, null);
-        this.construct = false;
 
     }
 

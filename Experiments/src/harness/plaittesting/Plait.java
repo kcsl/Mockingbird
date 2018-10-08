@@ -383,7 +383,7 @@ public class Plait {
         if (reduced) {
             this.freeNormalize();
         }
-        System.out.println("After free reduce: " + this.intersections);
+//        System.out.println("After free reduce: " + this.intersections);
     }
 
     private PositionPair takeFollowingSection() {
