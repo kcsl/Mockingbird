@@ -22,9 +22,9 @@ public class MultipleMockClass extends SubMockClass {
 
     private final AttributeClass attributeClass;
 
-    public MultipleMockClass(TargetedMockBuilder targetedMockBuilder, DynamicType.Builder<?> builder,
+    public MultipleMockClass(TargetedMockBuilderDEL targetedMockBuilderDEL, DynamicType.Builder<?> builder,
             AttributeClass attributeClass) {
-        super(targetedMockBuilder, attributeClass.getMockClass(), builder);
+        super(targetedMockBuilderDEL, attributeClass.getMockClass(), builder);
         this.attributeClass = attributeClass;
         super.createField(MultipleMockAnswer.INDEX_FIELD, int.class, Modifier.PUBLIC);
     }

@@ -9,7 +9,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="asm-all-6.0_BETA" level="project" />
-    <orderEntry type="library" name="byte-buddy-1.8.11" level="project" />
     <orderEntry type="library" name="objenesis-2.6-javadoc" level="project" />
     <orderEntry type="library" name="byte-buddy-agent-1.8.11-javadoc" level="project" />
     <orderEntry type="library" name="args4j-2.33" level="project" />
@@ -19,5 +18,6 @@
     <orderEntry type="library" name="antlr-4.7.1-complete" level="project" />
     <orderEntry type="library" name="generex-1.0.2" level="project" />
     <orderEntry type="library" name="automaton" level="project" />
+    <orderEntry type="library" name="byte-buddy-1.9.2" level="project" />
   </component>
 </module>

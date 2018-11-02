@@ -1,162 +1,88 @@
 package mock;
 
-import method.AttributeClass;
-import mock.answers.*;
+import mock.answers.Answer;
+import mock.answers.ConstructParamAnswer;
 import net.bytebuddy.ByteBuddy;
-import net.bytebuddy.description.method.MethodDescription;
-import net.bytebuddy.dynamic.DynamicType;
-import net.bytebuddy.dynamic.scaffold.subclass.ConstructorStrategy;
+import net.bytebuddy.dynamic.ClassFileLocator;
 import net.bytebuddy.implementation.Implementation;
+import net.bytebuddy.implementation.MethodCall;
 import net.bytebuddy.implementation.MethodDelegation;
-import net.bytebuddy.implementation.SuperMethodCall;
-import net.bytebuddy.matcher.ElementMatcher;
-import org.objenesis.Objenesis;
-import org.objenesis.ObjenesisStd;
-import org.objenesis.instantiator.ObjectInstantiator;
+import net.bytebuddy.matcher.ElementMatchers;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.File;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.Callable;
 
 /**
  * @author Derrick Lockwood
- * @created 5/15/18.
+ * @created 10/22/18.
  */
 public class TargetedMockBuilder {
 
-    private final Objenesis objenesis;
-    private ByteBuddy byteBuddy;
-    private Map<Class<?>, ObjectInstantiator<?>> instanceCreatorHolder;
-    private Map<String, Class<?>> namedInstanceMap;
+    private final ByteBuddy byteBuddy;
+    private final ClassLoader classLoader;
+    private final Set<File> saveLocations;
 
     public TargetedMockBuilder() {
-        //TODO: create rebase which is a mix of subclass and redefine where it keeps the old methods
+        this(ClassLoader.getSystemClassLoader());
+    }
+
+    public TargetedMockBuilder(ClassLoader classLoader) {
         byteBuddy = new ByteBuddy();
-        instanceCreatorHolder = new HashMap<>();
-        namedInstanceMap = new HashMap<>();
-        objenesis = new ObjenesisStd();
+        this.classLoader = classLoader;
+        saveLocations = new HashSet<>();
+
     }
 
-    static Implementation getRedefineAnswerImplementation(Answer redefineAnswer) {
-        return getImplementation(redefineAnswer, Answer.REDEFINE_MATCHER);
+    public RebaseMockClass<?> rebaseClass(String name) throws
+            ClassNotFoundException {
+        return rebaseClass(name, null);
     }
 
-    static Implementation getImplementation(Answer answer, ElementMatcher<? super MethodDescription> matcher) {
-        return MethodDelegation.withDefaultConfiguration().filter(matcher).to(answer, Answer.class);
+    public <T> RebaseMockClass<T> rebaseClass(Class<T> clazz) {
+        return rebaseClass(clazz, null);
     }
 
-    public MultipleMockClass createMultipleMockClass(AttributeClass attributeClass) {
-        return new MultipleMockClass(this,
-                byteBuddy.subclass(attributeClass.getMockClass(), ConstructorStrategy.Default.NO_CONSTRUCTORS),
-                attributeClass);
+    public RebaseMockClass<?> rebaseClass(String name, ConstructParamAnswer constructParamAnswer) throws
+            ClassNotFoundException {
+        return rebaseClass(classLoader.loadClass(name), constructParamAnswer);
     }
 
-    public SubMockClass createSubclass(Class<?> type) {
-        return createSubclass(type, NotStubbedAnswer.newInstance());
+    public <T> RebaseMockClass<T> rebaseClass(Class<T> clazz, ConstructParamAnswer constructParamAnswer) {
+        return new RebaseMockClass<T>(this, clazz,
+                byteBuddy.rebase(clazz, ClassFileLocator.ForClassLoader.of(classLoader)),
+                constructParamAnswer);
     }
 
-    private SubMockClass createSubclass(Class<?> type, ConstructParamAnswer constructorAnswer) {
-        return new SubMockClass(this, type, byteBuddy.subclass(type, ConstructorStrategy.Default.IMITATE_SUPER_CLASS), constructorAnswer);
+    public static Implementation getImplementation(Answer answer) {
+        return MethodDelegation.withDefaultConfiguration().filter(ElementMatchers.named("handle").and(
+                ElementMatchers.takesArguments(Object.class, Object[].class, Callable.class, Method.class)).or(
+                ElementMatchers.takesArguments(Object.class, Object[].class, Method.class))).to(answer, Answer.class);
     }
 
-    public SubMockClass createSubclass(Class<?> type, Answer defaultSubAnswer, ConstructParamAnswer constructorAnswer) {
-        SubMockClass mockClass = createSubclass(type, constructorAnswer);
-        if (defaultSubAnswer != null) {
-            mockClass.setDefaultImplementation(mockClass.getImplementation(defaultSubAnswer));
+    public static class EmptyInterceptor {
+        public void intercept() {
+            System.out.println("Intercepted");
         }
-        return mockClass;
     }
 
-    public SubMockClass createSubclass(Class<?> type, Answer defaultSubAnswer) {
-        return createSubclass(type, defaultSubAnswer, null);
+    void addSaveLocation(File saveLocation) {
+        saveLocations.add(saveLocation);
     }
 
-    public SubMockClass createSubclass(Class<?> type, Implementation defaultImplementation, ConstructParamAnswer constructorAnswer) {
-        SubMockClass mockClass = createSubclass(type, constructorAnswer);
-        if (defaultImplementation != null) {
-            mockClass.setDefaultImplementation(defaultImplementation);
-        }
-        return mockClass;
-    }
-
-    public SubMockClass createSubclass(Class<?> type, Implementation defaultImplementation) {
-        return createSubclass(type, defaultImplementation, null);
-    }
-
-    public SubMockClass createSubclassRealMethods(Class<?> type, ConstructParamAnswer constructorAnswer) {
-        return createSubclass(type, SuperMethodCall.INSTANCE, constructorAnswer);
-    }
-
-    public RedefineMockClass createRedefine(Class<?> type) {
-        return createRedefine(type, NotStubbedAnswer.newInstance());
-    }
-
-    public RedefineMockClass createRedefine(Class<?> type, Answer defaultRedefineAnswer) {
-        return createRedefine(type, getRedefineAnswerImplementation(defaultRedefineAnswer));
-    }
-
-    public RedefineMockClass createRedefine(Class<?> type, Implementation defaultImplementation) {
-        RedefineMockClass mockClass = new RedefineMockClass(this, type, byteBuddy.redefine(type));
-        if (defaultImplementation != null) {
-            mockClass.setDefaultImplementation(defaultImplementation);
-        }
-        return mockClass;
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> ObjectInstantiator<T> getInstantiator(String name) {
-        Class<T> tClass = (Class<T>) namedInstanceMap.get(name);
-        return tClass == null ? null : getInstantiator(tClass);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> ObjectInstantiator<T> getInstantiator(Class<T> tClass) {
-        return (ObjectInstantiator<T>) instanceCreatorHolder.get(tClass);
-    }
-
-    public <T> T newInstance(Class<T> tClass) {
-        return getInstantiator(tClass).newInstance();
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> T newInstance(String name) {
-        return (T) getInstantiator(name).newInstance();
-    }
-
-    void setObjectInstantiator(Class<?> type, ObjectInstantiator<?> objectInstantiator) {
-        instanceCreatorHolder.put(type, objectInstantiator);
-    }
-
-    void setNamedInstance(String name, Class<?> type) {
-        namedInstanceMap.put(name, type);
-    }
-
-    <T> ObjectInstantiator<T> createObjectInstantiator(String name, Class<T> newType) {
-        ObjectInstantiator<T> objectInstantiator = objenesis.getInstantiatorOf(newType);
-        instanceCreatorHolder.put(newType, objectInstantiator);
-        if (name != null) {
-            namedInstanceMap.put(name, newType);
-        }
-        return objectInstantiator;
-    }
-
-    @SuppressWarnings("unchecked")
-    <T> ObjectInstantiator<T> createObjectInstantiator(String name, T value) {
-        Class<T> tClass = (Class<T>) value.getClass();
-        ObjectInstantiator<T> objectInstantiator = () -> value;
-        instanceCreatorHolder.put(tClass, objectInstantiator);
-        return objectInstantiator;
-    }
-
-    <T> ObjectInstantiator<T> createObjectInstantiator(String name, Class<T> newType, ConstructParamAnswer constructorAnswer) {
-        System.out.println(constructorAnswer);
-        ObjectInstantiator<T> objectInstantiator = () -> newType.cast(constructorAnswer.applyReturnType(newType, true));
-        instanceCreatorHolder.put(newType, objectInstantiator);
-        if (name != null) {
-            namedInstanceMap.put(name, newType);
-        }
-        return objectInstantiator;
+    public ClassLoader createSavedLocationsLoader() {
+        return new URLClassLoader(saveLocations.stream().map(a -> {
+            try {
+                return a.toURI().toURL();
+            } catch (MalformedURLException e) {
+                return null;
+            }
+        }).toArray(URL[]::new));
     }
 
 }

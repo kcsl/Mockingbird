@@ -125,7 +125,7 @@ public class StacColorSpaceExample {
     }
 
 //    public static void testMaxIntensify(int size) throws NoSuchMethodException, IOException {
-//        TargetedMockBuilder targetedMockBuilder = new TargetedMockBuilder();
+//        TargetedMockBuilderDEL targetedMockBuilder = new TargetedMockBuilderDEL();
 //        targetedMockBuilder.createSubclass(Intensify.class, MethodCall.invokeSuper().withAllArguments()).storeSubclass();
 //        ColorSpaceSubAnswer colorSpaceAnswer = new ColorSpaceSubAnswer();
 //        targetedMockBuilder.createSubclass(BufferedImage.class)

@@ -2,7 +2,6 @@ package mock;
 
 import mock.answers.Answer;
 import mock.answers.ConstructParamAnswer;
-import mock.answers.ReturnTypeAnswer;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import net.bytebuddy.implementation.Implementation;
@@ -13,12 +12,12 @@ import net.bytebuddy.implementation.Implementation;
  */
 public class SubMockClass extends MockClass {
 
-    SubMockClass(TargetedMockBuilder targetedMockBuilder, Class<?> oldType, DynamicType.Builder<?> builder, ConstructParamAnswer returnTypeAnswer) {
-        super(targetedMockBuilder, oldType, builder, returnTypeAnswer);
+    SubMockClass(TargetedMockBuilderDEL targetedMockBuilderDEL, Class<?> oldType, DynamicType.Builder<?> builder, ConstructParamAnswer returnTypeAnswer) {
+        super(targetedMockBuilderDEL, oldType, builder, returnTypeAnswer);
     }
 
-    SubMockClass(TargetedMockBuilder targetedMockBuilder, Class<?> oldType, DynamicType.Builder<?> builder) {
-        super(targetedMockBuilder, oldType, builder);
+    SubMockClass(TargetedMockBuilderDEL targetedMockBuilderDEL, Class<?> oldType, DynamicType.Builder<?> builder) {
+        super(targetedMockBuilderDEL, oldType, builder);
     }
 
     @Override
@@ -29,7 +28,7 @@ public class SubMockClass extends MockClass {
 
     @Override
     Implementation getImplementation(Answer answer) {
-        return TargetedMockBuilder.getImplementation(answer, Answer.SUB_MATCHER);
+        return TargetedMockBuilderDEL.getImplementation(answer, Answer.SUB_MATCHER);
     }
 
     public void createField(String name, Class<?> type, int modifiers) {

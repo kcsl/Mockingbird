@@ -13,11 +13,11 @@ import mock.answers.ReturnTypeAnswer;
  */
 public class PrimitiveMockCreator implements MockCreator {
     private final Class<?> type;
-    private final TargetedMockBuilder builder;
+    private final TargetedMockBuilderDEL builder;
     private ReturnTypeAnswer answer;
     private String name;
 
-    private PrimitiveMockCreator(TargetedMockBuilder builder, Class<?> type, ReturnTypeAnswer answer) {
+    private PrimitiveMockCreator(TargetedMockBuilderDEL builder, Class<?> type, ReturnTypeAnswer answer) {
         this.type = type;
         this.builder = builder;
         builder.setObjectInstantiator(type, this);
@@ -25,7 +25,7 @@ public class PrimitiveMockCreator implements MockCreator {
         name = null;
     }
 
-    public static PrimitiveMockCreator create(TargetedMockBuilder builder, Class<?> type, Answer answer) {
+    public static PrimitiveMockCreator create(TargetedMockBuilderDEL builder, Class<?> type, Answer answer) {
         if (!(answer instanceof ReturnTypeAnswer)) {
             return null;
         }
@@ -43,7 +43,7 @@ public class PrimitiveMockCreator implements MockCreator {
         return null;
     }
 
-    public static PrimitiveMockCreator create(TargetedMockBuilder builder, AttributeClass attributeClass,
+    public static PrimitiveMockCreator create(TargetedMockBuilderDEL builder, AttributeClass attributeClass,
             Answer answer) {
         if (!(answer instanceof ReturnTypeAnswer)) {
             return null;

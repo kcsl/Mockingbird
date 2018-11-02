@@ -20,7 +20,7 @@ import java.util.Map;
 public abstract class MockClass implements MockCreator {
 
     final Class<?> oldType;
-    private final TargetedMockBuilder targetedMockBuilder;
+    private final TargetedMockBuilderDEL targetedMockBuilderDEL;
     DynamicType.Builder<?> builder;
     private Class<?> newType;
     private FieldSetInterceptor fieldSetInterceptor;
@@ -31,11 +31,11 @@ public abstract class MockClass implements MockCreator {
     private boolean construct;
 
     MockClass(
-            TargetedMockBuilder targetedMockBuilder,
+            TargetedMockBuilderDEL targetedMockBuilderDEL,
             Class<?> oldType,
             DynamicType.Builder<?> builder, ConstructParamAnswer constructorAnswer) {
         this.oldType = oldType;
-        this.targetedMockBuilder = targetedMockBuilder;
+        this.targetedMockBuilderDEL = targetedMockBuilderDEL;
         fieldSetInterceptor = new FieldSetInterceptor(oldType.getSimpleName());
         //TODO: handle toString better?
         this.builder = builder.method(ElementMatchers.named("toString").and(ElementMatchers.takesArguments(0)))
@@ -48,10 +48,10 @@ public abstract class MockClass implements MockCreator {
     }
 
     MockClass(
-            TargetedMockBuilder targetedMockBuilder,
+            TargetedMockBuilderDEL targetedMockBuilderDEL,
             Class<?> oldType,
             DynamicType.Builder<?> builder) {
-        this(targetedMockBuilder, oldType, builder, null);
+        this(targetedMockBuilderDEL, oldType, builder, null);
 
     }
 
@@ -103,7 +103,7 @@ public abstract class MockClass implements MockCreator {
 
     public <T> MockClass applyField(Field field, T value) {
         //TODO: name objectinstantiator field?
-        fieldSetInterceptor.putField(field, targetedMockBuilder.createObjectInstantiator(null, value));
+        fieldSetInterceptor.putField(field, targetedMockBuilderDEL.createObjectInstantiator(null, value));
         return this;
     }
 
@@ -113,9 +113,9 @@ public abstract class MockClass implements MockCreator {
     }
 
     public <T> MockClass applyField(Class<T> tClass, ObjectInstantiator<T> objectInstantiator, Field field) {
-        targetedMockBuilder.setObjectInstantiator(tClass, objectInstantiator);
+        targetedMockBuilderDEL.setObjectInstantiator(tClass, objectInstantiator);
         //TODO: Do this? what happens if this is true?
-        targetedMockBuilder.setNamedInstance(field.getName(), tClass);
+        targetedMockBuilderDEL.setNamedInstance(field.getName(), tClass);
         fieldSetInterceptor.putField(field, objectInstantiator);
         return this;
     }
@@ -210,7 +210,7 @@ public abstract class MockClass implements MockCreator {
         builder = fieldSetInterceptor.addFields(builder);
         newType = createClass(builder.make());
         builder = null;
-        objectInstantiator = targetedMockBuilder.createObjectInstantiator(name, newType, constructorAnswer);
+        objectInstantiator = targetedMockBuilderDEL.createObjectInstantiator(name, newType, constructorAnswer);
         return objectInstantiator;
     }
 
@@ -223,7 +223,7 @@ public abstract class MockClass implements MockCreator {
         builder = fieldSetInterceptor.addFields(builder);
         newType = createClass(builder.make());
         builder = null;
-        objectInstantiator = targetedMockBuilder.createObjectInstantiator(name, newType);
+        objectInstantiator = targetedMockBuilderDEL.createObjectInstantiator(name, newType);
         return objectInstantiator;
     }
 

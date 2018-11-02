@@ -5,11 +5,10 @@ import method.callbacks.MethodCallback;
 import mock.MockCreator;
 import mock.PrimitiveMockCreator;
 import mock.SubMockClass;
-import mock.TargetedMockBuilder;
+import mock.TargetedMockBuilderDEL;
 import mock.answers.Answer;
 import mock.answers.ConstructParamAnswer;
 import mock.answers.NotStubbedAnswer;
-import mock.answers.ReturnTypeAnswer;
 import org.objenesis.instantiator.ObjectInstantiator;
 
 import java.lang.reflect.Method;
@@ -26,7 +25,7 @@ import java.util.List;
  */
 public class MethodCall {
 
-    private final TargetedMockBuilder builder;
+    private final TargetedMockBuilderDEL builder;
     final MockCreator[] parameters;
     final List<String> primitiveInstanceVariables;
     final List<MockCreator> normalObjects;
@@ -41,7 +40,7 @@ public class MethodCall {
     MethodCall(AttributeClass[] parameterDefinitions, Method method, ConstructParamAnswer constructorAnswer) {
         this.method = method;
         this.parameterDefinitions = parameterDefinitions;
-        builder = new TargetedMockBuilder();
+        builder = new TargetedMockBuilderDEL();
         methodMockClass = builder.createSubclassRealMethods(method.getDeclaringClass(), constructorAnswer);
         parameters = new MockCreator[method.getParameterCount()];
         primitiveInstanceVariables = new ArrayList<>();
