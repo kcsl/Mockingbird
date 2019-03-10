@@ -23,4 +23,8 @@ public class FixedAnswer implements BasicAnswer {
         return new FixedAnswer(value);
     }
 
+    @Override
+    public String toString() {
+        return "Fixed Answer: " + (value != null ? value : "null");
+    }
 }

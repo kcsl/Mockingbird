@@ -46,6 +46,11 @@ public class MethodData {
         this.systemOut = systemOut;
     }
 
+    void setError(Throwable returnException, Duration duration) {
+        this.returnException = returnException;
+        this.duration = duration;
+    }
+
     public Object getMockObject() {
         return mockObject;
     }
@@ -92,6 +97,14 @@ public class MethodData {
                     (String) values[4]);
             return this;
         };
+    }
+
+    public void print() {
+        if (returnException != null) {
+            returnException.printStackTrace();
+        } else {
+            System.out.println(this);
+        }
     }
 
     @Override

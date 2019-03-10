@@ -1,23 +1,30 @@
 package mock;
 
-import instrumentor.AFLClassVisitor;
 import instrumentor.AFLMethodVisitor;
 import mock.answers.Answer;
+import net.bytebuddy.agent.ByteBuddyAgent;
 import net.bytebuddy.agent.builder.AgentBuilder;
-import net.bytebuddy.asm.AsmVisitorWrapper;
+import net.bytebuddy.agent.builder.ResettableClassFileTransformer;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.implementation.Implementation;
 import net.bytebuddy.implementation.MethodDelegation;
+import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.utility.JavaModule;
 import org.objenesis.Objenesis;
 import org.objenesis.ObjenesisStd;
+import org.objenesis.instantiator.ObjectInstantiator;
 
+import javax.sound.midi.Instrument;
+import java.io.File;
+import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 /**
@@ -25,23 +32,30 @@ import java.util.concurrent.Callable;
  * @created 10/23/18.
  */
 public class TransformClassLoader extends URLClassLoader implements AgentBuilder.Transformer {
-    private HashMap<String, Transformer> hashMap;
+    private final Map<String, TransformMockClass> transformMap;
     private final Objenesis objenesis;
+    private ElementMatcher.Junction<? super TypeDescription> transformedTypes;
+    private ElementMatcher.Junction<? super TypeDescription> transformedPackages;
 
-    public TransformClassLoader(URL[] urls) {
+    public TransformClassLoader(String... urlPaths) throws MalformedURLException {
+        this(toURLs(urlPaths));
+    }
+
+    public TransformClassLoader(URL... urls) {
         super(urls);
-        hashMap = new HashMap<>();
+        transformMap = new HashMap<>();
         objenesis = new ObjenesisStd();
+        transformedTypes = ElementMatchers.none();
+        transformedPackages = ElementMatchers.none();
     }
 
     public TransformClassLoader() {
-        this(new URL[0]);
+        this((URL) null);
     }
 
     public AgentBuilder transformAgentBuilder(AgentBuilder agentBuilder) {
         return agentBuilder
-                .type(ElementMatchers.any())
-//                .transform(TransformClassLoader.createAFLTransformer(this))
+                .type(transformedPackages.or(transformedTypes))
                 .transform(this);
     }
 
@@ -49,29 +63,50 @@ public class TransformClassLoader extends URLClassLoader implements AgentBuilder
         return transformAgentBuilder(new AgentBuilder.Default());
     }
 
-    public void addTransformation(String canonicalName, Transformer transformer) {
-        hashMap.put(canonicalName, transformer);
+    public ResettableClassFileTransformer loadAgent(Instrumentation instrumentation) {
+        return createAgentBuilder().installOn(instrumentation);
     }
 
     public void addTransformation(TransformMockClass transformMockClass) {
+        String canonicalName = transformMockClass.getCanonicalName();
+        if (transformMap.containsKey(canonicalName)) {
+            return;
+        }
+        transformedTypes = transformedTypes.or(ElementMatchers.named(canonicalName));
         transformMockClass.tiedClassLoader = this;
-        hashMap.put(transformMockClass.getCanonicalName(), transformMockClass);
+        transformMap.put(canonicalName, transformMockClass);
+    }
+
+    public TransformMockClass getTransformMockClass(String canonicalName) {
+        return transformMap.get(canonicalName);
+    }
+
+    public TransformMockClass getTransformMockClassOrCreate(String canonicalName) {
+        TransformMockClass t = getTransformMockClass(canonicalName);
+        if (t == null) {
+            t = new TransformMockClass(canonicalName);
+            addTransformation(t);
+        }
+        return t;
     }
 
     public void addURL(URL url) {
         super.addURL(url);
     }
 
+    public void addAppPackage(String packageName) {
+        transformedPackages = transformedPackages.or(ElementMatchers.nameContains(packageName));
+    }
 
     @Override
     public DynamicType.Builder<?> transform(DynamicType.Builder<?> builder, TypeDescription typeDescription,
             ClassLoader classLoader, JavaModule module) {
         if (this.equals(classLoader)) {
-            Transformer t = hashMap.get(typeDescription.getCanonicalName());
-            if (t != null) {
-                builder = builder.method(ElementMatchers.any())
-                        .intercept(MethodDelegation.withDefaultConfiguration().filter(AFLAnswer.MATCHER).to(new AFLAnswer()));
-                return t.transform(builder);
+            if (transformedTypes.matches(typeDescription)) {
+                return transformMap.get(typeDescription.getCanonicalName()).transform(builder);
+            } else {
+                //No transform class but still needs AFL transformation
+                return AFLMethodVisitor.applyAFLTransformation(builder, ElementMatchers.any());
             }
         }
         return builder;
@@ -84,36 +119,31 @@ public class TransformClassLoader extends URLClassLoader implements AgentBuilder
                 ElementMatchers.takesArguments(Object[].class))).to(answer, Answer.class);
     }
 
-    <V> V newInstance(Class<V> vClass) {
+    private static URL[] foldURLs(URL app, URL... libs) {
+        URL[] urls = new URL[libs.length + 1];
+        urls[0] = app;
+        for (int i = 1; i < urls.length; i++) {
+            urls[i]= libs[i-1];
+        }
+        return urls;
+    }
+
+    <V> ObjectInstantiator<V> getInstantiator(Class<V> vClass) {
         if (vClass == null) {
             return null;
         }
-        return objenesis.newInstance(vClass);
+        return objenesis.getInstantiatorOf(vClass);
     }
 
-
-    private static AgentBuilder.Transformer createAFLTransformer(TransformClassLoader cl) {
-        return (builder, typeDescription, classLoader, module) -> {
-            if (cl.equals(classLoader)) {
-                        return builder.visit(AFLClassVisitor.create());
-//                return builder.visit(new AsmVisitorWrapper.ForDeclaredMethods().method(ElementMatchers.any(),
-//                        (AsmVisitorWrapper.ForDeclaredMethods.MethodVisitorWrapper) (instrumentedType, instrumentedMethod, methodVisitor, implementationContext, typePool, writerFlags, readerFlags) -> new AFLMethodVisitor(
-//                                methodVisitor)));
-            }
-            return builder;
-        };
+    private static URL[] toURLs(String... urlPaths) throws MalformedURLException {
+        URL[] urls = new URL[urlPaths.length];
+        for (int i = 0; i < urlPaths.length; i++) {
+            urls[i] = new File(urlPaths[i]).toURI().toURL();
+        }
+        return urls;
     }
 
     public interface Transformer {
         DynamicType.Builder<?> transform(DynamicType.Builder<?> builder);
-
-        default Transformer link(Transformer transformer) {
-            Transformer self = this;
-            return builder -> transformer.transform(self.transform(builder));
-        }
-
-        static Transformer empty() {
-            return builder -> builder;
-        }
     }
 }

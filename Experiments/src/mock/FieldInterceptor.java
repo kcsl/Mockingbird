@@ -8,7 +8,6 @@ import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.This;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.objenesis.instantiator.ObjectInstantiator;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;

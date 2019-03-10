@@ -10,12 +10,12 @@ import java.util.concurrent.Callable;
 public class OriginalMethodAnswer implements Answer {
     @Override
     public Object handle(Object proxy, Object[] args, Method method) {
-        return null;
+        throw new InvalidHandleException();
     }
 
     @Override
     public Object handle(Object[] args) {
-        return null;
+        throw new InvalidHandleException();
     }
 
     @Override
@@ -30,6 +30,16 @@ public class OriginalMethodAnswer implements Answer {
 
     @Override
     public Object handle(Object proxy, Object[] parameters, String name, Class<?> returnType) {
-        return null;
+        throw new InvalidHandleException();
+    }
+
+    class InvalidHandleException extends RuntimeException {
+        public InvalidHandleException() {
+            super("Invalid handle method in Answer ");
+        }
+    }
+
+    public static OriginalMethodAnswer newInstance() {
+        return new OriginalMethodAnswer();
     }
 }

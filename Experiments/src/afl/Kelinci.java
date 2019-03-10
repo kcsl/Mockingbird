@@ -4,22 +4,22 @@ import edu.cmu.sv.kelinci.Mem;
 import instrumentor.InstrumentLoader;
 import io.AFLConfig;
 import io.MethodCallFormatter;
-import method.MethodCall;
-import method.MethodCallParser;
-import method.MethodCallSession;
-import method.MethodData;
+import method.*;
 import method.callbacks.CSVMethodCallback;
+import method.callbacks.EmptyMethodCallback;
 import method.callbacks.LogMethodCallback;
 import method.callbacks.MethodCallback;
+import mock.TransformClassLoader;
 import mock.answers.readers.ByteReaderList;
 import mock.answers.readers.inputstream.ByteReaderInputStreamList;
-import net.bytebuddy.ByteBuddy;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.SocketException;
+import java.net.URL;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -48,6 +48,7 @@ public class Kelinci {
     private static AFLConfig CONFIG;
     private static Logger LOGGER = Logger.getLogger(Kelinci.class.getName());
     private static MethodCallSession methodCallSession;
+    private static TransformClassLoader transformClassLoader;
     private static ByteReaderInputStreamList byteReaderList;
     private static AFLServer aflServer;
 
@@ -229,6 +230,12 @@ public class Kelinci {
          * Parse methodcall definition and config
          */
         byteReaderList = new ByteReaderInputStreamList(LOGGER);
+        try {
+            transformClassLoader = new TransformClassLoader(instrumentedDir.getPath());
+        } catch (MalformedURLException e) {
+            LOGGER.log(Level.SEVERE, e.getMessage());
+            return;
+        }
         String configFile = args[curArg];
         LOGGER.log(Level.INFO, "Parsing " + configFile);
         try {
@@ -250,12 +257,13 @@ public class Kelinci {
                 LOGGER.addHandler(fileHandler);
             }
             if (jsonObject.containsKey("definition")) {
-                MethodCall methodCall = MethodCallParser.setupMethodCall(LOGGER, (JSONObject) jsonObject.get("definition"),
+                MethodCall methodCall = MethodCallParser.setupMethodCall(LOGGER, transformClassLoader, (JSONObject) jsonObject.get("definition"),
                         byteReaderList);
                 if (methodCall == null) {
                     return;
                 }
                 LOGGER.log(Level.INFO, "Parsing Finished");
+                methodCallSession = methodCall.createSession(EmptyMethodCallback.create());
             }
         } catch (ClassNotFoundException e) {
             LOGGER.log(Level.SEVERE, "Error can't start the fuzzer because class " + e.getMessage() + " not found");
@@ -286,7 +294,6 @@ public class Kelinci {
 
         //Setup the AFLServer to get requests from interface program
         aflServer = new AFLServer(port);
-
 
         if (methodCallSession == null) {
             return;

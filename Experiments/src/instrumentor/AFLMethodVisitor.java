@@ -1,8 +1,14 @@
 package instrumentor;
 
 import edu.cmu.sv.kelinci.Mem;
+import net.bytebuddy.asm.AsmVisitorWrapper;
+import net.bytebuddy.description.method.MethodDescription;
+import net.bytebuddy.dynamic.DynamicType;
+import net.bytebuddy.jar.asm.ClassReader;
+import net.bytebuddy.jar.asm.ClassWriter;
 import net.bytebuddy.jar.asm.Label;
 import net.bytebuddy.jar.asm.MethodVisitor;
+import net.bytebuddy.matcher.ElementMatcher;
 
 import java.util.HashSet;
 import java.util.Random;
@@ -60,9 +66,9 @@ public class AFLMethodVisitor extends MethodVisitor {
      */
     private void instrumentLocation() {
         Integer id = getNewLocationId();
-        mv.visitFieldInsn(GETSTATIC, "edu/cmu/sv/kelinci/Mem", "mem", "[B");
+        mv.visitFieldInsn(GETSTATIC, "instrumentor/AFLPathMem", "mem", "[B");
         mv.visitLdcInsn(id);
-        mv.visitFieldInsn(GETSTATIC, "edu/cmu/sv/kelinci/Mem", "prev_location", "I");
+        mv.visitFieldInsn(GETSTATIC, "instrumentor/AFLPathMem", "prev_location", "I");
         mv.visitInsn(IXOR);
         mv.visitInsn(DUP2);
         mv.visitInsn(BALOAD);
@@ -71,7 +77,7 @@ public class AFLMethodVisitor extends MethodVisitor {
         mv.visitInsn(I2B);
         mv.visitInsn(BASTORE);
         mv.visitIntInsn(SIPUSH, (id >> 1));
-        mv.visitFieldInsn(PUTSTATIC, "edu/cmu/sv/kelinci/Mem", "prev_location", "I");
+        mv.visitFieldInsn(PUTSTATIC, "instrumentor/AFLPathMem", "prev_location", "I");
     }
 
     @Override
@@ -104,4 +110,12 @@ public class AFLMethodVisitor extends MethodVisitor {
          */
         instrumentLocation();
     }
+
+    public static DynamicType.Builder<?> applyAFLTransformation(DynamicType.Builder<?> builder,
+            ElementMatcher<? super MethodDescription> descriptions) {
+        return builder.visit(new AsmVisitorWrapper.ForDeclaredMethods().writerFlags(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES).method(descriptions,
+                (AsmVisitorWrapper.ForDeclaredMethods.MethodVisitorWrapper) (instrumentedType, instrumentedMethod, methodVisitor, implementationContext, typePool, writerFlags, readerFlags) ->
+                        new AFLMethodVisitor(methodVisitor)));
+    }
+
 }

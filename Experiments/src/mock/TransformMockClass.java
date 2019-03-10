@@ -1,90 +1,82 @@
 package mock;
 
+import instrumentor.AFLMethodVisitor;
 import mock.answers.Answer;
-import mock.answers.ConstructParamAnswer;
-import mock.answers.FixedAnswer;
+import mock.answers.AnswerInstantiator;
+import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.dynamic.DynamicType;
+import net.bytebuddy.implementation.MethodDelegation;
+import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
+import org.objenesis.instantiator.ObjectInstantiator;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Derrick Lockwood
  * @created 10/25/18.
  */
-public class TransformMockClass implements TransformClassLoader.Transformer {
+public class TransformMockClass implements TransformClassLoader.Transformer, MockCreator {
 
     private final String canonicalName;
-    private final ConstructParamAnswer constructParamAnswer;
+    private final boolean isPrimitive;
+    private String name;
     private List<TransformClassLoader.Transformer> transformers;
-    private FieldInterceptor fieldInterceptor;
     private Class<?> transformedClass;
+    private ElementMatcher.Junction<? super MethodDescription> transformedMethods;
+    private final Map<ElementMatcher<? super MethodDescription>, String> matcherToMethodField;
+    private ObjectInstantiator<?> objectInstantiator;
+    private final ClassInterceptor interceptor;
     TransformClassLoader tiedClassLoader;
 
-    public TransformMockClass(String canonicalName, ConstructParamAnswer constructParamAnswer) {
+    public TransformMockClass(String canonicalName) {
         this.canonicalName = canonicalName;
-        this.constructParamAnswer = constructParamAnswer;
-        fieldInterceptor = new FieldInterceptor(canonicalName);
+        this.name = name + "_" + canonicalName;
         transformers = new LinkedList<>();
         tiedClassLoader = null;
-        transformedClass = null;
+        transformedClass = getClassForString(canonicalName, null);
+        isPrimitive = transformedClass != null;
+        transformedMethods = ElementMatchers.none();
+        matcherToMethodField = new HashMap<>();
+        objectInstantiator = null;
+        interceptor = new ClassInterceptor(this);
+        transformers.add(interceptor);
+        transformedMethods = transformedMethods.or(interceptor.getInterceptorMatcher());
     }
 
-    public TransformMockClass(String canonicalName) {
-        this(canonicalName, null);
+    String getMethodFieldName(ElementMatcher<? super MethodDescription> methodMatcher) {
+        String fieldName = matcherToMethodField.get(methodMatcher);
+        if (fieldName == null) {
+            transformedMethods = transformedMethods.or(methodMatcher);
+            fieldName = getCanonicalName() + "_" + matcherToMethodField.size();
+            matcherToMethodField.put(methodMatcher, fieldName);
+            String finalFieldName = fieldName;
+            transformers.add(
+                    builder -> builder.defineField(finalFieldName, Answer.class, Modifier.PUBLIC)
+                            .method(methodMatcher)
+                            .intercept(MethodDelegation.toField(finalFieldName)));
+            interceptor.initMethod(fieldName);
+        }
+        return fieldName;
     }
 
     public String getCanonicalName() {
         return canonicalName;
     }
 
-    public void applyMethod(Answer answer, String methodName, Class<?>... args) {
-        transformers.add(
-                builder -> builder.method(ElementMatchers.named(methodName).and(ElementMatchers.takesArguments(args)))
-                        .intercept(TransformClassLoader.getImplementation(answer)));
-    }
-
-    public <V> void applyMethod(V value, String methodName, Class<?>... parameters) {
-        applyMethod(new FixedAnswer(value), methodName, parameters);
-    }
-
-    public void applyField(String fieldName, Object value) {
-        fieldInterceptor.setFieldInstanciator(fieldName, new FixedAnswer(value));
-    }
-
-    public void applyField(String fieldName, Answer answerCreator) {
-        fieldInterceptor.setFieldInstanciator(fieldName, answerCreator);
-    }
-
+    @Override
     public Class<?> loadClass() throws ClassNotFoundException {
         if (transformedClass == null && tiedClassLoader != null) {
-            transformedClass = tiedClassLoader.loadClass(canonicalName);
+            transformedClass = getClassForString(canonicalName, tiedClassLoader);
         }
         return transformedClass;
-    }
-
-    @SuppressWarnings("unchecked")
-    public <V> V newInstance() throws
-            ClassNotFoundException,
-            NoSuchMethodException,
-            IllegalAccessException,
-            InvocationTargetException {
-        V v = null;
-        if (constructParamAnswer != null) {
-            v = (V) constructParamAnswer.applyReturnType(loadClass(), true);
-        } else if (tiedClassLoader != null) {
-            v = (V) tiedClassLoader.newInstance(loadClass());
-        }
-        if (v != null) {
-            fieldInterceptor.reloadParameters(v);
-            return v;
-        }
-        throw new ClassNotLoadedException("Mock Class (" + canonicalName + ") isn't loaded yet");
     }
 
     public Method loadMethod(String methodName, Class<?>... params) throws ClassNotFoundException,
@@ -104,24 +96,104 @@ public class TransformMockClass implements TransformClassLoader.Transformer {
         throw new ClassNotLoadedException("Mock Class (" + canonicalName + ") isn't loaded yet");
     }
 
-    public void reloadInstanceVariables(Object o, String... variableNamesToReload) throws
-            ClassNotFoundException,
-            NoSuchMethodException,
-            IllegalAccessException,
-            InvocationTargetException {
-        Class<?> loadedClass = loadClass();
-        if (o == null || !o.getClass().equals(loadedClass)){
-            return;
-        }
-        fieldInterceptor.reloadParameters(o, variableNamesToReload);
-    }
-
     @Override
     public DynamicType.Builder<?> transform(DynamicType.Builder<?> builder) {
+        if (transformedClass != null) {
+            return builder;
+        }
         for (TransformClassLoader.Transformer transformer : transformers) {
             builder = transformer.transform(builder);
         }
-        return fieldInterceptor.addFieldInterceptor(builder);
+        builder = AFLMethodVisitor.applyAFLTransformation(builder, ElementMatchers.not(transformedMethods));
+
+        return builder;
+    }
+
+    @Override
+    public boolean isPrimitive() {
+        return isPrimitive;
+    }
+
+    @Override
+    public ObjectInstantiator<?> getObjectInstantiator(ClassMap classMap) throws ClassNotFoundException {
+        if (this.objectInstantiator == null && tiedClassLoader != null && !isPrimitive) {
+            objectInstantiator = tiedClassLoader.getInstantiator(loadClass());
+        }
+        if (!classMap.isAssociated(this)){
+            classMap.associateWithMockClass(this);
+        }
+        ObjectInstantiator<?> objectInstantiator = this.objectInstantiator;
+        if (classMap.getConstructAnswer() != null) {
+            objectInstantiator = new AnswerInstantiator(classMap.getConstructAnswer(), loadClass());
+        } else if (isPrimitive) {
+            throw new RuntimeException("Primitive Class doesn't have answer");
+        }
+        if (objectInstantiator != null) {
+            ObjectInstantiator<?> finalObjectInstantiator = objectInstantiator;
+            return new ObjectInstantiator<>() {
+
+                private Object instance;
+
+                @Override
+                public Object newInstance() {
+                    if (classMap.getLoadEveryInstantiation() || instance == null) {
+                        instance = finalObjectInstantiator.newInstance();
+                        if (isPrimitive) {
+                            return instance;
+                        }
+                        try {
+                            interceptor.applyMap(instance, classMap);
+                        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                            Throwable t = e.getCause();
+                            if (t == null) {
+                                t = e;
+                            }
+                            throw new RuntimeException(t);
+                        }
+                    }
+                    return instance;
+                }
+            };
+        }
+        throw new ClassNotLoadedException("Mock Class (" + canonicalName + ") isn't loaded yet");
+    }
+
+    private static Class<?> getClassForString(String name, ClassLoader classLoader) {
+        switch (name) {
+            case "Boolean":
+            case "boolean":
+                return boolean.class;
+            case "Byte":
+            case "byte":
+                return byte.class;
+            case "Character":
+            case "char":
+                return char.class;
+            case "Short":
+            case "short":
+                return short.class;
+            case "Integer":
+            case "int":
+                return int.class;
+            case "Long":
+            case "long":
+                return long.class;
+            case "Float":
+            case "float":
+                return float.class;
+            case "Double":
+            case "double":
+                return double.class;
+            default:
+                if (classLoader != null) {
+                    try {
+                        return Class.forName(name, true, classLoader);
+                    } catch (ClassNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                return null;
+        }
     }
 
     private class ClassNotLoadedException extends RuntimeException {
@@ -130,4 +202,13 @@ public class TransformMockClass implements TransformClassLoader.Transformer {
         }
     }
 
+    @Override
+    public String toString() {
+        return getCanonicalName();
+    }
+
+    @Override
+    public int hashCode() {
+        return getCanonicalName().hashCode();
+    }
 }

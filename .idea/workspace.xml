@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="e545e32b-3769-4e17-b8d7-627ca9c4dad2" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/Experiments/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Experiments/src/afl/Kelinci.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/afl/Kelinci.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Experiments/src/harness/Foo.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/harness/Foo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Experiments/src/harness/Runner.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/harness/Runner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Experiments/src/harness/StacColorSpaceExample.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/harness/StacColorSpaceExample.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Experiments/src/harness/plaittesting/PlaitTestHarness.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/harness/plaittesting/PlaitTestHarness.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Experiments/src/harness/plaittesting/PlaitTesting.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/harness/plaittesting/PlaitTesting.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Experiments/src/harness/tollboothtesting/TollBoothTesting.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/harness/tollboothtesting/TollBoothTesting.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Experiments/src/instrumentor/AFLMethodVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/instrumentor/AFLMethodVisitor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Experiments/src/method/MethodCall.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/method/MethodCallDEL.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Experiments/src/method/MethodCallFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/method/MethodCallFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Experiments/src/method/MethodCallParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/method/MethodCallParser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Experiments/src/method/MethodCallSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/method/MethodCallSessionDEL.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Experiments/src/method/MethodRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/method/MethodRunner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Experiments/src/mock/AFLAnswer.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/instrumentor/AFLAnswer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Experiments/src/mock/FieldInterceptor.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/mock/FieldInterceptor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Experiments/src/mock/MockClass.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/mock/MockClassDELDEL.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Experiments/src/mock/MockCreator.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/mock/MockCreatorDEL.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Experiments/src/mock/MultipleMockClass.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/mock/MultipleMockClassDELDEL.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Experiments/src/mock/PrimitiveMockCreator.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/mock/PrimitiveMockCreatorDEL.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Experiments/src/mock/RebaseMockClass.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/mock/RebaseMockClass.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Experiments/src/mock/SubMockClass.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/mock/SubMockClassDELDEL.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Experiments/src/mock/TargetedMockBuilderDEL.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/mock/TargetedMockBuilderDEL.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Experiments/src/mock/TransformClassLoader.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/mock/TransformClassLoader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Experiments/src/mock/TransformMockClass.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/mock/TransformMockClass.java" afterDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="y" value="23" />
+    <option name="width" value="1440" />
+    <option name="height" value="847" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="MockingbirdFuzzer" type="b2602c69:ProjectViewProjectNode" />
+              <item name="MockingbirdFuzzer" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="PackagesPane" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="project.structure.last.edited" value="SDKs" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.project.gradle" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="Applet">
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="Application" factoryName="Application">
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="JUnit" factoryName="JUnit">
+      <option name="TEST_OBJECT" value="class" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="TestNG">
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <properties />
+      <listeners />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType">
+      <module name="" />
+      <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m -ea" />
+      <option name="PROGRAM_PARAMETERS" />
+      <predefined_log_file enabled="true" id="idea.log" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e545e32b-3769-4e17-b8d7-627ca9c4dad2" name="Default Changelist" comment="" />
+      <created>1549549546577</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1549549546577</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="0" y="23" width="1440" height="847" extended-state="6" />
+    <layout>
+      <window_info id="Image Layers" />
+      <window_info id="Designer" />
+      <window_info id="UI Designer" />
+      <window_info id="Capture Tool" />
+      <window_info id="Favorites" side_tool="true" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24964234" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info anchor="bottom" id="Tool Output" />
+      <window_info anchor="bottom" id="Version Control" />
+      <window_info anchor="bottom" id="ANTLR Preview" />
+      <window_info anchor="bottom" id="Terminal" />
+      <window_info anchor="bottom" id="Event Log" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="right" id="Palette" />
+      <window_info anchor="right" id="Theme Preview" />
+      <window_info anchor="right" id="Capture Analysis" />
+      <window_info anchor="right" id="Palette&#9;" />
+      <window_info anchor="right" id="Maven" />
+      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+    </layout>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="GlobalLibrariesConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="JdkListConfigurable.UI">
+        <settings>
+          <last-edited>Android API 23 Platform</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.32988507" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectJDKs.UI">
+        <settings>
+          <last-edited>1.8</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectLibrariesConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
+  </component>
+</project>

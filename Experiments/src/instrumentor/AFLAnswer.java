@@ -1,12 +1,13 @@
-package mock;
+package instrumentor;
 
 import edu.cmu.sv.kelinci.Mem;
 import net.bytebuddy.description.method.MethodDescription;
+import net.bytebuddy.dynamic.DynamicType;
+import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.bind.annotation.*;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
 
-import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.concurrent.Callable;
@@ -46,9 +47,13 @@ public class AFLAnswer {
     @RuntimeType
     public Object handle(@SuperCall Callable<Object> originalMethod) throws Throwable {
         int id = getNewLocationId();
-        Mem.mem[id^Mem.prev_location]++;
-        Mem.prev_location = id >> 1;
+        AFLPathMem.mem[id^Mem.prev_location]++;
+        AFLPathMem.prev_location = id >> 1;
         return originalMethod.call();
     }
 
+    public static DynamicType.Builder<?> applyAFLTransformation(DynamicType.Builder<?> builder, ElementMatcher<? super MethodDescription> descriptions) {
+        return builder.method(descriptions)
+                .intercept(MethodDelegation.withDefaultConfiguration().filter(AFLAnswer.MATCHER).to(new AFLAnswer()));
+    }
 }

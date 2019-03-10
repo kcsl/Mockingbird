@@ -26,7 +26,7 @@ public class StacColorSpaceExample {
 //                methodData.getDuration()
 //        });
 //        int imgSize = 50;
-//        MethodCall methodCall = MethodCall.createMethodCall(colorSpaceSubAnswer.link(methodCallback), Intensify.class, "filter", BufferedImage.class);
+//        MethodCallDEL methodCall = MethodCallDEL.createMethodCall(colorSpaceSubAnswer.link(methodCallback), Intensify.class, "filter", BufferedImage.class);
 //        methodCall.createParameterMock(0)
 //                .applyMethod(imgSize, "getWidth")
 //                .applyMethod(imgSize, "getHeight")
@@ -126,7 +126,7 @@ public class StacColorSpaceExample {
 
 //    public static void testMaxIntensify(int size) throws NoSuchMethodException, IOException {
 //        TargetedMockBuilderDEL targetedMockBuilder = new TargetedMockBuilderDEL();
-//        targetedMockBuilder.createSubclass(Intensify.class, MethodCall.invokeSuper().withAllArguments()).storeSubclass();
+//        targetedMockBuilder.createSubclass(Intensify.class, MethodCallDEL.invokeSuper().withAllArguments()).storeSubclass();
 //        ColorSpaceSubAnswer colorSpaceAnswer = new ColorSpaceSubAnswer();
 //        targetedMockBuilder.createSubclass(BufferedImage.class)
 //                .apply(invocationData -> size, "getWidth")

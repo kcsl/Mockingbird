@@ -54,22 +54,22 @@ public class RebaseMockClass<T> {
         return methodMap.get(method);
     }
 
-//    public <V> MockClass applyField(String fieldName, V value) throws NoSuchFieldException {
+//    public <V> MockClassDELDEL applyField(String fieldName, V value) throws NoSuchFieldException {
 //        return applyField(oldType.getDeclaredField(fieldName), value);
 //    }
 //
-//    public <V> MockClass applyField(Field field, V value) {
+//    public <V> MockClassDELDEL applyField(Field field, V value) {
 //        //TODO: name objectinstantiator field?
 //        fieldSetInterceptor.putField(field, targetedMockBuilder.createObjectInstantiator(null, value));
 //        return this;
 //    }
 //
-//    public <T> MockClass applyField(Class<T> tClass, ObjectInstantiator<T> objectInstantiator, String fieldName) throws
+//    public <T> MockClassDELDEL applyField(Class<T> tClass, ObjectInstantiator<T> objectInstantiator, String fieldName) throws
 //            NoSuchFieldException {
 //        return applyField(tClass, objectInstantiator, oldType.getDeclaredField(fieldName));
 //    }
 //
-//    public <T> MockClass applyField(Class<T> tClass, ObjectInstantiator<T> objectInstantiator, Field field) {
+//    public <T> MockClassDELDEL applyField(Class<T> tClass, ObjectInstantiator<T> objectInstantiator, Field field) {
 //        targetedMockBuilder.setObjectInstantiator(tClass, objectInstantiator);
 //        //TODO: Do this? what happens if this is true?
 //        targetedMockBuilder.setNamedInstance(field.getName(), tClass);
@@ -77,17 +77,17 @@ public class RebaseMockClass<T> {
 //        return this;
 //    }
 //
-//    public MockClass applyField(String fieldName, ObjectInstantiator<?> objectInstantiator) throws
+//    public MockClassDELDEL applyField(String fieldName, ObjectInstantiator<?> objectInstantiator) throws
 //            NoSuchFieldException {
 //        return applyField(oldType.getDeclaredField(fieldName), objectInstantiator);
 //    }
 //
-//    public MockClass applyField(String fieldName, Answer answerCreator) throws NoSuchFieldException {
+//    public MockClassDELDEL applyField(String fieldName, Answer answerCreator) throws NoSuchFieldException {
 //        Field field = oldType.getDeclaredField(fieldName);
 //        return applyField(field, new AnswerInstantiator(answerCreator, field, field.getType()));
 //    }
 //
-//    public MockClass applyField(Field field, ObjectInstantiator<?> objectInstantiator) {
+//    public MockClassDELDEL applyField(Field field, ObjectInstantiator<?> objectInstantiator) {
 //        fieldSetInterceptor.putField(field, objectInstantiator);
 //        return this;
 //    }
