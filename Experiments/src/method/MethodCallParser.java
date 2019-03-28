@@ -319,7 +319,7 @@ public class MethodCallParser {
         if (instanceVariable.containsKey("constraint")) { //i.e. primitive
             LOGGER.log(VERBOSITY, "Instance variable primitive");
             JSONObject constraint = (JSONObject) instanceVariable.get("constraint");
-            classMap.applyField(name, parseConstraint(name, constraint, byteReaders));
+//            classMap.applyField(name, parseConstraint(name, constraint, byteReaders));
         } else if (instanceVariable.containsKey("methods")) { //i.e. object
             LOGGER.log(VERBOSITY, "Instance variable object");
             //TODO: What is this?!?!?!
@@ -327,7 +327,7 @@ public class MethodCallParser {
             LOGGER.log(VERBOSITY, "Instance variable primitive no constraint");
             ByteReaderInputStream byteReader = new DefaultByteReaderInputStream(name);
             byteReaders.add(byteReader);
-            classMap.applyField(name, byteReader);
+//            classMap.applyField(name, byteReader);
         }
         LOGGER.log(VERBOSITY, "Completed Parsing of Instance Variable " + name);
     }

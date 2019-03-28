@@ -13,8 +13,12 @@ import mock.answers.Answer;
 import mock.answers.FixedAnswer;
 import mock.answers.ParameterIndexAnswer;
 import mock.answers.ReturnTypeAnswer;
+import net.bytebuddy.description.NamedElement;
+import net.bytebuddy.matcher.ElementMatchers;
 
 import java.io.File;
+import java.lang.reflect.Array;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -39,8 +43,7 @@ public class Runner {
 
         Size is determined by a bytereader of a single integer, long etc.
          */
-        InAndOut.runSpaceTest();
-
+        ExampleHarness.methodCallExample();
     }
 
 

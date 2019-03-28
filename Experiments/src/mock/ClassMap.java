@@ -2,17 +2,13 @@ package mock;
 
 import javafx.util.Pair;
 import mock.answers.Answer;
-import mock.answers.AnswerCreator;
-import mock.answers.FixedAnswer;
 import mock.matchers.MethodMatchers;
 import net.bytebuddy.description.method.MethodDescription;
-import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.matcher.ElementMatcher;
-import net.bytebuddy.matcher.ElementMatchers;
-import org.objenesis.instantiator.ObjectInstantiator;
 
-import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Derrick Lockwood
@@ -20,7 +16,7 @@ import java.util.*;
  */
 public class ClassMap {
 
-    private final Map<String, Answer> fieldMap;
+    private final Map<String, StoredMock> fieldMap;
     private final Map<ElementMatcher<? super MethodDescription>, Pair<Boolean, Answer>> methodMap;
     private TransformMockClass transformMockClass;
     private final Map<String, Pair<Boolean, Answer>> mockClassMap;
@@ -98,7 +94,7 @@ public class ClassMap {
         return mockClassMap.get(methodFieldName);
     }
 
-    public Set<Map.Entry<String, Answer>> getFieldEntries() {
+    public Set<Map.Entry<String, StoredMock>> getFieldEntries() {
         return fieldMap.entrySet();
     }
 
@@ -114,19 +110,21 @@ public class ClassMap {
     }
 
     public void applyMethod(Answer answer,  String methodName, String... parameterClasses) {
-        applyMethod(answer, true, methodName, parameterClasses);
+        applyMethod(answer, false, methodName, parameterClasses);
     }
 
-    public void applyField(String fieldName, Object value) {
-        fieldMap.put(fieldName, new FixedAnswer(value));
-    }
-
-    public void applyField(String fieldName, Answer answerCreator) {
-        fieldMap.put(fieldName, answerCreator);
+    public void applyField(String fieldName, StoredMock storedMock) {
+        fieldMap.put(fieldName, storedMock);
     }
 
     public void overrideConstructor(String[] constructorParamsTypes) {
 
+    }
+
+    public static ClassMap forConstructAnswer(Answer answer) {
+        ClassMap a = new ClassMap();
+        a.setConstructAnswer(answer);
+        return a;
     }
 
 }

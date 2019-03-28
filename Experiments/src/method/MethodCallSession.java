@@ -270,6 +270,7 @@ public class MethodCallSession {
                 originalOut = System.out;
                 System.setOut(new PrintStream(byteArrayOutputStream, true, StandardCharsets.UTF_8));
             }
+            toRunMethod.setAccessible(true);
             Instant instant = Instant.now();
             try {
                 returnValue = toRunMethod.invoke(mockObject, mockParameters);
@@ -281,13 +282,16 @@ public class MethodCallSession {
                 }
             }
             Duration duration = Duration.between(instant, Instant.now());
-            long survivorSpaceMemory = survivorSpace.getUsage().getUsed();
-            long edenSpaceUsage = edenSpace.getUsage().getUsed();
-            long edenSpaceMax = edenSpace.getUsage().getCommitted();
-            long deltaHeapMemory = edenSpaceUsage - currentHeapBytes;
-            if (deltaHeapMemory < 0) {
-                deltaHeapMemory = edenSpaceMax - currentHeapBytes + survivorSpaceMemory;
-            }
+//            long survivorSpaceMemory = survivorSpace.getUsage().getUsed();
+//            long edenSpaceUsage = edenSpace.getUsage().getUsed();
+//            long edenSpaceMax = edenSpace.getUsage().getCommitted();
+//            long deltaHeapMemory = edenSpaceUsage - currentHeapBytes;
+//            if (deltaHeapMemory < 0) {
+//                deltaHeapMemory = edenSpaceMax - currentHeapBytes + survivorSpaceMemory;
+//            }
+            Runtime runtime = Runtime.getRuntime();
+            runtime.gc();
+            long deltaHeapMemory = runtime.totalMemory() - runtime.freeMemory();
             String sysOut = null;
             if (overrideSystemOut) {
                 System.setOut(originalOut);

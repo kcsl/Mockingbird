@@ -101,15 +101,12 @@ public class TransformClassLoader extends URLClassLoader implements AgentBuilder
     @Override
     public DynamicType.Builder<?> transform(DynamicType.Builder<?> builder, TypeDescription typeDescription,
             ClassLoader classLoader, JavaModule module) {
-        if (this.equals(classLoader)) {
-            if (transformedTypes.matches(typeDescription)) {
-                return transformMap.get(typeDescription.getCanonicalName()).transform(builder);
-            } else {
-                //No transform class but still needs AFL transformation
-                return AFLMethodVisitor.applyAFLTransformation(builder, ElementMatchers.any());
-            }
+        if (transformedTypes.matches(typeDescription)) {
+            return transformMap.get(typeDescription.getCanonicalName()).transform(builder);
+        } else {
+            //No transform class but still needs AFL transformation
+            return AFLMethodVisitor.applyAFLTransformation(builder, ElementMatchers.any());
         }
-        return builder;
     }
 
     static Implementation getImplementation(Answer answer) {

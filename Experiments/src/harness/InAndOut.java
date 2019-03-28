@@ -11,10 +11,8 @@ import mock.answers.Answer;
 import mock.answers.FixedAnswer;
 import mock.answers.ReturnTypeAnswer;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
+import java.lang.reflect.Field;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -45,30 +43,49 @@ public class InAndOut {
                 new String[]{"com.cyberpointllc.stac.inandout.OrderFACE", "com.cyberpointllc.stac.inandout.OrderComponents", "int"},
                 new Answer[]{orderFaceConstructor, orderComponentsConstructor, pieAnswer});
 
-        FixedAnswer randomCreator = new FixedAnswer(new Random());
-
         ClassMap pieOrderMapping = new ClassMap();
 
         pieOrderMapping.setConstructAnswer(pieConstruction);
 
         methodCall.associateClassMapToParameter(0, pieOrderMapping);
-        methodCall.addFieldVariable("random", randomCreator);
+        methodCall.associateFieldVariable("random", "java.lang.Random", ClassMap.forConstructAnswer(new FixedAnswer(new Random())));
 
         MethodCallSession session = methodCall.createSession(
                 CSVMethodCallback.createWithImmediateWrite("resources/inandoutfuzz.csv",
-                        methodData -> new Object[]{methodData.getDeltaHeapMemory()}));
-        ExecutorService executorService = Executors.newFixedThreadPool(10);
+                        methodData -> {
+                            String s = "";
+                            Integer[] componentInts;
+                            int quantity;
+                            try {
+                                Object o = methodData.getParameters()[0];
+                                Class<?> z = methodData.getParameterTypes()[0];
+                                Field f = z.getDeclaredField("orderComponents");
+                                f.setAccessible(true);
+                                Object components = f.get(o);
+                                f = z.getDeclaredField("quantity");
+                                f.setAccessible(true);
+                                quantity = f.getInt(o);
+                                z = components.getClass();
+                                f = z.getDeclaredField("componentsAppeal");
+                                f.setAccessible(true);
+                                componentInts = (Integer[]) f.get(components);
+                                s = "\"" + Arrays.toString(componentInts) + " : " + quantity + "\"";
+                            } catch (IllegalAccessException | NoSuchFieldException e) {
+                                e.printStackTrace();
+                                return new Object[] {"ERROR"};
+                            }
+                            return new Object[]{s, quantity, methodData.getDeltaHeapMemory()};
+                        }));
+        int threads = 10;
+        ExecutorService executorService = Executors.newFixedThreadPool(threads);
+        List<Future<MethodData>> futures = new ArrayList<>(threads);
         while (pieAnswer.hasNext()) {
-            session.runMethod(executorService).print();
-            System.out.println(pieAnswer.orderComponentsIterator.current + " : " + pieAnswer.numberOfPies);
+            for (int i = 0; i < 10 && pieAnswer.hasNext(); i++) {
+                futures.add(session.runAsyncMethod(executorService));
+            }
+            finishedOrder(futures, MethodData::print);
+            futures.clear();
         }
-//        List<Future<MethodData>> futures = new ArrayList<>(10);
-//        while (pieAnswer.hasNext()) {
-//            for (int i = 0; i < 10 && pieAnswer.hasNext(); i++) {
-//                futures.add(session.runAsyncMethod(executorService));
-//            }
-//            finishedOrder(futures, MethodData::print);
-//        }
         executorService.shutdown();
     }
 
@@ -78,9 +95,12 @@ public class InAndOut {
         boolean isDone = false;
         while (!isDone) {
             isDone = true;
-            for (Future<V> future : futures) {
+            Iterator<Future<V>> iterator = futures.iterator();
+            while(iterator.hasNext()) {
+                Future<V> future = iterator.next();
                 if (future.isDone()) {
                     consumer.accept(future.get());
+                    iterator.remove();
                 } else {
                     isDone = false;
                 }
@@ -92,12 +112,11 @@ public class InAndOut {
 
         private final OrderComponentsIterator orderComponentsIterator;
         private int numberOfPies;
-        boolean nextValue;
 
         PieAnswer() {
             numberOfPies = 0;
             orderComponentsIterator = new OrderComponentsIterator();
-            nextValue = true;
+            orderComponentsIterator.next();
         }
 
         @Override
@@ -122,6 +141,11 @@ public class InAndOut {
         @Override
         public Answer duplicate() {
             return new PieAnswer();
+        }
+
+        @Override
+        public String toString() {
+            return orderComponentsIterator.current.toString() + " : " + numberOfPies;
         }
     }
 

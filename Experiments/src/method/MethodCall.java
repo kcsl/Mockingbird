@@ -69,14 +69,21 @@ public class MethodCall {
 
     public void associateClassMapToStoredMock(String canonicalName, ClassMap classMap) {
         if (storedClassMapping.containsKey(canonicalName)) {
-            storedClassMapping.get(canonicalName).classMap = classMap;
+            storedClassMapping.get(canonicalName).setClassMap(classMap);
         } else {
             storedClassMapping.put(canonicalName, new StoredMock(canonicalName, classMap));
         }
     }
 
-    public void addFieldVariable(String fieldName, Answer answer) {
-        methodCallMap.applyField(fieldName, answer);
+    public void associateFieldVariable(String fieldName, String canonicalName, ClassMap classMap) {
+        StoredMock mock;
+        if (storedClassMapping.containsKey(canonicalName)) {
+            mock = storedClassMapping.get(canonicalName);
+        } else {
+            mock = new StoredMock(canonicalName, classMap);
+            storedClassMapping.put(canonicalName, mock);
+        }
+        methodCallMap.applyField(fieldName, mock);
     }
 
     public String getParameterTypeCanonicalName(int index) {
@@ -138,18 +145,6 @@ public class MethodCall {
     public static class PrimitiveNeedsAnswerException extends RuntimeException {
         PrimitiveNeedsAnswerException(Class<?> primitiveClass) {
             super("Primitive " + primitiveClass.getCanonicalName() + " Needs Answer to be supplied ");
-        }
-    }
-
-    private static class StoredMock {
-        private final TransformMockClass transformMockClass;
-        ClassMap classMap;
-        StoredMock(String canonicalName, ClassMap classMap) {
-            this.transformMockClass = new TransformMockClass(canonicalName);
-            this.classMap = classMap;
-        }
-        ObjectInstantiator<?> getObjectInstantiator() throws ClassNotFoundException {
-            return transformMockClass.getObjectInstantiator(classMap);
         }
     }
 }

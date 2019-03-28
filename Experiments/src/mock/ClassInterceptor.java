@@ -84,6 +84,14 @@ public class ClassInterceptor implements TransformClassLoader.Transformer {
         return MethodMatchers.getMethodMatcher(interceptorName, ClassMap.class);
     }
 
+//    @RuntimeType
+//    public void intercept(@Origin Method method, @This(optional = true) Object o, @AllArguments Object[] args) throws Exception {
+//        Class<?> clazz = method.getDeclaringClass();
+//        Field f = clazz.getDeclaredField("classMap");
+//        ClassMap c = (ClassMap) f.get(null);
+//        //TODO: Accuracy of timing is affected if finding each method every time method is called
+//    }
+
     @RuntimeType
     public void intercept(@Origin Method method, @This(optional = true) Object o, @AllArguments Object[] args) throws Exception {
         if (args == null || args.length < 1 || args[0] == null || !(args[0] instanceof ClassMap)) {
@@ -94,16 +102,17 @@ public class ClassInterceptor implements TransformClassLoader.Transformer {
         if (!classMap.isAssociated(canonicalName)) {
             throw new IllegalArgumentException("Class Map not associated with Mock Class");
         }
-        for (Map.Entry<String, Answer> entry : classMap.getFieldEntries()) {
+        for (Map.Entry<String, StoredMock> entry : classMap.getFieldEntries()) {
             //Todo: Soft pass or crash on NoSuchFieldException?
             Field f = c.getDeclaredField(entry.getKey());
             f.setAccessible(true);
             if (o != null) {
-                f.set(o, entry.getValue().handle(o, null, entry.getKey(), f.getType()));
+                f.set(o, entry.getValue().getObjectInstantiator().newInstance());
             } else {
-                f.set(null, entry.getValue().handle(o, null, entry.getKey(), f.getType()));
+                f.set(null, entry.getValue().getObjectInstantiator().newInstance());
             }
         }
+
         for (String fieldName : methodFieldNames) {
             Field f = c.getField(fieldName);
             Pair<Boolean, Answer> a;

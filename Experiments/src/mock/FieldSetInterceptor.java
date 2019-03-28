@@ -78,7 +78,7 @@ public class FieldSetInterceptor {
             builder = builder.defineMethod(interceptorName, Void.TYPE, Modifier.PUBLIC)
                     .withParameters(String[].class)
                     .intercept(MethodDelegation.withDefaultConfiguration().
-                            filter(ElementMatchers.named("intercept")).
+                            filter(ElementMatchers.named("setup")).
                             to(this));
         }
         return builder;

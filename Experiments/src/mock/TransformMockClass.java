@@ -14,10 +14,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Derrick Lockwood
@@ -55,7 +52,7 @@ public class TransformMockClass implements TransformClassLoader.Transformer, Moc
         String fieldName = matcherToMethodField.get(methodMatcher);
         if (fieldName == null) {
             transformedMethods = transformedMethods.or(methodMatcher);
-            fieldName = getCanonicalName() + "_" + matcherToMethodField.size();
+            fieldName = getCanonicalName().replaceAll("[.]", "_") + "_" + matcherToMethodField.size();
             matcherToMethodField.put(methodMatcher, fieldName);
             String finalFieldName = fieldName;
             transformers.add(
@@ -83,7 +80,7 @@ public class TransformMockClass implements TransformClassLoader.Transformer, Moc
             NoSuchMethodException {
         Class<?> loadedClass = loadClass();
         if (loadedClass != null) {
-            return loadedClass.getMethod(methodName, params);
+            return loadedClass.getDeclaredMethod(methodName, params);
         }
         throw new ClassNotLoadedException("Mock Class (" + canonicalName + ") isn't loaded yet");
     }
@@ -184,6 +181,8 @@ public class TransformMockClass implements TransformClassLoader.Transformer, Moc
             case "Double":
             case "double":
                 return double.class;
+            case "String":
+                return String.class;
             default:
                 if (classLoader != null) {
                     try {
