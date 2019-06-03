@@ -13,6 +13,7 @@ import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
@@ -38,8 +39,7 @@ public class MethodCallSession {
 
     MethodCallSession(MethodCallback methodCallback, ResettableClassFileTransformer transformer, Method methodToCall,
             ObjectInstantiator<?> methodClassInstantiator, ObjectInstantiator<?>[] parameterInstantiators,
-            ObjectInstantiator<?>[] storedMockInstantiators) throws
-            ClassNotFoundException, NoSuchMethodException {
+            ObjectInstantiator<?>[] storedMockInstantiators) {
         this.transformer = transformer;
         this.methodCallback = methodCallback;
         for (MemoryPoolMXBean bean : ManagementFactory.getMemoryPoolMXBeans()) {
@@ -200,12 +200,18 @@ public class MethodCallSession {
         MethodData methodData = new MethodData(null, null, methodToCall.getDeclaringClass(),
                 methodToCall.getName(),
                 methodToCall.getReturnType(), methodToCall.getParameterTypes());
-        Object mockObject;
+        Object mockObject = null;
         try {
             //TODO: Fix Error Handling maybe? The throwables are weird and out of scope in different areas
-            mockObject = methodClassInstantiator.newInstance();
+            if (!Modifier.isStatic(methodToCall.getModifiers())){
+                mockObject = methodClassInstantiator.newInstance();
+            }
             for (int i = 0; i < parameterInstantiators.length; i++) {
-                mockParameters[i] = parameterInstantiators[i].newInstance();
+                if (parameterInstantiators[i] != null) {
+                    mockParameters[i] = parameterInstantiators[i].newInstance();
+                } else {
+                    mockParameters[i] = null;
+                }
             }
         } catch (Throwable e) {
             methodCallback.onBefore(methodData);

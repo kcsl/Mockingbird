@@ -51,7 +51,7 @@ public class ExampleHarness {
         executorService.shutdown();
     }
 
-    public static void badConstructorAvoided() throws Exception {
+    public static void targetHarness() throws Exception {
 
         TransformClassLoader classLoader = new TransformClassLoader("resources/testClasses/");
 

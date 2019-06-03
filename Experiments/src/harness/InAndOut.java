@@ -13,10 +13,7 @@ import mock.answers.ReturnTypeAnswer;
 
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 import java.util.function.Consumer;
 
 /**
@@ -52,39 +49,38 @@ public class InAndOut {
 
         MethodCallSession session = methodCall.createSession(
                 CSVMethodCallback.createWithImmediateWrite("resources/inandoutfuzz.csv",
-                        methodData -> {
-                            String s = "";
-                            Integer[] componentInts;
-                            int quantity;
-                            try {
-                                Object o = methodData.getParameters()[0];
-                                Class<?> z = methodData.getParameterTypes()[0];
-                                Field f = z.getDeclaredField("orderComponents");
-                                f.setAccessible(true);
-                                Object components = f.get(o);
-                                f = z.getDeclaredField("quantity");
-                                f.setAccessible(true);
-                                quantity = f.getInt(o);
-                                z = components.getClass();
-                                f = z.getDeclaredField("componentsAppeal");
-                                f.setAccessible(true);
-                                componentInts = (Integer[]) f.get(components);
-                                s = "\"" + Arrays.toString(componentInts) + " : " + quantity + "\"";
-                            } catch (IllegalAccessException | NoSuchFieldException e) {
-                                e.printStackTrace();
-                                return new Object[] {"ERROR"};
-                            }
-                            return new Object[]{s, quantity, methodData.getDeltaHeapMemory()};
-                        }));
+                        InAndOut::getMethodInput));
         int threads = 10;
         ExecutorService executorService = Executors.newFixedThreadPool(threads);
         List<Future<MethodData>> futures = new ArrayList<>(threads);
+        boolean isValid;
         while (pieAnswer.hasNext()) {
-            for (int i = 0; i < 10 && pieAnswer.hasNext(); i++) {
+            isValid = true;
+            for (int i = 0; i < threads && pieAnswer.hasNext(); i++) {
                 futures.add(session.runAsyncMethod(executorService));
             }
-            finishedOrder(futures, MethodData::print);
-            futures.clear();
+            for (Future<MethodData> future: futures) {
+                try {
+                    MethodData m = future.get(10, TimeUnit.SECONDS);
+                    if (m.getReturnException() != null) {
+                        m.getReturnException().printStackTrace();
+                        isValid = false;
+                        break;
+                    }
+                    Object[] o = getMethodInput(m);
+                    System.out.println(o[0]);
+                } catch (InterruptedException | TimeoutException e){
+                    System.out.println("Timeout");
+                    isValid = false;
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                    isValid = false;
+                    break;
+                }
+            }
+            if (!isValid) {
+                break;
+            }
         }
         executorService.shutdown();
     }
@@ -108,6 +104,31 @@ public class InAndOut {
         }
     }
 
+    private static Object[] getMethodInput(MethodData methodData) {
+        String s = "";
+        Integer[] componentInts;
+        int quantity;
+        try {
+            Object o = methodData.getParameters()[0];
+            Class<?> z = methodData.getParameterTypes()[0];
+            Field f = z.getDeclaredField("orderComponents");
+            f.setAccessible(true);
+            Object components = f.get(o);
+            f = z.getDeclaredField("quantity");
+            f.setAccessible(true);
+            quantity = f.getInt(o);
+            z = components.getClass();
+            f = z.getDeclaredField("componentsAppeal");
+            f.setAccessible(true);
+            componentInts = (Integer[]) f.get(components);
+            s = "\"" + Arrays.toString(componentInts) + " : " + quantity + "\"";
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            e.printStackTrace();
+            return new Object[] {"ERROR"};
+        }
+        return new Object[]{s, quantity, methodData.getDeltaHeapMemory()};
+    }
+
     private static class PieAnswer implements ReturnTypeAnswer {
 
         private final OrderComponentsIterator orderComponentsIterator;
@@ -122,6 +143,7 @@ public class InAndOut {
         @Override
         public Object applyReturnType(Class<?> returnType, boolean forceReload) {
             if (returnType.isAssignableFrom(String.class)) {
+                System.out.println(this);
                 return orderComponentsIterator.current.toString();
             } else if (returnType.isAssignableFrom(int.class)) {
                 if (numberOfPies > 9) {
@@ -129,6 +151,7 @@ public class InAndOut {
                     orderComponentsIterator.next();
                 }
                 numberOfPies++;
+                System.out.println(this);
                 return numberOfPies;
             }
             return null;

@@ -19,7 +19,6 @@ public class ClassMap {
     private final Map<String, StoredMock> fieldMap;
     private final Map<ElementMatcher<? super MethodDescription>, Pair<Boolean, Answer>> methodMap;
     private TransformMockClass transformMockClass;
-    private final Map<String, Pair<Boolean, Answer>> mockClassMap;
     private Answer constructAnswer;
     private boolean loadEveryInstantiation;
     private String name;
@@ -29,7 +28,6 @@ public class ClassMap {
     public ClassMap(boolean useOriginal) {
         fieldMap = new HashMap<>();
         methodMap = new HashMap<>();
-        mockClassMap = new HashMap<>();
         this.useOriginal = useOriginal;
         transformMockClass = null;
         constructAnswer = null;
@@ -42,12 +40,9 @@ public class ClassMap {
     }
 
     public void associateWithMockClass(TransformMockClass transformMockClass) {
-        if (this.transformMockClass != null) {
-            mockClassMap.clear();
-        }
         this.transformMockClass = transformMockClass;
         for (Map.Entry<ElementMatcher<? super MethodDescription>, Pair<Boolean, Answer>> entry : methodMap.entrySet()) {
-            mockClassMap.put(transformMockClass.getMethodFieldName(entry.getKey()), entry.getValue());
+            transformMockClass.associateMethodInterceptor(entry.getKey(), entry.getValue().getValue());
         }
     }
 
@@ -90,10 +85,6 @@ public class ClassMap {
         return this.transformMockClass.getCanonicalName().equals(canonicalName);
     }
 
-    public Pair<Boolean, Answer> getAnswer(String methodFieldName) {
-        return mockClassMap.get(methodFieldName);
-    }
-
     public Set<Map.Entry<String, StoredMock>> getFieldEntries() {
         return fieldMap.entrySet();
     }
@@ -101,7 +92,7 @@ public class ClassMap {
     public void applyDescribedMethod(Answer answer, boolean duplicate, ElementMatcher<? super MethodDescription> methodMatcher) {
         methodMap.put(methodMatcher, new Pair<>(duplicate, answer));
         if (this.transformMockClass != null) {
-            mockClassMap.put(transformMockClass.getMethodFieldName(methodMatcher), new Pair<>(duplicate, answer));
+            transformMockClass.associateMethodInterceptor(methodMatcher, answer);
         }
     }
 
@@ -118,7 +109,7 @@ public class ClassMap {
     }
 
     public void overrideConstructor(String[] constructorParamsTypes) {
-
+        //TODO
     }
 
     public static ClassMap forConstructAnswer(Answer answer) {

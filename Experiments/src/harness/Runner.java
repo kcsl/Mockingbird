@@ -43,7 +43,9 @@ public class Runner {
 
         Size is determined by a bytereader of a single integer, long etc.
          */
-        ExampleHarness.methodCallExample();
+//        InAndOut.runSpaceTest();
+//        ExampleHarness.methodCallExample();
+//        Suspicion2.runSpaceTest();
     }
 
 

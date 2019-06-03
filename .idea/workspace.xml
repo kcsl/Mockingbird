@@ -2,31 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e545e32b-3769-4e17-b8d7-627ca9c4dad2" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/Experiments/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Experiments/src/afl/Kelinci.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/afl/Kelinci.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Experiments/src/harness/Foo.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/harness/Foo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Experiments/src/harness/Example.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/harness/Example.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Experiments/src/harness/InAndOut.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/harness/InAndOut.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Experiments/src/harness/Runner.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/harness/Runner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Experiments/src/harness/StacColorSpaceExample.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/harness/StacColorSpaceExample.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Experiments/src/harness/plaittesting/PlaitTestHarness.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/harness/plaittesting/PlaitTestHarness.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Experiments/src/harness/plaittesting/PlaitTesting.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/harness/plaittesting/PlaitTesting.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Experiments/src/harness/tollboothtesting/TollBoothTesting.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/harness/tollboothtesting/TollBoothTesting.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Experiments/src/instrumentor/AFLMethodVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/instrumentor/AFLMethodVisitor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Experiments/src/method/MethodCall.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/method/MethodCallDEL.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Experiments/src/method/MethodCallFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/method/MethodCallFactory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Experiments/src/method/MethodCallParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/method/MethodCallParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Experiments/src/method/MethodCallSession.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/method/MethodCallSessionDEL.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Experiments/src/method/MethodRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/method/MethodRunner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Experiments/src/mock/AFLAnswer.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/instrumentor/AFLAnswer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Experiments/src/mock/FieldInterceptor.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/mock/FieldInterceptor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Experiments/src/mock/MockClass.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/mock/MockClassDELDEL.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Experiments/src/mock/MockCreator.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/mock/MockCreatorDEL.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Experiments/src/mock/MultipleMockClass.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/mock/MultipleMockClassDELDEL.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Experiments/src/mock/PrimitiveMockCreator.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/mock/PrimitiveMockCreatorDEL.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Experiments/src/mock/RebaseMockClass.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/mock/RebaseMockClass.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Experiments/src/mock/SubMockClass.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/mock/SubMockClassDELDEL.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Experiments/src/mock/TargetedMockBuilderDEL.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/mock/TargetedMockBuilderDEL.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Experiments/src/mock/TransformClassLoader.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/mock/TransformClassLoader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Experiments/src/mock/TransformMockClass.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/mock/TransformMockClass.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Experiments/src/mock/ClassInterceptor.java" beforeDir="false" afterPath="$PROJECT_DIR$/Experiments/src/mock/ClassInterceptor.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -47,22 +26,13 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="ProjectPane" />
       <pane id="Scope" />
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="MockingbirdFuzzer" type="b2602c69:ProjectViewProjectNode" />
-              <item name="MockingbirdFuzzer" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
       <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="project.structure.last.edited" value="SDKs" />
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.0" />
@@ -101,6 +71,7 @@
       </method>
     </configuration>
     <configuration default="true" type="TestNG">
+      <option name="TEST_OBJECT" value="CLASS" />
       <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
       <properties />
       <listeners />
@@ -134,18 +105,13 @@
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="847" extended-state="6" />
     <layout>
-      <window_info id="Image Layers" />
-      <window_info id="Designer" />
-      <window_info id="UI Designer" />
-      <window_info id="Capture Tool" />
-      <window_info id="Favorites" side_tool="true" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24964234" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2532189" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Tool Output" />
-      <window_info anchor="bottom" id="Version Control" />
-      <window_info anchor="bottom" id="ANTLR Preview" />
-      <window_info anchor="bottom" id="Terminal" />
-      <window_info anchor="bottom" id="Event Log" side_tool="true" />
+      <window_info id="Image Layers" order="2" />
+      <window_info id="Designer" order="3" />
+      <window_info id="UI Designer" order="4" />
+      <window_info id="Capture Tool" order="5" />
+      <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="bottom" id="Run" order="2" />
@@ -153,14 +119,19 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="right" id="Palette" />
-      <window_info anchor="right" id="Theme Preview" />
-      <window_info anchor="right" id="Capture Analysis" />
-      <window_info anchor="right" id="Palette&#9;" />
-      <window_info anchor="right" id="Maven" />
+      <window_info anchor="bottom" id="Version Control" order="7" />
+      <window_info anchor="bottom" id="Tool Output" order="8" />
+      <window_info anchor="bottom" id="Terminal" order="9" />
+      <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
+      <window_info anchor="bottom" id="ANTLR Preview" order="11" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Palette" order="3" />
+      <window_info anchor="right" id="Capture Analysis" order="4" />
+      <window_info anchor="right" id="Theme Preview" order="5" />
+      <window_info anchor="right" id="Maven" order="6" />
+      <window_info anchor="right" id="Palette&#9;" order="7" />
     </layout>
   </component>
   <component name="masterDetails">

@@ -6,6 +6,7 @@ import mock.answers.AnswerInstantiator;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.implementation.MethodDelegation;
+import net.bytebuddy.implementation.bind.annotation.*;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.objenesis.instantiator.ObjectInstantiator;
@@ -14,7 +15,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
 
 /**
  * @author Derrick Lockwood
@@ -28,7 +33,8 @@ public class TransformMockClass implements TransformClassLoader.Transformer, Moc
     private List<TransformClassLoader.Transformer> transformers;
     private Class<?> transformedClass;
     private ElementMatcher.Junction<? super MethodDescription> transformedMethods;
-    private final Map<ElementMatcher<? super MethodDescription>, String> matcherToMethodField;
+//    private final Map<ElementMatcher<? super MethodDescription>, String> matcherToMethodField;
+    private final Map<ElementMatcher<? super MethodDescription>, MethodSwitcherInterceptor> matcherMethodSwitcherInterceptorMap;
     private ObjectInstantiator<?> objectInstantiator;
     private final ClassInterceptor interceptor;
     TransformClassLoader tiedClassLoader;
@@ -41,28 +47,45 @@ public class TransformMockClass implements TransformClassLoader.Transformer, Moc
         transformedClass = getClassForString(canonicalName, null);
         isPrimitive = transformedClass != null;
         transformedMethods = ElementMatchers.none();
-        matcherToMethodField = new HashMap<>();
+//        matcherToMethodField = new HashMap<>();
+        matcherMethodSwitcherInterceptorMap = new HashMap<>();
         objectInstantiator = null;
         interceptor = new ClassInterceptor(this);
         transformers.add(interceptor);
         transformedMethods = transformedMethods.or(interceptor.getInterceptorMatcher());
     }
 
-    String getMethodFieldName(ElementMatcher<? super MethodDescription> methodMatcher) {
-        String fieldName = matcherToMethodField.get(methodMatcher);
-        if (fieldName == null) {
+    void associateMethodInterceptor(ElementMatcher<? super MethodDescription> methodMatcher, Answer answer) {
+        MethodSwitcherInterceptor interceptor = matcherMethodSwitcherInterceptorMap.get(methodMatcher);
+        if (interceptor == null) {
             transformedMethods = transformedMethods.or(methodMatcher);
-            fieldName = getCanonicalName().replaceAll("[.]", "_") + "_" + matcherToMethodField.size();
-            matcherToMethodField.put(methodMatcher, fieldName);
-            String finalFieldName = fieldName;
-            transformers.add(
-                    builder -> builder.defineField(finalFieldName, Answer.class, Modifier.PUBLIC)
-                            .method(methodMatcher)
-                            .intercept(MethodDelegation.toField(finalFieldName)));
-            interceptor.initMethod(fieldName);
+            interceptor = new MethodSwitcherInterceptor();
+            interceptor.switchAnswer(answer);
+            matcherMethodSwitcherInterceptorMap.put(methodMatcher, interceptor);
+            MethodSwitcherInterceptor finalInterceptor = interceptor;
+            transformers.add(builder -> builder.method(methodMatcher).intercept(
+                    MethodDelegation.withDefaultConfiguration().filter(ElementMatchers.named("intercept")).to(
+                            finalInterceptor)));
+        } else {
+            interceptor.switchAnswer(answer);
         }
-        return fieldName;
     }
+
+//    String getMethodFieldName(ElementMatcher<? super MethodDescription> methodMatcher) {
+//        String fieldName = matcherToMethodField.get(methodMatcher);
+//        if (fieldName == null) {
+//            transformedMethods = transformedMethods.or(methodMatcher);
+//            fieldName = getCanonicalName().replaceAll("[.]", "_") + "_" + matcherToMethodField.size();
+//            matcherToMethodField.put(methodMatcher, fieldName);
+//            String finalFieldName = fieldName;
+//            transformers.add(
+//                    builder -> builder.defineField(finalFieldName, Answer.class, Modifier.PUBLIC)
+//                            .method(methodMatcher)
+//                            .intercept(MethodDelegation.toField(finalFieldName)));
+//            interceptor.initMethod(fieldName);
+//        }
+//        return fieldName;
+//    }
 
     public String getCanonicalName() {
         return canonicalName;
@@ -113,20 +136,22 @@ public class TransformMockClass implements TransformClassLoader.Transformer, Moc
 
     @Override
     public ObjectInstantiator<?> getObjectInstantiator(ClassMap classMap) throws ClassNotFoundException {
+        if (classMap == null) {
+            return null;
+        }
         if (this.objectInstantiator == null && tiedClassLoader != null && !isPrimitive) {
             objectInstantiator = tiedClassLoader.getInstantiator(loadClass());
         }
-        if (!classMap.isAssociated(this)){
+        if (!classMap.isAssociated(this)) {
             classMap.associateWithMockClass(this);
         }
         ObjectInstantiator<?> objectInstantiator = this.objectInstantiator;
         if (classMap.getConstructAnswer() != null) {
-            objectInstantiator = new AnswerInstantiator(classMap.getConstructAnswer(), loadClass());
+            return new AnswerInstantiator(classMap.getConstructAnswer(), loadClass());
         } else if (isPrimitive) {
             throw new RuntimeException("Primitive Class doesn't have answer");
         }
         if (objectInstantiator != null) {
-            ObjectInstantiator<?> finalObjectInstantiator = objectInstantiator;
             return new ObjectInstantiator<>() {
 
                 private Object instance;
@@ -134,7 +159,7 @@ public class TransformMockClass implements TransformClassLoader.Transformer, Moc
                 @Override
                 public Object newInstance() {
                     if (classMap.getLoadEveryInstantiation() || instance == null) {
-                        instance = finalObjectInstantiator.newInstance();
+                        instance = objectInstantiator.newInstance();
                         if (isPrimitive) {
                             return instance;
                         }
@@ -209,5 +234,26 @@ public class TransformMockClass implements TransformClassLoader.Transformer, Moc
     @Override
     public int hashCode() {
         return getCanonicalName().hashCode();
+    }
+
+    public static class MethodSwitcherInterceptor {
+        private Answer answer;
+
+        MethodSwitcherInterceptor() {
+            answer = null;
+        }
+
+        public void switchAnswer(Answer answer) {
+            this.answer = answer;
+        }
+        @RuntimeType
+        public Object intercept(@Origin Method method, @SuperCall Callable<Object> originalMethod,
+                @This(optional = true) Object o, @AllArguments Object[] args) throws Throwable {
+            if (answer != null) {
+                return answer.handle(o, args, originalMethod, method);
+            }
+            return null;
+        }
+
     }
 }

@@ -84,14 +84,6 @@ public class ClassInterceptor implements TransformClassLoader.Transformer {
         return MethodMatchers.getMethodMatcher(interceptorName, ClassMap.class);
     }
 
-//    @RuntimeType
-//    public void intercept(@Origin Method method, @This(optional = true) Object o, @AllArguments Object[] args) throws Exception {
-//        Class<?> clazz = method.getDeclaringClass();
-//        Field f = clazz.getDeclaredField("classMap");
-//        ClassMap c = (ClassMap) f.get(null);
-//        //TODO: Accuracy of timing is affected if finding each method every time method is called
-//    }
-
     @RuntimeType
     public void intercept(@Origin Method method, @This(optional = true) Object o, @AllArguments Object[] args) throws Exception {
         if (args == null || args.length < 1 || args[0] == null || !(args[0] instanceof ClassMap)) {
@@ -113,24 +105,24 @@ public class ClassInterceptor implements TransformClassLoader.Transformer {
             }
         }
 
-        for (String fieldName : methodFieldNames) {
-            Field f = c.getField(fieldName);
-            Pair<Boolean, Answer> a;
-            if ((a = classMap.getAnswer(fieldName)) != null) {
-                if (a.getKey()) {
-                    f.set(o, a.getValue().duplicate());
-                } else {
-                    f.set(o, a.getValue());
-                }
-
-            } else {
-                //TODO: Set it every time?
-                if (classMap.useOriginal) {
-                    f.set(o, OriginalMethodAnswer.newInstance());
-                } else {
-                    f.set(o, NotStubbedAnswer.newInstance());
-                }
-            }
-        }
+//        for (String fieldName : methodFieldNames) {
+//            Field f = c.getField(fieldName);
+//            Pair<Boolean, Answer> a;
+//            if ((a = classMap.getAnswer(fieldName)) != null) {
+//                if (a.getKey()) {
+//                    f.set(o, a.getValue().duplicate());
+//                } else {
+//                    f.set(o, a.getValue());
+//                }
+//
+//            } else {
+//                //TODO: Set it every time?
+//                if (classMap.useOriginal) {
+//                    f.set(o, OriginalMethodAnswer.newInstance());
+//                } else {
+//                    f.set(o, NotStubbedAnswer.newInstance());
+//                }
+//            }
+//        }
     }
 }
