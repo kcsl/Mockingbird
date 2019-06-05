@@ -1,19 +1,19 @@
 package mock;
 
+import mock.answers.Answer;
 import org.objenesis.instantiator.ObjectInstantiator;
 
 /**
  * @author Derrick Lockwood
- * @created 6/7/18.
+ * @created 11/7/18.
  */
-public interface MockCreator extends ObjectInstantiator<Object> {
+public interface MockCreator {
 
     boolean isPrimitive();
 
-    String getName();
+    //TODO: Change to be more specific than just Exception
+    ObjectInstantiator<?> getObjectInstantiator(ClassMap classMap) throws Exception;
 
-    void setName(String name);
-
-    Class<?> getType();
+    Class<?> loadClass() throws ClassNotFoundException;
 
 }

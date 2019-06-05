@@ -24,6 +24,14 @@ public class Foo {
         return -1;
     }
 
+    public long stupidPow(long a, long n) {
+        long t = 1;
+        for (int i = 0; i < n; i++) {
+            t *= a;
+        }
+        return t;
+    }
+
     public String strTest() {
         return "Hello World";
     }

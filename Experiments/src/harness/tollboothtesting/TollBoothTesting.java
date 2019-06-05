@@ -1,25 +1,16 @@
 package harness.tollboothtesting;
 
-import instrumentor.InstrumentLoader;
-import method.MethodCall;
-import method.MethodCallFactory;
-import method.MethodData;
-import mock.SubMockClass;
 import mock.answers.*;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * @author Derrick Lockwood
@@ -32,32 +23,32 @@ public class TollBoothTesting {
     private static final int NUMBER_OF_TRIES = 1000;
     private static final boolean RESTART = true;
 
-    public static void main(String[] args) throws
-            NoSuchMethodException,
-            MalformedURLException,
-            IllegalAccessException,
-            InvocationTargetException, ClassNotFoundException, NoSuchFieldException, FileNotFoundException {
-        InstrumentLoader.addToClassPath(new File("./resources/TollBooth-1.0.0.jar"));
-        MethodCall methodCall = MethodCallFactory.createMethodCall(Class.forName("com.bbn.TransponderDevice"), "run",
-                (String[]) null);
-
-        methodCall.overrideMethodCall(new RunOverrideMethod());
-
-        methodCall.addFieldInstantiator("rand", new ConstructParamAnswer(null, null));
-
-        SubMockClass subMockClass = methodCall.createFieldMock("w");
-
-        SetReturnAnswer setReturnAnswer = new SetReturnAnswer();
-        subMockClass.applyMethod(setReturnAnswer, "getKnownTransponders");
-        subMockClass.applyMethod(new CarPassedAnswer(setReturnAnswer), "carPassed", int.class);
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-
-        MethodData methodData = methodCall.createSession().runMethod(executorService, -1);
-        if (methodData.getReturnException() != null) {
-            methodData.getReturnException().printStackTrace();
-        }
-        executorService.shutdownNow();
-    }
+//    public static void main(String[] args) throws
+//            NoSuchMethodException,
+//            MalformedURLException,
+//            IllegalAccessException,
+//            InvocationTargetException, ClassNotFoundException, NoSuchFieldException, FileNotFoundException {
+//        InstrumentLoader.addToClassPath(new File("./resources/TollBooth-1.0.0.jar"));
+//        MethodCallDEL methodCallDEL = MethodCallFactory.createMethodCall(Class.forName("com.bbn.TransponderDevice"), "run",
+//                (String[]) null);
+//
+//        methodCallDEL.overrideMethodCall(new RunOverrideMethod());
+//
+//        methodCallDEL.addFieldInstantiator("rand", new ConstructParamAnswer(null, null));
+//
+//        SubMockClassDELDEL subMockClass = methodCallDEL.createFieldMock("w");
+//
+//        SetReturnAnswer setReturnAnswer = new SetReturnAnswer();
+//        subMockClass.applyMethod(setReturnAnswer, "getKnownTransponders");
+//        subMockClass.applyMethod(new CarPassedAnswer(setReturnAnswer), "carPassed", int.class);
+//        ExecutorService executorService = Executors.newSingleThreadExecutor();
+//
+//        MethodData methodData = methodCallDEL.createSession().runMethod(executorService, -1);
+//        if (methodData.getReturnException() != null) {
+//            methodData.getReturnException().printStackTrace();
+//        }
+//        executorService.shutdownNow();
+//    }
 
     private static class SetReturnAnswer implements ReturnTypeAnswer {
 

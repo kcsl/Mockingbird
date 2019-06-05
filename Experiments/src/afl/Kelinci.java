@@ -4,13 +4,12 @@ import edu.cmu.sv.kelinci.Mem;
 import instrumentor.InstrumentLoader;
 import io.AFLConfig;
 import io.MethodCallFormatter;
-import method.MethodCall;
-import method.MethodCallParser;
-import method.MethodCallSession;
-import method.MethodData;
+import method.*;
 import method.callbacks.CSVMethodCallback;
+import method.callbacks.EmptyMethodCallback;
 import method.callbacks.LogMethodCallback;
 import method.callbacks.MethodCallback;
+import mock.TransformClassLoader;
 import mock.answers.readers.ByteReaderList;
 import mock.answers.readers.inputstream.ByteReaderInputStreamList;
 import org.json.simple.JSONObject;
@@ -18,7 +17,9 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.SocketException;
+import java.net.URL;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -47,6 +48,7 @@ public class Kelinci {
     private static AFLConfig CONFIG;
     private static Logger LOGGER = Logger.getLogger(Kelinci.class.getName());
     private static MethodCallSession methodCallSession;
+    private static TransformClassLoader transformClassLoader;
     private static ByteReaderInputStreamList byteReaderList;
     private static AFLServer aflServer;
 
@@ -223,18 +225,17 @@ public class Kelinci {
         File instrumentedDir = new File(args[curArg]);
         curArg++;
 
-        //Loads instrumented classes to classpath and creates instrumented classes if necessary
-        if (!InstrumentLoader.loadInstrumentedClasses(inputSource, libs, instrumentedDir)) {
-            System.exit(1);
-        }
-
-        //Setup the AFLServer to get requests from interface program
-        aflServer = new AFLServer(port);
-
+        //TODO: Parse config first and instrument classes with ByteBuddy
         /*
          * Parse methodcall definition and config
          */
         byteReaderList = new ByteReaderInputStreamList(LOGGER);
+        try {
+            transformClassLoader = new TransformClassLoader(instrumentedDir.getPath());
+        } catch (MalformedURLException e) {
+            LOGGER.log(Level.SEVERE, e.getMessage());
+            return;
+        }
         String configFile = args[curArg];
         LOGGER.log(Level.INFO, "Parsing " + configFile);
         try {
@@ -256,35 +257,44 @@ public class Kelinci {
                 LOGGER.addHandler(fileHandler);
             }
             if (jsonObject.containsKey("definition")) {
-                MethodCall methodCall = MethodCallParser.setupMethodCall(LOGGER, (JSONObject) jsonObject.get("definition"),
+                MethodCall methodCall = MethodCallParser.setupMethodCall(LOGGER, transformClassLoader, (JSONObject) jsonObject.get("definition"),
                         byteReaderList);
                 if (methodCall == null) {
                     return;
                 }
                 LOGGER.log(Level.INFO, "Parsing Finished");
-                methodCallSession = methodCall.createSession(true);
+                methodCallSession = methodCall.createSession(EmptyMethodCallback.create());
             }
         } catch (ClassNotFoundException e) {
             LOGGER.log(Level.SEVERE, "Error can't start the fuzzer because class " + e.getMessage() + " not found");
-            methodCallSession = null;
+            return;
         } catch (NoSuchFieldException e) {
             LOGGER.log(Level.SEVERE, "Error can't start the fuzzer because field " + e.getMessage() + " not found");
-            methodCallSession = null;
+            return;
         } catch (NoSuchMethodException e) {
             LOGGER.log(Level.SEVERE, "Error can't start the fuzzer because method " + e.getMessage() + " not found");
-            methodCallSession = null;
+            return;
         } catch (ParseException e) {
             LOGGER.log(Level.SEVERE, "Config Parse error");
-            methodCallSession = null;
+            return;
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "IO Parse error");
-            methodCallSession = null;
+            return;
         } catch (MethodCallParser.MethodCallConfigKeyException e) {
             LOGGER.log(Level.SEVERE, e.getMessage());
+            return;
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, e, () -> "Other exception");
-            methodCallSession = null;
+            return;
         }
+        //Loads instrumented classes to classpath and creates instrumented classes if necessary
+        if (!InstrumentLoader.loadInstrumentedClasses(inputSource, libs, instrumentedDir)) {
+            System.exit(1);
+        }
+
+        //Setup the AFLServer to get requests from interface program
+        aflServer = new AFLServer(port);
+
         if (methodCallSession == null) {
             return;
         }

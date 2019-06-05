@@ -20,12 +20,12 @@ public class MethodRunner {
     /**
      * Runs the method to mock and recreates the declared object and its parameters every time the method is run
      */
-//    public void runRecreate(MethodCall methodCall) {
+//    public void runRecreate(MethodCallDEL methodCall) {
 //
 //        while (methodCall.methodCallback.continueIteration()) {
 //            Object mockObject = methodCall.methodMockClass.newInstance();
 //            Object[] objects = new Object[methodCall.parameters.length];
-//            for (MockCreator mockCreator : normalObjects) {
+//            for (MockCreatorDEL mockCreator : normalObjects) {
 //                mockCreator.newInstance();
 //            }
 //            for (int i = 0; i < parameters.length; i++) {
@@ -44,7 +44,7 @@ public class MethodRunner {
 //    public void run() {
 //        Object mockObject = methodMockClass.newInstance();
 //        Object[] objects = new Object[parameters.length];
-//        for (MockCreator mockCreator : normalObjects) {
+//        for (MockCreatorDEL mockCreator : normalObjects) {
 //            mockCreator.newInstance();
 //        }
 //        for (int i = 0; i < parameters.length; i++) {

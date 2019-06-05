@@ -1,8 +1,5 @@
 package harness.plaittesting;
 
-import method.MethodCall;
-import method.MethodCallFactory;
-import method.MethodCallSession;
 import method.MethodData;
 import mock.answers.Answer;
 import mock.answers.ConstructParamAnswer;
@@ -15,25 +12,25 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
 
 public class PlaitTestHarness {
-    public static void main(String[] args) throws NoSuchMethodException {
-        PlaitConstructorAnswer constructorAnswer = new PlaitConstructorAnswer();
-        MethodCall methodCall = MethodCallFactory.createMethodCall(Plait.class, "normalizeCompletely",
-                new ConstructParamAnswer(new Class[]{String.class, int.class}, new Answer[]{
-                        constructorAnswer, constructorAnswer
-                }));
-        methodCall.overrideMethod(new EmptyAnswer(), Plait.class.getMethod("log", String.class));
-        MethodCallSession session = methodCall.createSession(true);
-        while (constructorAnswer.hasNext()) {
-            ExecutorService executorService = Executors.newSingleThreadExecutor();
-            MethodData methodData = session.runMethod(executorService, 2000);
-            if (methodData.getReturnException() != null && methodData.getReturnException() instanceof TimeoutException) {
-                System.out.println(constructorAnswer.curSpace.getString() + " : " + String.valueOf(constructorAnswer.curSpace.getNumStrands()));
-            } else if (methodData.getReturnException() != null) {
-                methodData.getReturnException().printStackTrace();
-            }
-            executorService.shutdownNow();
-        }
-    }
+//    public static void main(String[] args) throws NoSuchMethodException {
+//        PlaitConstructorAnswer constructorAnswer = new PlaitConstructorAnswer();
+//        MethodCallDEL methodCallDEL = MethodCallFactory.createMethodCall(Plait.class, "normalizeCompletely",
+//                new ConstructParamAnswer(new Class[]{String.class, int.class}, new Answer[]{
+//                        constructorAnswer, constructorAnswer
+//                }));
+//        methodCallDEL.overrideMethod(new EmptyAnswer(), Plait.class.getMethod("log", String.class));
+//        MethodCallSessionDEL session = methodCallDEL.createSession(true);
+//        while (constructorAnswer.hasNext()) {
+//            ExecutorService executorService = Executors.newSingleThreadExecutor();
+//            MethodData methodData = session.runMethod(executorService, 2000);
+//            if (methodData.getReturnException() != null && methodData.getReturnException() instanceof TimeoutException) {
+//                System.out.println(constructorAnswer.curSpace.getString() + " : " + String.valueOf(constructorAnswer.curSpace.getNumStrands()));
+//            } else if (methodData.getReturnException() != null) {
+//                methodData.getReturnException().printStackTrace();
+//            }
+//            executorService.shutdownNow();
+//        }
+//    }
 
     private static class PlaitConstructorAnswer implements ReturnTypeAnswer {
 

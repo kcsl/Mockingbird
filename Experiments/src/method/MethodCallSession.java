@@ -1,42 +1,47 @@
 package method;
 
 import method.callbacks.MethodCallback;
-import mock.MockCreator;
-import mock.answers.Answer;
-import util.AdvancedFuture;
+import net.bytebuddy.agent.builder.AgentBuilder;
+import net.bytebuddy.agent.builder.ResettableClassFileTransformer;
+import org.objenesis.instantiator.ObjectInstantiator;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.lang.instrument.Instrumentation;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryType;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.*;
+import java.util.function.Consumer;
 
 /**
  * @author Derrick Lockwood
- * @created 8/14/18.
+ * @created 11/7/18.
  */
 public class MethodCallSession {
 
     private MemoryPoolMXBean edenSpace;
     private MemoryPoolMXBean survivorSpace;
-    private final MethodCall methodCall;
+    private final ResettableClassFileTransformer transformer;
     private MethodCallback methodCallback;
-    private Object mockObject;
+    private Method methodToCall;
+    private final ObjectInstantiator<?> methodClassInstantiator;
+    private final ObjectInstantiator<?>[] parameterInstantiators;
+    private final ObjectInstantiator<?>[] storedMockInstantiators;
     private Object[] mockParameters;
-    private boolean isLoaded;
-    private boolean resetEveryTime;
 
-    MethodCallSession(MethodCall methodCall, MethodCallback methodCallback, boolean resetEveryTime) {
-        this.methodCall = methodCall;
-        this.resetEveryTime = resetEveryTime;
+    MethodCallSession(MethodCallback methodCallback, ResettableClassFileTransformer transformer, Method methodToCall,
+            ObjectInstantiator<?> methodClassInstantiator, ObjectInstantiator<?>[] parameterInstantiators,
+            ObjectInstantiator<?>[] storedMockInstantiators) {
+        this.transformer = transformer;
         this.methodCallback = methodCallback;
-        isLoaded = false;
         for (MemoryPoolMXBean bean : ManagementFactory.getMemoryPoolMXBeans()) {
             if (bean.getType() == MemoryType.HEAP) {
                 if (bean.getName().contains("Eden")) {
@@ -49,17 +54,17 @@ public class MethodCallSession {
                 }
             }
         }
+        this.methodClassInstantiator = methodClassInstantiator;
+        this.methodToCall = methodToCall;
+        this.parameterInstantiators = parameterInstantiators;
+        this.storedMockInstantiators = storedMockInstantiators;
+        mockParameters = new Object[parameterInstantiators.length];
     }
 
-    MethodCallSession(MethodCall methodCall, MethodCallback methodCallback) {
-        this(methodCall, methodCallback, false);
+    public boolean revertClasses(Instrumentation instrumentation) {
+        return transformer.reset(instrumentation, AgentBuilder.RedefinitionStrategy.RETRANSFORMATION);
     }
 
-    /**
-     * Links the {@code methodCallback} to the current {@code methodCallback}
-     *
-     * @param methodCallback
-     */
     public void linkMethodCallback(MethodCallback methodCallback) {
         this.methodCallback = this.methodCallback.link(methodCallback);
     }
@@ -73,109 +78,193 @@ public class MethodCallSession {
         return methodCallback;
     }
 
-    private void loadMethodRequirements() throws
-            NoSuchMethodException,
-            InvocationTargetException,
-            IllegalAccessException {
-        if (!isLoaded || resetEveryTime) {
-            mockObject = methodCall.methodMockClass.create();
-            mockParameters = new Object[methodCall.parameters.length];
-            for (MockCreator mockCreator : methodCall.normalObjects) {
-                mockCreator.newInstance();
+    private Callable<MethodData> getMethodDataCallable(MethodData methodData, Object mockObject,
+            Object[] methodParameters) {
+        Callable<Object[]> callable = getCallableRunner(edenSpace, survivorSpace, methodToCall, mockObject,
+                methodParameters, false);
+        return () -> methodData.objectMapFunction().apply(callable.call());
+    }
+
+    private Callable<MethodData> getCreatedCallable() {
+        Object mockObject = null;
+        Object[] mockParameters = null;
+        try {
+            mockObject = methodClassInstantiator.newInstance();
+            mockParameters = new Object[parameterInstantiators.length];
+            for (int i = 0; i < parameterInstantiators.length; i++) {
+                mockParameters[i] = parameterInstantiators[i].newInstance();
             }
-            for (int i = 0; i < methodCall.parameters.length; i++) {
-                mockParameters[i] = methodCall.parameters[i].newInstance();
+        } catch (Exception e) {
+            MethodData methodData = new MethodData(mockObject, mockParameters, methodToCall.getDeclaringClass(),
+                    methodToCall.getName(),
+                    methodToCall.getReturnType(), methodToCall.getParameterTypes());
+            methodData.setOutput(null, e, null, 0, null);
+            return () -> methodData;
+        }
+        MethodData methodData = new MethodData(mockObject, mockParameters, methodToCall.getDeclaringClass(),
+                methodToCall.getName(),
+                methodToCall.getReturnType(), methodToCall.getParameterTypes());
+        methodCallback.onBefore(methodData);
+        return getMethodDataCallable(methodData, mockObject, mockParameters);
+    }
+
+    public Future<MethodData> runAsyncMethod(ExecutorService executorService) {
+        Object mockObject = null;
+        Object[] mockParameters = null;
+        try {
+            mockObject = methodClassInstantiator.newInstance();
+            mockParameters = new Object[parameterInstantiators.length];
+            for (int i = 0; i < parameterInstantiators.length; i++) {
+                mockParameters[i] = parameterInstantiators[i].newInstance();
             }
-            isLoaded = true;
-        } else {
-            for (int i = 0; i < methodCall.parameters.length; i++) {
-                if (methodCall.parameters[i].isPrimitive()) {
-                    mockParameters[i] = methodCall.parameters[i].newInstance();
+        } catch (Exception e) {
+            MethodData methodData = new MethodData(mockObject, mockParameters, methodToCall.getDeclaringClass(),
+                    methodToCall.getName(),
+                    methodToCall.getReturnType(), methodToCall.getParameterTypes());
+            methodData.setOutput(null, e, null, 0, null);
+            return new Future<>() {
+                @Override
+                public boolean cancel(boolean mayInterruptIfRunning) {
+                    return false;
+                }
+
+                @Override
+                public boolean isCancelled() {
+                    return false;
+                }
+
+                @Override
+                public boolean isDone() {
+                    return true;
+                }
+
+                @Override
+                public MethodData get() throws InterruptedException, ExecutionException {
+                    return methodData;
+                }
+
+                @Override
+                public MethodData get(long timeout, TimeUnit unit) throws
+                        InterruptedException,
+                        ExecutionException,
+                        TimeoutException {
+                    return methodData;
+                }
+            };
+        }
+        MethodData methodData = new MethodData(mockObject, mockParameters, methodToCall.getDeclaringClass(),
+                methodToCall.getName(),
+                methodToCall.getReturnType(), methodToCall.getParameterTypes());
+        methodCallback.onBefore(methodData);
+        return after(executorService.submit(getMethodDataCallable(methodData, mockObject, mockParameters)),
+                md -> methodCallback.onAfter(md));
+    }
+
+    private <V> Future<V> after(Future<V> future, Consumer<V> consumer) {
+        return new Future<V>() {
+            @Override
+            public boolean cancel(boolean mayInterruptIfRunning) {
+                return future.cancel(mayInterruptIfRunning);
+            }
+
+            @Override
+            public boolean isCancelled() {
+                return future.isCancelled();
+            }
+
+            @Override
+            public boolean isDone() {
+                return future.isDone();
+            }
+
+            @Override
+            public V get() throws InterruptedException, ExecutionException {
+                V v = future.get();
+                consumer.accept(v);
+                return v;
+            }
+
+            @Override
+            public V get(long timeout, TimeUnit unit) throws
+                    InterruptedException,
+                    ExecutionException,
+                    TimeoutException {
+                V v = future.get(timeout, unit);
+                consumer.accept(v);
+                return v;
+            }
+        };
+    }
+
+    public MethodData runMethod(ExecutorService executorService, long timeOut, boolean sysOutStop) {
+        MethodData methodData = new MethodData(null, null, methodToCall.getDeclaringClass(),
+                methodToCall.getName(),
+                methodToCall.getReturnType(), methodToCall.getParameterTypes());
+        Object mockObject = null;
+        try {
+            //TODO: Fix Error Handling maybe? The throwables are weird and out of scope in different areas
+            if (!Modifier.isStatic(methodToCall.getModifiers())){
+                mockObject = methodClassInstantiator.newInstance();
+            }
+            for (int i = 0; i < parameterInstantiators.length; i++) {
+                if (parameterInstantiators[i] != null) {
+                    mockParameters[i] = parameterInstantiators[i].newInstance();
+                } else {
+                    mockParameters[i] = null;
                 }
             }
-            //Reloads the primitive instance variables defined applyReturnType the mockObject
-            methodCall.methodMockClass.reloadInstanceVariables(mockObject, methodCall.primitiveInstanceVariables);
+        } catch (Throwable e) {
+            methodCallback.onBefore(methodData);
+            methodData.setOutput(null, e, null, 0, null);
+            methodCallback.onAfter(methodData);
+            return methodData;
         }
+        methodCallback.onBefore(methodData);
+        Future<MethodData> future = executorService.submit(
+                getMethodDataCallable(methodData, mockObject, mockParameters));
+        try {
+            if (timeOut > 0) {
+                future.get(timeOut, TimeUnit.MILLISECONDS);
+            } else {
+                future.get();
+            }
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            methodData.setError(e, Duration.of(timeOut, ChronoUnit.MILLIS));
+        } finally {
+            future.cancel(true);
+        }
+        methodCallback.onAfter(methodData);
+        return methodData;
     }
 
     public MethodData runMethod(ExecutorService executorService, long timeOut) {
         return runMethod(executorService, timeOut, false);
     }
 
-    public MethodData runMethod(ExecutorService executorService, long timeOut, boolean sysOutStop) {
-        try {
-            //TODO: Fix Error Handling maybe? The throwables are weird and out of scope in different areas
-            loadMethodRequirements();
-        } catch (Throwable e) {
-            MethodData methodData = new MethodData(mockObject, mockParameters, methodCall.method.getDeclaringClass(),
-                    methodCall.method.getName(),
-                    methodCall.method.getReturnType(), methodCall.method.getParameterTypes());
-            methodCallback.onBefore(methodData);
-            methodData.setOutput(null, e, null, 0, null);
-            methodCallback.onAfter(methodData);
-            return methodData;
+    public MethodData runMethod(ExecutorService executorService) {
+        return runMethod(executorService, -1, false);
+    }
+
+    public MethodData[] runMultipleTimesMethod(ExecutorService executorService, int n, long timeOut,
+            boolean sysOutStop) {
+        MethodData[] methodData = new MethodData[n];
+        for (int i = 0; i < methodData.length; i++) {
+            methodData[i] = runMethod(executorService, timeOut, sysOutStop);
         }
-        MethodData methodData = new MethodData(mockObject, mockParameters, methodCall.method.getDeclaringClass(),
-                methodCall.method.getName(),
-                methodCall.method.getReturnType(), methodCall.method.getParameterTypes());
-        methodCallback.onBefore(methodData);
-        Future<Object[]> future = executorService.submit(getCallable(mockObject, mockParameters, sysOutStop));
-        Object[] values = new Object[]{
-                null,
-                null,
-                null,
-                0L,
-                null
-        };
-        try {
-            if (timeOut > 0) {
-                values = future.get(timeOut, TimeUnit.MILLISECONDS);
-            } else {
-                values = future.get();
-            }
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            values[1] = e;
-            values[2] = Duration.of(timeOut, ChronoUnit.MILLIS);
-        } finally {
-            future.cancel(true);
-        }
-        methodData.setOutput(values[0], (Exception) values[1], (Duration) values[2], (long) values[3],
-                (String) values[4]);
-        methodCallback.onAfter(methodData);
         return methodData;
     }
 
-    public AdvancedFuture<MethodData> runAsyncMethod(ExecutorService executorService) {
-        Object mockObject = null;
-        Object[] mockParameters = null;
-        try {
-            mockObject = methodCall.methodMockClass.newInstance();
-            mockParameters = new Object[methodCall.parameters.length];
-            for (MockCreator mockCreator : methodCall.normalObjects) {
-                mockCreator.newInstance();
-            }
-            for (int i = 0; i < methodCall.parameters.length; i++) {
-                mockParameters[i] = methodCall.parameters[i].newInstance();
-            }
-        } catch (Exception e) {
-            MethodData methodData = new MethodData(mockObject, mockParameters, methodCall.method.getDeclaringClass(),
-                    methodCall.method.getName(),
-                    methodCall.method.getReturnType(), methodCall.method.getParameterTypes());
-            methodData.setOutput(null, e, null, 0, null);
-            return AdvancedFuture.completedFuture(methodData);
-        }
-        MethodData methodData = new MethodData(mockObject, mockParameters, methodCall.method.getDeclaringClass(),
-                methodCall.method.getName(),
-                methodCall.method.getReturnType(), methodCall.method.getParameterTypes());
-        methodCallback.onBefore(methodData);
-
-        return AdvancedFuture.submit(executorService, getCallable(mockObject, mockParameters, false))
-                .map(methodData.objectMapFunction())
-                .after(md -> methodCallback.onAfter(md));
+    public MethodData[] runMultipleTimesMethod(ExecutorService executorService, int n) {
+        return runMultipleTimesMethod(executorService, n, -1, false);
     }
 
+    @Override
+    public String toString() {
+        return methodToCall.toString();
+    }
 
-    private Callable<Object[]> getCallable(Object mockObject, Object[] objects, boolean overrideSystemOut) {
+    private static Callable<Object[]> getCallableRunner(MemoryPoolMXBean edenSpace, MemoryPoolMXBean survivorSpace,
+            Method toRunMethod, Object mockObject, Object[] mockParameters, boolean overrideSystemOut) {
         return () -> {
             long currentHeapBytes = edenSpace.getUsage().getUsed();
             Object returnValue = null;
@@ -185,11 +274,12 @@ public class MethodCallSession {
             if (overrideSystemOut) {
                 byteArrayOutputStream = new ByteArrayOutputStream();
                 originalOut = System.out;
-                System.setOut(new PrintStream(byteArrayOutputStream, true, "UTF-8"));
+                System.setOut(new PrintStream(byteArrayOutputStream, true, StandardCharsets.UTF_8));
             }
+            toRunMethod.setAccessible(true);
             Instant instant = Instant.now();
             try {
-                returnValue = methodCall.method.invoke(mockObject, objects);
+                returnValue = toRunMethod.invoke(mockObject, mockParameters);
             } catch (Throwable e) {
                 if (e instanceof InvocationTargetException) {
                     returnException = e.getCause();
@@ -198,13 +288,16 @@ public class MethodCallSession {
                 }
             }
             Duration duration = Duration.between(instant, Instant.now());
-            long survivorSpaceMemory = survivorSpace.getUsage().getUsed();
-            long edenSpaceUsage = edenSpace.getUsage().getUsed();
-            long edenSpaceMax = edenSpace.getUsage().getCommitted();
-            long deltaHeapMemory = edenSpaceUsage - currentHeapBytes;
-            if (deltaHeapMemory < 0) {
-                deltaHeapMemory = edenSpaceMax - currentHeapBytes + survivorSpaceMemory;
-            }
+//            long survivorSpaceMemory = survivorSpace.getUsage().getUsed();
+//            long edenSpaceUsage = edenSpace.getUsage().getUsed();
+//            long edenSpaceMax = edenSpace.getUsage().getCommitted();
+//            long deltaHeapMemory = edenSpaceUsage - currentHeapBytes;
+//            if (deltaHeapMemory < 0) {
+//                deltaHeapMemory = edenSpaceMax - currentHeapBytes + survivorSpaceMemory;
+//            }
+            Runtime runtime = Runtime.getRuntime();
+            runtime.gc();
+            long deltaHeapMemory = runtime.totalMemory() - runtime.freeMemory();
             String sysOut = null;
             if (overrideSystemOut) {
                 System.setOut(originalOut);
@@ -219,6 +312,5 @@ public class MethodCallSession {
             };
         };
     }
-
 
 }
